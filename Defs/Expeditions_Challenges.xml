@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A challenge is a weighted list of vanilla stats. "reference" is what a decent pawn has; that pawn scores 100.
+     "combine" is how the squad's scores add up: Sum (more pawns help), Min (weakest pawn decides),
+     Max (one expert is enough), Average. -->
+<Defs>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Fight</defName>
+		<label>fight</label>
+		<description>Getting through whoever is there.</description>
+		<combine>Sum</combine>
+		<stats>
+			<li><stat>ShootingAccuracyPawn</stat><reference>0.9</reference></li>
+			<li><stat>MeleeDPS</stat><reference>4</reference></li>
+			<li><stat>ArmorRating_Sharp</stat><reference>0.6</reference></li>
+			<li><stat>ArmorRating_Blunt</stat><reference>0.3</reference></li>
+		</stats>
+		<skills>
+			<li>Shooting</li>
+			<li>Melee</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Stealth</defName>
+		<label>stealth</label>
+		<description>Getting in and out unseen. One loud pawn gives everyone away.</description>
+		<combine>Min</combine>
+		<isStealth>true</isStealth>
+		<stats>
+			<li><stat>HuntingStealth</stat><reference>0.5</reference></li>
+			<li><stat>MoveSpeed</stat><reference>4.6</reference></li>
+		</stats>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_SearchOre</defName>
+		<label>search (ore)</label>
+		<description>Finding and working the good seams.</description>
+		<combine>Max</combine>
+		<isSearch>true</isSearch>
+		<stats>
+			<li><stat>MiningSpeed</stat><reference>1</reference></li>
+			<li><stat>MiningYield</stat><reference>1</reference></li>
+		</stats>
+		<skills>
+			<li>Mining</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_SearchSalvage</defName>
+		<label>search (salvage)</label>
+		<description>Knowing what is worth taking and getting it out of the wreckage.</description>
+		<combine>Max</combine>
+		<isSearch>true</isSearch>
+		<stats>
+			<li><stat>ResearchSpeed</stat><reference>1</reference></li>
+			<li><stat>ConstructionSpeed</stat><reference>1</reference></li>
+		</stats>
+		<skills>
+			<li>Intellectual</li>
+			<li>Construction</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_SearchGame</defName>
+		<label>search (game)</label>
+		<description>Tracking the herd and making the shots count.</description>
+		<combine>Max</combine>
+		<isSearch>true</isSearch>
+		<stats>
+			<li><stat>HuntingStealth</stat><reference>0.5</reference></li>
+			<li><stat>ShootingAccuracyPawn</stat><reference>0.9</reference></li>
+		</stats>
+		<skills>
+			<li>Animals</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Haul</defName>
+		<label>haul</label>
+		<description>Carrying it all home. Shuttles and vehicles add their cargo room.</description>
+		<combine>Sum</combine>
+		<isHaul>true</isHaul>
+		<stats>
+			<li><stat>CarryingCapacity</stat><reference>75</reference></li>
+		</stats>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Endure</defName>
+		<label>endure</label>
+		<description>Staying healthy on the road and patching each other up.</description>
+		<combine>Average</combine>
+		<stats>
+			<li><stat>ImmunityGainSpeed</stat><reference>1</reference></li>
+			<li><stat>MedicalTendQuality</stat><reference>1</reference></li>
+			<li><stat>ToxicResistance</stat><reference>0.5</reference><weight>0.5</weight></li>
+		</stats>
+		<skills>
+			<li>Medicine</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+</Defs>
