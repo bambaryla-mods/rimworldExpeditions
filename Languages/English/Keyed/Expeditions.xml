@@ -94,4 +94,5 @@
 	<Exp_SettingStyle>Map style</Exp_SettingStyle>
 	<Exp_SettingRange>Expedition range: {0} tiles</Exp_SettingRange>
 	<Exp_SettingOffers>Ready-made opportunities at a time: {0}</Exp_SettingOffers>
+	<Exp_CallOff>Call off</Exp_CallOff>
 </LanguageData>

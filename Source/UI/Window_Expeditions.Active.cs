@@ -47,6 +47,12 @@ public partial class Window_Expeditions
             Label(new Rect(rect.x, rect.y + 30f, rect.width, 22f),
                 "Exp_PhaseLine".Translate(("Exp_Phase_" + e.phase).Translate(), ("Exp_Ride_" + e.ride).Translate(), Ticks(e.phaseEndTick - Find.TickManager.TicksGame)));
             look.Bar(new Rect(rect.x, rect.y + 56f, rect.width * 0.5f, 10f), e.PhaseProgress, 1f);
+            if (e.phase == Phase.Departing && look.Button(new Rect(rect.xMax - 130f, rect.y, 130f, 28f), "Exp_CallOff".Translate()))
+            {
+                Departure.CallOff(e);
+                selectedExp = null;
+                return;
+            }
             var people = e.phase == Phase.Departing ? e.squad : e.AwayPawns.Where(p => !RideFinder.VehicleCompat.IsVehicle(p)).ToList();
             for (int i = 0; i < people.Count; i++)
             {

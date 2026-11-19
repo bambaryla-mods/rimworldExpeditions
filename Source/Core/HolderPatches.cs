@@ -39,10 +39,14 @@ public static class Patch_ColonistBar_CheckRecacheEntries
 {
     public static void Prefix(bool ___entriesDirty, out bool __state) => __state = ___entriesDirty;
 
-    public static void Postfix(bool __state, List<ColonistBar.Entry> ___cachedEntries)
+    // Vanilla works out the draw positions before this postfix runs and only draws as many entries as it has
+    // positions, so after adding ours the groups and positions are recalculated the same way vanilla does.
+    public static void Postfix(bool __state, List<ColonistBar.Entry> ___cachedEntries, List<int> ___cachedReorderableGroups,
+        List<UnityEngine.Vector2> ___cachedDrawLocs, ColonistBarDrawLocsFinder ___drawLocsFinder, ref float ___cachedScale)
     {
         if (!__state || ExpeditionsGame.Instance == null || !Find.PlaySettings.showColonistBar) return;
-        int group = ___cachedEntries.Count == 0 ? 0 : ___cachedEntries.Max(e => e.group) + 1;
+        int before = ___cachedEntries.Count;
+        int group = before == 0 ? 0 : ___cachedEntries.Max(e => e.group) + 1;
         foreach (Expedition e in ExpeditionsGame.Instance.active)
         {
             var pawns = e.AwayPawns.Where(p => p.IsColonist).ToList();
@@ -59,5 +63,8 @@ public static class Patch_ColonistBar_CheckRecacheEntries
             }
             group++;
         }
+        if (___cachedEntries.Count == before) return;
+        for (int i = before; i < ___cachedEntries.Count; i++) ___cachedReorderableGroups.Add(-1);
+        ___drawLocsFinder.CalculateDrawLocs(___cachedDrawLocs, out ___cachedScale, group);
     }
 }

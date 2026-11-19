@@ -15,7 +15,8 @@ public static class Departure
     // Days walking there for this squad, or -1 when there is no path.
     public static double FootDays(Map map, Opportunity opp, List<Pawn> squad)
     {
-        float mass = RideFinder.SquadMass(squad);
+        // As vanilla caravans count it: only what they carry, not their own bodies, so light squads walk faster.
+        float mass = squad.Sum(MassUtility.GearAndInventoryMass);
         float capacity = squad.Sum(p => MassUtility.Capacity(p, null));
         int ticks = TravelEstimator.FootTicks(map.Tile, opp.tile, squad, mass, Math.Max(capacity, 1f));
         return ticks < 0 ? -1 : ticks / (double)GenDate.TicksPerDay;
@@ -80,22 +81,25 @@ public static class Departure
             take.count = pickups[i].count;
             Order(carrier, take, queue: true);
         }
-        foreach (Pawn p in squad) Order(p, DepartJob(e, p), queue: true);
+        // A member who cannot reach the edge or the ride gets no order and drops out on the next check.
+        foreach (Pawn p in squad)
+            if (DepartJob(e, p) is { } depart) Order(p, depart, queue: true);
         return e;
     }
 
-    public static Job DepartJob(Expedition e, Pawn pawn)
+    // Null when the pawn has no way out: no reachable ride, no reachable map edge.
+    public static Job? DepartJob(Expedition e, Pawn pawn)
     {
         Job job;
         if (e.rideThings.FirstOrDefault(t => t.Spawned) is { } ride)
         {
+            if (!pawn.CanReach(ride, PathEndMode.Touch, Danger.Deadly)) return null;
             job = JobMaker.MakeJob(ExpeditionsDefOf.Exp_Depart, ride);
         }
         else
         {
-            IntVec3 spot = IntVec3.Invalid;
-            RCellFinder.TryFindBestExitSpot(pawn, out spot, TraverseMode.ByPawn, true);
-            job = JobMaker.MakeJob(ExpeditionsDefOf.Exp_Depart, spot.IsValid ? spot : pawn.Position);
+            if (!RCellFinder.TryFindBestExitSpot(pawn, out IntVec3 spot, TraverseMode.ByPawn, true) || !spot.IsValid) return null;
+            job = JobMaker.MakeJob(ExpeditionsDefOf.Exp_Depart, spot);
         }
         job.count = e.id;
         return job;
@@ -112,12 +116,14 @@ public static class Departure
     public static void Tick(Expedition e)
     {
         Map? map = e.originMap;
-        if (map == null)
+        if (map == null || !Find.Maps.Contains(map))
         {
             Cancel(e, null);
             return;
         }
-        e.squad.RemoveAll(p => !e.contents.Contains(p) && DroppedOut(p, map, e));
+        // Departure has a deadline (a day from launch): whoever has not boarded by then stays behind.
+        bool late = Find.TickManager.TicksGame > e.phaseEndTick;
+        e.squad.RemoveAll(p => !e.contents.Contains(p) && (late || DroppedOut(p, map, e)));
         if (People(e.squad) < e.squadMin)
         {
             Cancel(e, map);
@@ -158,24 +164,32 @@ public static class Departure
         if (p.Drafted) return true;
         bool ours(Job? j) => j != null && (j.def == ExpeditionsDefOf.Exp_Depart || j.def == JobDefOf.TakeInventory);
         if (ours(p.CurJob) || p.jobs.jobQueue.Any(q => ours(q.job))) return false;
-        // Animals' think trees may drop the order; give it again rather than losing the animal.
-        if (!p.RaceProps.Humanlike)
+        // Animals' think trees may drop the order; give it again rather than losing the animal, unless it has no way out.
+        if (!p.RaceProps.Humanlike && DepartJob(e, p) is { } again)
         {
-            Order(p, DepartJob(e, p), queue: false);
+            Order(p, again, queue: false);
             return false;
         }
         return true;
     }
 
-    // Nothing is lost: boarded pawns come back where they left, food stays in their pockets, the offer returns.
+    // The player calls it off from the Active tab.
+    public static void CallOff(Expedition e) => Cancel(e, e.originMap);
+
+    // Nothing is lost: boarded pawns come back where they left (or to another home map, or as a caravan when there
+    // is no home left), food stays in their pockets, the offer returns.
     private static void Cancel(Expedition e, Map? map)
     {
         var game = ExpeditionsGame.Instance;
-        Map? target = map ?? Find.AnyPlayerHomeMap;
+        Map? target = map != null && Find.Maps.Contains(map) ? map : Find.AnyPlayerHomeMap;
         if (target != null)
         {
-            IntVec3 near = e.squad.FirstOrDefault(p => p.Spawned)?.Position ?? DropCellFinder.TradeDropSpot(target);
+            IntVec3 near = e.squad.FirstOrDefault(p => p.Spawned && p.Map == target)?.Position ?? DropCellFinder.TradeDropSpot(target);
             foreach (Thing t in e.contents.ToList()) e.Release(t, target, near);
+        }
+        else if (e.AwayPawns.Any())
+        {
+            Arrival.BecomeCaravan(e, e.AwayPawns.Where(p => !p.Dead).ToList());
         }
         foreach (Pawn p in e.squad.Where(p => p.Spawned && p.CurJobDef == ExpeditionsDefOf.Exp_Depart)) p.jobs.EndCurrentJob(JobCondition.InterruptForced);
         game.active.Remove(e);

@@ -17,7 +17,18 @@ public static class Arrival
         var pawns = e.AwayPawns.Where(p => !p.Dead).ToList();
         if (!pawns.Any(p => p.RaceProps.Humanlike && !RideFinder.VehicleCompat.IsVehicle(p)))
         {
-            foreach (Thing t in e.contents.ToList()) { e.contents.Remove(t); if (!t.Destroyed) t.Destroy(); }
+            // Animals left without their people die with the expedition (so bonds and relations resolve properly);
+            // vehicles and cargo are lost.
+            foreach (Thing t in e.contents.ToList())
+            {
+                e.contents.Remove(t);
+                if (t is Pawn p && !p.Dead && !RideFinder.VehicleCompat.IsVehicle(p))
+                {
+                    if (!Find.WorldPawns.Contains(p)) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.KeepForever);
+                    p.Kill(null);
+                }
+                else if (!t.Destroyed) t.Destroy();
+            }
             Find.LetterStack.ReceiveLetter("Exp_LostLabel".Translate(), "Exp_LostText".Translate(report.siteLabel), LetterDefOf.NegativeEvent);
             game.HolderChanged();
             return;
@@ -66,7 +77,7 @@ public static class Arrival
     }
 
     // No player home map left: they become an ordinary caravan on the tile they left from, so nobody is lost.
-    private static void BecomeCaravan(Expedition e, List<Pawn> pawns)
+    public static void BecomeCaravan(Expedition e, List<Pawn> pawns)
     {
         foreach (Pawn p in pawns) e.contents.Remove(p);
         Caravan caravan = CaravanMaker.MakeCaravan(pawns, Faction.OfPlayer, e.originTile, true);

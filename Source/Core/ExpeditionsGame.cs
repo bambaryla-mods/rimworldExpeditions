@@ -99,7 +99,10 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         Scribe_Collections.Look(ref prospectTicksDone, "prospectTicksDone", LookMode.Def, LookMode.Value, ref prospectKeys, ref prospectValues);
         Scribe_Collections.Look(ref prospectedThisWindow, "prospectedThisWindow", LookMode.Def);
         Scribe_Values.Look(ref prospectWindow, "prospectWindow", -1);
-        Scribe_Collections.Look(ref capturedTick, "capturedTick", LookMode.Reference, LookMode.Value, ref capturedKeys, ref capturedValues);
+        // Pawns no longer held (freed, sold, dead, discarded) are dropped before saving, so no dead reference is written.
+        if (Scribe.mode == LoadSaveMode.Saving)
+            capturedTick.RemoveAll(kv => kv.Key == null || kv.Key.Destroyed || kv.Key.Discarded || !CaptiveTracker.IsHeld(kv.Key));
+        Scribe_Collections.Look(ref capturedTick, "capturedTick", LookMode.Reference, LookMode.Value, ref capturedKeys, ref capturedValues, logNullErrors: false);
         Scribe_Values.Look(ref nextOfferTick, "nextOfferTick");
         Scribe_Values.Look(ref nextId, "nextId", 1);
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
@@ -111,7 +114,14 @@ public class ExpeditionsGame : GameComponent, IThingHolder
             prospectedThisWindow ??= new();
             capturedTick ??= new();
             offers.RemoveAll(o => o?.site == null);
-            active.RemoveAll(e => e?.opp?.site == null);
+            active.RemoveAll(e => e == null);
+            // A site def that is gone (a removed mod) must not take the squad with it: they finish as a rumored stash.
+            foreach (Expedition e in active.Where(e => e.opp?.site == null))
+            {
+                e.opp ??= new Opportunity { id = NextId(), tile = e.originTile };
+                e.opp.site = ExpeditionsDefOf.Exp_Rumor;
+                Log.Warning($"[Expeditions] Expedition {e.id} lost its site def; it continues as {e.opp.site.defName}.");
+            }
             prospectTicksDone.RemoveAll(kv => kv.Key == null);
             prospectedThisWindow.RemoveWhere(d => d == null);
             capturedTick.RemoveAll(kv => kv.Key == null);

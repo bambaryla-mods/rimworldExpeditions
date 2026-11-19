@@ -6,8 +6,17 @@ public class OutcomeRollTests
     public void Roll_bands()
     {
         Assert.Equal(Outcome.Success, OutcomeRoll.Roll(0.6, 0.5));
-        Assert.Equal(Outcome.Partial, OutcomeRoll.Roll(0.6, 0.55));
-        Assert.Equal(Outcome.Failure, OutcomeRoll.Roll(0.6, 0.7));
+        Assert.Equal(Outcome.Partial, OutcomeRoll.Roll(0.6, 0.65, 0.3));
+        Assert.Equal(Outcome.Failure, OutcomeRoll.Roll(0.6, 0.8));
+    }
+
+    // The shown success chance is the real one: a roll below it always succeeds.
+    [Fact]
+    public void Success_chance_is_honest()
+    {
+        Assert.Equal(Outcome.Success, OutcomeRoll.Roll(0.6, 0.59));
+        Assert.Equal(Outcome.Success, OutcomeRoll.Roll(0.05, 0.04));
+        Assert.Equal(Outcome.Failure, OutcomeRoll.Roll(0.95, 0.99));
     }
 
     [Fact]

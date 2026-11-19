@@ -26,6 +26,9 @@ public static class CaptiveTracker
         }
     }
 
+    public static bool IsHeld(Pawn p) =>
+        Find.FactionManager.AllFactionsListForReading.Any(f => f.kidnapped?.KidnappedPawnsListForReading.Contains(p) == true);
+
     public static bool HasRescue(Pawn p) =>
         ExpeditionsGame.Instance.offers.Any(o => o.captive == p) || ExpeditionsGame.Instance.active.Any(e => e.opp.captive == p);
 

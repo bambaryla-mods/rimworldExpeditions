@@ -5,6 +5,9 @@
 		<defName>Expeditions_Tuning</defName>
 		<label>expeditions tuning</label>
 
+		<!-- share of non-success rolls that come out Partial instead of Failure -->
+		<partialBand>0.3</partialBand>
+
 		<!-- squad score / requirement -> chance for one challenge -->
 		<challengeRatioCurve>
 			<points>

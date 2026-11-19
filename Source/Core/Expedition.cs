@@ -5,8 +5,11 @@ namespace Expeditions;
 
 // A squad out on one opportunity. While away, its pawns, animals, vehicles, shuttle and cargo sit in `contents`,
 // which nothing ticks: they are frozen until they come home.
-public class Expedition : IExposable, IThingHolder
+public class Expedition : IExposable, ISuspendableThingHolder
 {
+    // Frozen while away: vanilla treats suspended pawns as not needing food, warmth or mood alerts.
+    public bool IsContentsSuspended => true;
+
     public int id;
     public Opportunity opp = null!;
     public Ride ride;

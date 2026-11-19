@@ -5,11 +5,12 @@ public readonly record struct FateWeights(double Unharmed, double Injured, doubl
 
 public static class OutcomeRoll
 {
-    // Partial covers a band centered on the success chance.
+    // The success chance is exactly what the player is shown. Partial takes `partialBand` of the remaining rolls,
+    // so even a high chance can still fail outright.
     public static Outcome Roll(double successChance, double roll01, double partialBand = 0.15)
     {
-        if (roll01 < successChance - partialBand / 2) return Outcome.Success;
-        if (roll01 < successChance + partialBand / 2) return Outcome.Partial;
+        if (roll01 < successChance) return Outcome.Success;
+        if (roll01 < successChance + partialBand * (1 - successChance)) return Outcome.Partial;
         return Outcome.Failure;
     }
 
