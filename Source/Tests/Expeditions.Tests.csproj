@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Unit tests for Source/Logic only. The Logic files are compiled straight in, and this project has no game
+	     references, so anything in Logic that reaches for Verse, RimWorld or UnityEngine fails to build here. -->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<IsPackable>false</IsPackable>
+		<RootNamespace>Expeditions.Tests</RootNamespace>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\Logic\**\*.cs" LinkBase="Logic" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+		<PackageReference Include="xunit" Version="2.9.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<Using Include="Xunit" />
+	</ItemGroup>
+</Project>

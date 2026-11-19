@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expedition Map Styles</title>
+<style>
+:root{--bg:#15171a;--panel:#1f2226;--line:#3a3f46;--text:#d9d6cf;--dim:#8d8a83;--accent:#d8b45a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,sans-serif;padding:24px 16px}
+section{max-width:1100px;margin:0 auto 36px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--dim);margin:0 0 22px;max-width:900px}
+h2{font-size:16px;margin:0 0 4px;color:var(--accent)}.why{color:var(--dim);margin:0 0 10px;max-width:900px}
+.frame{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+<section>
+<h1>Map art style: three options</h1>
+<p class="sub">Layout A, map area only. Same world, same markers: Home with its range ring, Old mine (selected), Pirate outpost, Crashed ship, Stalled convoy, Squad 1 walking out, and the camp holding a captured colonist. Everything is generated from the world's own tile data (biome, elevation, hills, rivers, roads), so no hand-painted art is needed for any of them.</p>
+</section>
+
+<!-- 1 VANILLA -->
+<section>
+<h2>1. Vanilla</h2>
+<p class="why">Biome colors as on the RimWorld world map, flat shading, plain white markers. Feels like part of the game, and looks the most familiar. It's the least distinctive.</p>
+<div class="frame">
+<svg viewBox="0 0 800 440">
+  <rect width="800" height="440" fill="#2a4a63"/>
+  <path d="M50 70 Q160 20 300 55 T560 45 Q720 60 760 140 Q785 260 690 350 Q570 420 400 400 Q220 410 120 350 Q25 280 40 170Z" fill="#7a8a4c"/>
+  <path d="M80 95 Q200 45 330 80 Q300 140 210 150 Q120 160 80 95Z" fill="#c9d3d6"/>
+  <path d="M510 85 Q630 70 720 140 Q690 195 600 185 Q520 165 510 85Z" fill="#c9d3d6"/>
+  <path d="M120 230 Q210 195 290 240 Q300 320 200 345 Q120 320 120 230Z" fill="#4c6b3c"/>
+  <path d="M480 265 Q600 230 680 290 Q650 360 545 370 Q465 345 480 265Z" fill="#d1b77c"/>
+  <g fill="#8a7d6f" opacity=".9"><path d="M330 140 l14 -22 l14 22z"/><path d="M352 150 l16 -26 l16 26z"/><path d="M376 140 l12 -20 l12 20z"/><path d="M345 168 l13 -20 l13 20z"/></g>
+  <path d="M240 160 Q340 230 400 300 Q440 345 500 395" stroke="#5d8fb3" stroke-width="3" fill="none"/>
+  <path d="M130 290 L400 220 L640 170" stroke="#9c8a66" stroke-width="2.5" fill="none"/>
+  <circle cx="400" cy="220" r="185" fill="none" stroke="#fff" stroke-opacity=".35" stroke-dasharray="5 7"/>
+  <path d="M400 220 Q310 265 215 290" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" fill="none"/>
+  <g font-family="Segoe UI" font-size="12" fill="#fff" stroke="#000" stroke-width=".4" paint-order="stroke">
+    <circle cx="400" cy="220" r="9" fill="#fff" stroke="#000" stroke-width="2"/><text x="414" y="216" font-weight="600">Home</text>
+    <circle cx="362" cy="160" r="8" fill="#fff" stroke="#d8b45a" stroke-width="3"/><text x="300" y="148" font-weight="600">Old mine</text>
+    <circle cx="215" cy="112" r="6" fill="#fff"/><text x="225" y="116">Pirate outpost</text>
+    <circle cx="565" cy="125" r="6" fill="#fff"/><text x="575" y="129">Crashed ship</text>
+    <circle cx="590" cy="305" r="6" fill="#fff"/><text x="600" y="309">Stalled convoy</text>
+    <circle cx="265" cy="270" r="6" fill="#9cd0f0" stroke="#000"/><text x="200" y="258">Squad 1 · 2d</text>
+    <rect x="160" y="355" width="11" height="11" fill="#fff"/><text x="178" y="365">Pirate camp (Ann held)</text>
+  </g>
+</svg>
+</div>
+</section>
+
+<!-- 2 HOLO -->
+<section>
+<h2>2. Tactical holo</h2>
+<p class="why">Dark map, coastlines and elevation contour lines in cyan, glowing markers and a faint scanline. It reads as a comms-console screen, which fits since the console is where it opens. The biome is only a tint, so it's slightly less readable at a glance.</p>
+<div class="frame">
+<svg viewBox="0 0 800 440">
+  <defs>
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#7fe7ff" opacity=".05"/></pattern>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#1d4a5a" stroke-width=".6"/></pattern>
+    <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="800" height="440" fill="#061218"/>
+  <rect width="800" height="440" fill="url(#grid)"/>
+  <g fill="none" stroke="#3fd0f0" filter="url(#glow)">
+    <path d="M50 70 Q160 20 300 55 T560 45 Q720 60 760 140 Q785 260 690 350 Q570 420 400 400 Q220 410 120 350 Q25 280 40 170Z" stroke-width="1.6" fill="#0b2a33" fill-opacity=".7"/>
+  </g>
+  <g fill="none" stroke="#2aa3c0" stroke-opacity=".55" stroke-width="1">
+    <path d="M310 150 Q360 105 410 140 Q425 185 370 195 Q320 190 310 150Z"/>
+    <path d="M290 155 Q360 85 430 135 Q450 205 365 215 Q295 205 290 155Z"/>
+    <path d="M270 160 Q360 65 455 130 Q475 225 360 235 Q270 225 270 160Z"/>
+    <path d="M100 100 Q200 60 320 90 Q290 140 200 150 Q120 150 100 100Z" stroke-opacity=".35"/>
+    <path d="M520 95 Q630 80 710 140 Q680 185 600 180 Q530 160 520 95Z" stroke-opacity=".35"/>
+    <path d="M490 270 Q600 240 670 295 Q640 355 545 362 Q475 340 490 270Z" stroke-opacity=".35"/>
+  </g>
+  <path d="M240 160 Q340 230 400 300 Q440 345 500 395" stroke="#3f8cff" stroke-width="1.5" fill="none" stroke-opacity=".8"/>
+  <path d="M130 290 L400 220 L640 170" stroke="#3fd0f0" stroke-width="1" stroke-dasharray="2 4" fill="none" stroke-opacity=".6"/>
+  <circle cx="400" cy="220" r="185" fill="none" stroke="#3fd0f0" stroke-opacity=".5" stroke-dasharray="2 6"/>
+  <circle cx="400" cy="220" r="120" fill="none" stroke="#3fd0f0" stroke-opacity=".15"/>
+  <path d="M400 220 Q310 265 215 290" stroke="#7fe7ff" stroke-width="1.6" stroke-dasharray="3 4" fill="none" filter="url(#glow)"/>
+  <g font-family="Consolas, monospace" font-size="11.5" fill="#bff3ff" filter="url(#glow)">
+    <circle cx="400" cy="220" r="7" fill="#ffd36a"/><text x="412" y="216" fill="#ffd36a">HOME</text>
+    <path d="M362 148 l12 12 l-12 12 l-12 -12z" fill="none" stroke="#ffd36a" stroke-width="2"/><text x="296" y="142" fill="#ffd36a">OLD MINE</text>
+    <path d="M215 104 l8 8 l-8 8 l-8 -8z" fill="#ff5a4a"/><text x="228" y="116">PIRATE OUTPOST</text>
+    <path d="M565 117 l8 8 l-8 8 l-8 -8z" fill="#ffb347"/><text x="578" y="129">CRASHED SHIP</text>
+    <path d="M590 297 l8 8 l-8 8 l-8 -8z" fill="#6aff9a"/><text x="603" y="309">STALLED CONVOY</text>
+    <circle cx="265" cy="270" r="5" fill="#7fe7ff"/><text x="190" y="258">SQD-1 T-2d</text>
+    <rect x="160" y="355" width="10" height="10" fill="none" stroke="#c48bff" stroke-width="2"/><text x="178" y="365" fill="#e3c8ff">CAMP / ANN HELD</text>
+  </g>
+  <rect width="800" height="440" fill="url(#scan)"/>
+</svg>
+</div>
+</section>
+
+<!-- 3 CARTOGRAPHER -->
+<section>
+<h2>3. Cartographer</h2>
+<p class="why">Parchment, ink coastlines, hatched mountains and hand-drawn-style icons. It matches RimWorld's storybook tone and makes the map feel like the colony's own. It needs a parchment texture and some icon art, and it clashes a bit with high-tech colonies.</p>
+<div class="frame">
+<svg viewBox="0 0 800 440">
+  <defs>
+    <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .18 0"/><feComposite in2="SourceGraphic" operator="over"/></filter>
+    <filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="2" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="4"/></filter>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><path d="M0 0V6" stroke="#6b5233" stroke-width="1" opacity=".5"/></pattern>
+  </defs>
+  <rect width="800" height="440" fill="#e8d9b5" filter="url(#paper)"/>
+  <g filter="url(#rough)">
+    <path d="M50 70 Q160 20 300 55 T560 45 Q720 60 760 140 Q785 260 690 350 Q570 420 400 400 Q220 410 120 350 Q25 280 40 170Z" fill="#efe3c4" stroke="#4a3520" stroke-width="2"/>
+    <path d="M50 70 Q160 20 300 55 T560 45 Q720 60 760 140 Q785 260 690 350 Q570 420 400 400 Q220 410 120 350 Q25 280 40 170Z" fill="none" stroke="#4a3520" stroke-width=".8" transform="translate(-8 -6) scale(1.02)" opacity=".4"/>
+    <path d="M120 230 Q210 195 290 240 Q300 320 200 345 Q120 320 120 230Z" fill="#c9cf9f" opacity=".6"/>
+    <path d="M480 265 Q600 230 680 290 Q650 360 545 370 Q465 345 480 265Z" fill="#e4c98a" opacity=".6"/>
+    <path d="M310 150 Q360 105 410 140 Q425 185 370 195 Q320 190 310 150Z" fill="url(#hatch)"/>
+  </g>
+  <g fill="none" stroke="#4a3520" stroke-width="1.4"><path d="M330 142 l12 -20 l12 20"/><path d="M350 152 l15 -25 l15 25"/><path d="M372 142 l11 -18 l11 18"/><path d="M342 170 l12 -19 l12 19"/></g>
+  <g fill="#4a3520" opacity=".7"><path d="M160 250 l5 -12 l5 12z"/><path d="M180 270 l5 -12 l5 12z"/><path d="M210 255 l5 -12 l5 12z"/><path d="M190 300 l5 -12 l5 12z"/><path d="M230 290 l5 -12 l5 12z"/></g>
+  <path d="M240 160 Q340 230 400 300 Q440 345 500 395" stroke="#3d6a8a" stroke-width="2" fill="none"/>
+  <path d="M130 290 L400 220 L640 170" stroke="#7a5a35" stroke-width="1.5" stroke-dasharray="7 4" fill="none"/>
+  <circle cx="400" cy="220" r="185" fill="none" stroke="#7a2f1f" stroke-opacity=".45" stroke-dasharray="1 6" stroke-width="2"/>
+  <path d="M400 220 Q310 265 215 290" stroke="#7a2f1f" stroke-width="2" stroke-dasharray="6 5" fill="none"/>
+  <g font-family="Georgia, serif" font-size="13" fill="#3a2614" font-style="italic">
+    <path d="M400 208 l4 8 l9 1 l-7 6 l2 9 l-8 -5 l-8 5 l2 -9 l-7 -6 l9 -1z" fill="#7a2f1f"/><text x="416" y="216" font-weight="bold" font-style="normal">Home</text>
+    <circle cx="362" cy="160" r="9" fill="none" stroke="#7a2f1f" stroke-width="2.5"/><path d="M356 160 h12 M362 154 v12" stroke="#7a2f1f" stroke-width="2"/><text x="302" y="146" font-weight="bold">Old mine</text>
+    <path d="M209 106 l12 12 M221 106 l-12 12" stroke="#7a2f1f" stroke-width="2.5"/><text x="228" y="116">pirate outpost</text>
+    <path d="M558 125 q7 -10 14 0 q-7 6 -14 0z" fill="#3a2614"/><text x="578" y="129">crashed ship</text>
+    <path d="M584 305 h12 v-6 h-12z" fill="#3a2614"/><text x="602" y="309">stalled convoy</text>
+    <circle cx="265" cy="270" r="5" fill="#3d6a8a"/><text x="190" y="258">the squad, two days out</text>
+    <path d="M160 355 h12 v12 h-12z M162 357 v8 M166 357 v8 M170 357 v8" stroke="#3a2614" fill="none" stroke-width="1.2"/><text x="178" y="366">camp where Ann is held</text>
+  </g>
+  <g transform="translate(730 390)" fill="none" stroke="#4a3520" stroke-width="1.2"><circle r="22"/><path d="M0 -26 L5 0 L0 26 L-5 0Z" fill="#4a3520"/><text x="-4" y="-30" font-family="Georgia" font-size="11" fill="#4a3520" stroke="none">N</text></g>
+</svg>
+</div>
+</section>
+</body>
+</html>

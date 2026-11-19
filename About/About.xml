@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>Expeditions</name>
+	<author>Bambaryła</author>
+	<packageId>bambaryla.expeditions</packageId>
+	<supportedVersions>
+		<li>1.7</li>
+	</supportedVersions>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>LazyFridayStudio.UIRethemed.Core</li>
+	</loadAfter>
+	<description>Go looking for things instead of buying them.
+
+Pick a point of interest on your colony's own map, send a squad as they stand, and they are gone for the trip. What happens out there is rolled off-screen and comes home as a report: what they found, what they could carry, who got hurt, and who did not come back. Sometimes they find nothing.</description>
+</ModMetaData>

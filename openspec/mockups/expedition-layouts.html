@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expedition Window Layouts</title>
+<style>
+:root{
+  --bg:#15171a; --panel:#1f2226; --panel2:#272b30; --line:#3a3f46; --text:#d9d6cf; --dim:#8d8a83;
+  --accent:#d8b45a; --good:#7fb069; --bad:#c8553d; --mid:#d89a3a; --squad:#5aa9d8;
+  --tundra:#8fa3a8; --forest:#3f5e3a; --grass:#6d7f45; --desert:#b39a63; --mount:#6b625a; --water:#22394d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,sans-serif;padding:24px 16px}
+h1{font-size:20px;margin:0 0 4px} .sub{color:var(--dim);margin:0 0 24px;max-width:900px}
+section{margin:0 auto 40px;max-width:1100px}
+h2{font-size:16px;margin:0 0 4px;color:var(--accent)} .why{color:var(--dim);margin:0 0 12px;max-width:900px}
+.win{border:1px solid var(--line);background:var(--panel);border-radius:6px;overflow:hidden}
+.title{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--line);font-weight:600;letter-spacing:.04em;font-size:13px}
+.tabs span{margin-left:14px;color:var(--dim);font-weight:500} .tabs span.on{color:var(--accent)}
+.map{display:block;width:100%;height:100%;background:var(--water)}
+.list .row{padding:7px 10px;border-bottom:1px solid var(--line);font-size:12.5px;cursor:default}
+.list .row.on{background:#2f2a1d;border-left:3px solid var(--accent)}
+.row b{display:block;font-size:13px} .meta{color:var(--dim);font-size:11.5px}
+.pill{display:inline-block;padding:0 6px;border-radius:8px;font-size:11px;margin-right:4px;border:1px solid var(--line)}
+.lo{color:var(--good)} .hi{color:var(--bad)} .md{color:var(--mid)}
+.detail{padding:10px 12px;font-size:12.5px}
+.detail h3{margin:0 0 2px;font-size:14px}
+.bar{display:flex;align-items:center;gap:8px;margin:3px 0;font-size:12px}
+.bar i{flex:1;height:8px;background:#111;border-radius:4px;position:relative;overflow:hidden}
+.bar i em{position:absolute;inset:0 auto 0 0;background:var(--squad)}
+.bar i u{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--accent)}
+.bar span:first-child{width:62px;color:var(--dim)} .bar span:last-child{width:34px;text-align:right}
+.squad{display:flex;gap:6px;margin:6px 0}
+.pawn{width:38px;height:38px;border-radius:4px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-size:11px}
+.pawn.add{color:var(--dim);border-style:dashed}
+.rides{display:flex;gap:4px;margin:6px 0} .rides span{padding:3px 8px;border:1px solid var(--line);border-radius:4px;font-size:11.5px;color:var(--dim)} .rides span.on{color:var(--text);border-color:var(--accent)}
+.btn{display:inline-block;margin-top:8px;padding:5px 14px;background:#3a3220;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:12px}
+.odds{display:flex;gap:16px;margin:6px 0;font-size:12px} .odds b{font-size:15px;color:var(--text)}
+.choose{margin-top:10px;display:flex;gap:10px;align-items:center;color:var(--dim);font-size:12.5px}
+.choose label{display:flex;gap:6px;align-items:center;cursor:pointer;color:var(--text)}
+.pros{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;font-size:12.5px}
+.pros div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+.pros h4{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.pros ul{margin:0;padding-left:18px}
+@media (max-width:760px){ .grid-a,.grid-b,.grid-c{grid-template-columns:1fr!important;grid-template-rows:auto!important} .pros{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<section>
+<h1>Expedition window: three layouts</h1>
+<p class="sub">Same content in each: your flat map centered on the colony, opportunities, one selected PoI with its challenges, squad, ride and odds. Tabs cover Opportunities, Prospect, Active and Captured. Pick the one that feels right, or mix parts. Colors and art style are a separate question.</p>
+</section>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="world">
+      <rect width="600" height="380" fill="#22394d"/>
+      <path d="M40 60 Q120 20 230 50 T420 40 Q540 50 570 120 Q590 220 520 300 Q430 360 300 345 Q170 350 90 300 Q20 240 30 150 Z" fill="#6d7f45"/>
+      <path d="M60 80 Q150 40 250 70 Q230 120 160 130 Q90 140 60 80Z" fill="#8fa3a8"/>
+      <path d="M380 70 Q470 60 540 120 Q520 170 450 160 Q390 140 380 70Z" fill="#8fa3a8"/>
+      <path d="M90 200 Q160 170 220 210 Q230 280 150 300 Q90 280 90 200Z" fill="#3f5e3a"/>
+      <path d="M360 230 Q450 200 510 250 Q490 310 410 320 Q350 300 360 230Z" fill="#b39a63"/>
+      <path d="M250 120 Q290 100 330 130 Q340 170 300 180 Q260 170 250 120Z" fill="#6b625a"/>
+      <path d="M180 140 Q260 200 300 260 Q330 300 380 340" stroke="#3b6e8f" stroke-width="3" fill="none"/>
+      <path d="M100 250 L300 190 L480 150" stroke="#a08d6a" stroke-width="2" stroke-dasharray="6 4" fill="none"/>
+      <circle cx="300" cy="190" r="150" fill="none" stroke="#d8b45a" stroke-opacity=".35" stroke-dasharray="4 6"/>
+      <circle cx="300" cy="190" r="9" fill="#d8b45a" stroke="#000" stroke-width="2"/>
+      <text x="314" y="186" fill="#f3e3b3" font-size="12" font-family="Segoe UI">Home</text>
+      <rect x="160" y="96" width="9" height="9" fill="#c8553d" transform="rotate(45 164 100)"/><text x="176" y="104" fill="#eee" font-size="11">Outpost</text>
+      <rect x="420" y="105" width="9" height="9" fill="#d89a3a" transform="rotate(45 424 109)"/><text x="436" y="113" fill="#eee" font-size="11">Crashed ship</text>
+      <rect x="270" y="138" width="11" height="11" fill="#d8b45a" stroke="#fff" stroke-width="2" transform="rotate(45 275 143)"/><text x="232" y="128" fill="#fff" font-size="11" font-weight="600">Old mine</text>
+      <rect x="440" y="260" width="9" height="9" fill="#7fb069" transform="rotate(45 444 264)"/><text x="456" y="268" fill="#eee" font-size="11">Convoy</text>
+      <path d="M300 190 Q230 230 160 250" stroke="#5aa9d8" stroke-width="2" stroke-dasharray="3 4" fill="none"/>
+      <circle cx="200" cy="235" r="6" fill="#5aa9d8" stroke="#000"/><text x="150" y="222" fill="#bfe2f6" font-size="11">Squad 1, 2d</text>
+      <circle cx="160" cy="250" r="5" fill="none" stroke="#5aa9d8" stroke-width="2"/>
+      <rect x="120" y="300" width="10" height="10" fill="#8a5bd8"/><text x="136" y="310" fill="#d8c7f5" font-size="11">Pirate camp (Ann held)</text>
+    </g>
+  </defs>
+</svg>
+
+<!-- A -->
+<section>
+<h2>A. Map first</h2>
+<p class="why">The map fills the window. A slim list sits on the left, and selecting a PoI opens a details drawer at the bottom. It feels most like "your own map", but the drawer has less room for challenge breakdowns.</p>
+<div class="win">
+  <div class="title"><span>EXPEDITIONS</span><span class="tabs"><span class="on">Opportunities</span><span>Prospect</span><span>Active (1)</span><span>Captured (1)</span><span>✕</span></span></div>
+  <div class="grid-a" style="display:grid;grid-template-columns:200px 1fr;grid-template-rows:330px 190px">
+    <div class="list" style="grid-row:1 / span 2;border-right:1px solid var(--line)">
+      <div class="row on"><b>Old mine</b><span class="meta">Steel, sunsteel? · 3d · expires 4d</span></div>
+      <div class="row"><b>Pirate outpost</b><span class="meta">Weapons · 2d · expires 2d</span></div>
+      <div class="row"><b>Crashed ship</b><span class="meta">Components · 6d · expires 5d</span></div>
+      <div class="row"><b>Stalled convoy</b><span class="meta">Textiles · 4d · expires 1d</span></div>
+    </div>
+    <svg class="map" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice"><use href="#world"/></svg>
+    <div class="detail" style="border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+      <div><h3>Old mine</h3><span class="meta">Mountains · 3 days on foot · hostile: none known</span>
+        <div class="odds"><span>Success <b>71%</b></span><span>Find <b>45%</b></span></div></div>
+      <div>
+        <div class="bar"><span>Search</span><i><em style="width:62%"></em><u style="left:55%"></u></i><span>62</span></div>
+        <div class="bar"><span>Endure</span><i><em style="width:48%"></em><u style="left:50%"></u></i><span>48</span></div>
+        <div class="bar"><span>Haul</span><i><em style="width:70%"></em><u style="left:40%"></u></i><span>70</span></div>
+        <div class="bar"><span>Fight</span><i><em style="width:30%"></em><u style="left:20%"></u></i><span>30</span></div>
+      </div>
+      <div><div class="squad"><div class="pawn">Bob</div><div class="pawn">Cia</div><div class="pawn add">+</div></div>
+        <div class="rides"><span class="on">Foot</span><span>Pods</span><span>Shuttle</span></div><span class="btn">Launch</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- B -->
+<section>
+<h2>B. Split</h2>
+<p class="why">Map on the left, a full-height panel on the right with the list on top and the details below. Everything is visible at once. The map is smaller, but the challenge bars, squad and ride get proper room.</p>
+<div class="win">
+  <div class="title"><span>EXPEDITIONS</span><span class="tabs"><span class="on">Opportunities</span><span>Prospect</span><span>Active (1)</span><span>Captured (1)</span><span>✕</span></span></div>
+  <div class="grid-b" style="display:grid;grid-template-columns:1.35fr 1fr;height:520px">
+    <svg class="map" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" style="height:520px"><use href="#world"/></svg>
+    <div style="border-left:1px solid var(--line);display:flex;flex-direction:column">
+      <div class="list" style="flex:0 0 auto">
+        <div class="row on"><b>Old mine <span class="pill lo">risk low</span></b><span class="meta">Steel, sunsteel? · 3d · expires 4d</span></div>
+        <div class="row"><b>Pirate outpost <span class="pill hi">risk high</span></b><span class="meta">Weapons · 2d · expires 2d</span></div>
+        <div class="row"><b>Crashed ship <span class="pill md">risk mid</span></b><span class="meta">Components · 6d · expires 5d</span></div>
+      </div>
+      <div class="detail" style="flex:1;overflow:auto">
+        <h3>Old mine</h3><span class="meta">Mountains · 3 days on foot · hostile: none known</span>
+        <div class="bar"><span>Search</span><i><em style="width:62%"></em><u style="left:55%"></u></i><span>62</span></div>
+        <div class="bar"><span>Endure</span><i><em style="width:48%"></em><u style="left:50%"></u></i><span>48</span></div>
+        <div class="bar"><span>Haul</span><i><em style="width:70%"></em><u style="left:40%"></u></i><span>70</span></div>
+        <div class="bar"><span>Fight</span><i><em style="width:30%"></em><u style="left:20%"></u></i><span>30</span></div>
+        <div class="squad"><div class="pawn">Bob</div><div class="pawn">Cia</div><div class="pawn add">+</div><div class="pawn add">+</div></div>
+        <div class="rides"><span class="on">Foot</span><span>Pods</span><span>Shuttle</span><span>Vehicles</span></div>
+        <div class="odds"><span>Success <b>71%</b></span><span>Find <b>45%</b></span><span>Away <b>~7d</b></span></div>
+        <span class="btn">Launch</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- C -->
+<section>
+<h2>C. Board first</h2>
+<p class="why">Opportunity cards lead and the map is a small inset showing where the selected one is. It's the quickest to scan, and the map is there to look at, not to work from.</p>
+<div class="win">
+  <div class="title"><span>EXPEDITIONS</span><span class="tabs"><span class="on">Opportunities</span><span>Prospect</span><span>Active (1)</span><span>Captured (1)</span><span>✕</span></span></div>
+  <div class="grid-c" style="display:grid;grid-template-columns:1fr 1fr 300px;gap:10px;padding:10px">
+    <div class="win" style="border-color:var(--accent)"><div class="detail"><h3>Old mine</h3><span class="meta">Steel, sunsteel? · 3d · expires 4d</span><div class="odds"><span>Success <b>71%</b></span><span>Find <b>45%</b></span></div><span class="pill lo">risk low</span><span class="pill">Search</span><span class="pill">Haul</span></div></div>
+    <div class="win"><div class="detail"><h3>Pirate outpost</h3><span class="meta">Weapons · 2d · expires 2d</span><div class="odds"><span>Success <b>34%</b></span><span>Find <b>80%</b></span></div><span class="pill hi">risk high</span><span class="pill">Fight</span><span class="pill">Stealth</span></div></div>
+    <div style="grid-row:span 3"><svg viewBox="0 0 600 380" style="width:100%;border-radius:6px;background:var(--water)"><use href="#world"/></svg>
+      <div class="detail" style="padding:8px 0">
+        <div class="bar"><span>Search</span><i><em style="width:62%"></em><u style="left:55%"></u></i><span>62</span></div>
+        <div class="bar"><span>Endure</span><i><em style="width:48%"></em><u style="left:50%"></u></i><span>48</span></div>
+        <div class="bar"><span>Haul</span><i><em style="width:70%"></em><u style="left:40%"></u></i><span>70</span></div>
+        <div class="squad"><div class="pawn">Bob</div><div class="pawn">Cia</div><div class="pawn add">+</div></div>
+        <div class="rides"><span class="on">Foot</span><span>Pods</span><span>Shuttle</span></div><span class="btn">Launch</span></div></div>
+    <div class="win"><div class="detail"><h3>Crashed ship</h3><span class="meta">Components · 6d · expires 5d</span><div class="odds"><span>Success <b>58%</b></span><span>Find <b>60%</b></span></div><span class="pill md">risk mid</span><span class="pill">Endure</span></div></div>
+    <div class="win"><div class="detail"><h3>Stalled convoy</h3><span class="meta">Textiles · 4d · expires 1d</span><div class="odds"><span>Success <b>66%</b></span><span>Find <b>70%</b></span></div><span class="pill lo">risk low</span><span class="pill">Haul</span></div></div>
+  </div>
+</div>
+</section>
+
+<section>
+<p class="sub">How to read the bars: blue is the squad's score, the gold tick is what the PoI asks for. Hovering a bar in game would list which pawn, gear, skill or bionic gave what. "Success" is getting in and out; "Find" is whether the item is actually there.</p>
+</section>
+</body>
+</html>
