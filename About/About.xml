@@ -20,5 +20,20 @@
 	</loadAfter>
 	<description>Go looking for things instead of buying them.
 
-Pick a point of interest on your colony's own map, send a squad as they stand, and they are gone for the trip. What happens out there is rolled off-screen and comes home as a report: what they found, what they could carry, who got hurt, and who did not come back. Sometimes they find nothing.</description>
+Open the Expeditions window from any comms console. It shows your colony's own map: what is around you, a few opportunities at a time, coming and going. Pick one, put together a squad as they stand (gear, skills, bionics and traits all count, and every number is shown before you commit), and send them off. They are gone for the trip. What happens out there is rolled off-screen and comes home as a report: what they found, what they could carry, who got hurt, and who did not come back. Sometimes they find nothing.
+
+[b]Rides[/b]
+- On foot: slow both ways, but quiet, so sneaking in counts. They carry only what they can.
+- Drop pods: fast there, used up, and they walk home.
+- Shuttle: fast both ways with room for a lot of loot.
+- Vehicles (with Vehicle Framework): faster than walking, with cargo room; armed vehicles sometimes help in a fight.
+Loud arrivals give the squad away.
+
+[b]Prospecting[/b]
+Ask around on the comms for any item. The rarer and more advanced it is, the less likely anyone knows where to find it. The answer only changes every couple of days.
+
+[b]Captives[/b]
+Colonists taken on an expedition, or kidnapped by raiders, are listed with who holds them. Plan a rescue: storm the camp or slip in and out.
+
+Squads need food for the whole trip. Optional support for Vehicle Framework and [LFS] UI Rethemed.</description>
 </ModMetaData>

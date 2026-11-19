@@ -91,4 +91,7 @@
 	<Exp_Home>Home</Exp_Home>
 	<Exp_Style_Vanilla>Vanilla</Exp_Style_Vanilla>
 	<Exp_Style_Holo>Holo</Exp_Style_Holo>
+	<Exp_SettingStyle>Map style</Exp_SettingStyle>
+	<Exp_SettingRange>Expedition range: {0} tiles</Exp_SettingRange>
+	<Exp_SettingOffers>Ready-made opportunities at a time: {0}</Exp_SettingOffers>
 </LanguageData>
