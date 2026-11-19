@@ -1,4 +1,5 @@
 using LudeonTK;
+using UnityEngine;
 using RimWorld;
 using Verse;
 
@@ -93,6 +94,21 @@ public static class ExpeditionsDebug
             }))
             .ToList();
         if (options.Count > 0) Find.WindowStack.Add(new FloatMenu(options));
+    }
+
+    [DebugAction("Expeditions", "Dump map bake (both styles)", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void DumpMap()
+    {
+        MapBaker.ClearCache();
+        foreach (MapStyle style in Enum.GetValues<MapStyle>())
+        {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            BakedMap map = MapBaker.Get(Find.CurrentMap.Tile, ExpeditionsMod.Settings.range, style);
+            watch.Stop();
+            string path = System.IO.Path.Combine(GenFilePaths.SaveDataFolderPath, $"Expeditions_map_{style}.png");
+            System.IO.File.WriteAllBytes(path, map.texture.EncodeToPNG());
+            Log.Message($"[Expeditions] {style} bake: {watch.ElapsedMilliseconds} ms, {map.texPixel.Count} tiles -> {path}");
+        }
     }
 
     private static void LogEvaluation(List<Pawn> pawns, ExpeditionSiteDef site)

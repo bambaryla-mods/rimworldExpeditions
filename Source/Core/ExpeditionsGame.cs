@@ -33,6 +33,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         Instance = this;
         WorldArea.ClearCache();
         TravelEstimator.ClearCache();
+        MapBaker.ClearCache();
     }
 
     public int NextId() => nextId++;
