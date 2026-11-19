@@ -7,4 +7,20 @@
 	<Exp_NoLeadText>Nobody on the comms has heard of any {0} out there. Maybe later.</Exp_NoLeadText>
 	<Exp_LeadFoundLabel>Lead: {0}</Exp_LeadFoundLabel>
 	<Exp_LeadFoundText>Someone on the comms knows of {0} at a {1} not far from here. It is on the Expeditions map now.</Exp_LeadFoundText>
+	<Exp_NoPods>No transport pods with fuel for this distance.</Exp_NoPods>
+	<Exp_PodsTooSmall>The pods hold {0} kg; the squad weighs {1} kg.</Exp_PodsTooSmall>
+	<Exp_NoShuttle>No shuttle on this map.</Exp_NoShuttle>
+	<Exp_ShuttleFuel>The shuttle needs fuel for the trip there and back.</Exp_ShuttleFuel>
+	<Exp_ShuttleTooSmall>The squad does not fit in the shuttle.</Exp_ShuttleTooSmall>
+	<Exp_NoVehicles>No vehicles on this map.</Exp_NoVehicles>
+	<Exp_NotEnoughSeats>{0} seats for {1} people.</Exp_NotEnoughSeats>
+	<Exp_NeedConsole>Needs a powered comms console on this map.</Exp_NeedConsole>
+	<Exp_SquadSize>Needs {0} to {1} colonists.</Exp_SquadSize>
+	<Exp_PawnBusy>Someone in the squad is already on an expedition.</Exp_PawnBusy>
+	<Exp_PawnUnavailable>Someone in the squad cannot leave right now.</Exp_PawnUnavailable>
+	<Exp_NoPath>There is no way to get there on foot.</Exp_NoPath>
+	<Exp_NotEnoughFood>Not enough food: needs {0}, has {1}.</Exp_NotEnoughFood>
+	<Exp_Departed>The squad has set out for the {0}.</Exp_Departed>
+	<Exp_DepartureCancelled>The expedition to the {0} was called off: the squad fell apart before leaving.</Exp_DepartureCancelled>
+	<Exp_DepartReport>setting out on an expedition.</Exp_DepartReport>
 </LanguageData>

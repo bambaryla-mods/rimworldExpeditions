@@ -48,7 +48,6 @@ public class Expedition : IExposable, IThingHolder
     // Moves a spawned thing into the holder.
     public void Take(Thing thing)
     {
-        if (thing is Pawn pawn) pawn.jobs?.StopAll();
         if (thing.Spawned) thing.DeSpawnOrDeselect();
         if (!contents.TryAddOrTransfer(thing, canMergeWithExistingStacks: false))
             Log.Error($"[Expeditions] Could not take {thing} into expedition {id}.");

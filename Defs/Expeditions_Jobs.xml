@@ -6,4 +6,10 @@
 		<reportString>asking around on the comms console.</reportString>
 		<casualInterruptible>false</casualInterruptible>
 	</JobDef>
+	<JobDef>
+		<defName>Exp_Depart</defName>
+		<driverClass>Expeditions.JobDriver_ExpeditionDepart</driverClass>
+		<reportString>setting out on an expedition.</reportString>
+		<casualInterruptible>false</casualInterruptible>
+	</JobDef>
 </Defs>
