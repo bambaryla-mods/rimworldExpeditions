@@ -21,6 +21,40 @@ public static class ExpeditionsDebug
         Find.WindowStack.Add(new FloatMenu(options));
     }
 
+    [DebugAction("Expeditions", "Send selected pawns away (test)", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void SendAway()
+    {
+        Map map = Find.CurrentMap;
+        var pawns = Find.Selector.SelectedPawns.Where(p => p.IsColonist).ToList();
+        if (pawns.Count == 0) return;
+        var game = ExpeditionsGame.Instance;
+        var e = new Expedition
+        {
+            id = game.NextId(),
+            opp = new Opportunity { id = game.NextId(), site = ExpeditionsDefOf.Exp_Rumor, tile = map.Tile },
+            ride = Ride.Foot,
+            originMap = map,
+            originTile = map.Tile,
+        };
+        e.StartPhase(Phase.Outbound, int.MaxValue / 2);
+        e.squad.AddRange(pawns);
+        game.active.Add(e);
+        foreach (Pawn p in pawns) e.Take(p);
+        Log.Message($"[Expeditions] Test expedition {e.id}: {pawns.Count} pawns away.");
+    }
+
+    [DebugAction("Expeditions", "Bring all back (test)", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void BringAllBack()
+    {
+        Map map = Find.CurrentMap;
+        var game = ExpeditionsGame.Instance;
+        foreach (Expedition e in game.active.ToList())
+        {
+            foreach (Thing t in e.contents.ToList()) e.Release(t, map, map.Center);
+            game.active.Remove(e);
+        }
+    }
+
     private static void LogEvaluation(List<Pawn> pawns, ExpeditionSiteDef site)
     {
         SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, site, Ride.Foot, null, 0);
