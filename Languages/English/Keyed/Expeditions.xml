@@ -23,4 +23,24 @@
 	<Exp_Departed>The squad has set out for the {0}.</Exp_Departed>
 	<Exp_DepartureCancelled>The expedition to the {0} was called off: the squad fell apart before leaving.</Exp_DepartureCancelled>
 	<Exp_DepartReport>setting out on an expedition.</Exp_DepartReport>
+	<Exp_InjuryLost>lost {0}</Exp_InjuryLost>
+	<Exp_DeathLabel>Died: {0}</Exp_DeathLabel>
+	<Exp_DeathText>{0} died on the expedition to the {1}. The others carry on.</Exp_DeathText>
+	<Exp_CapturedLabel>Captured: {0}</Exp_CapturedLabel>
+	<Exp_CapturedText>{0} was taken by {1} at the {2}. You can try to get them back from the Captured tab of the Expeditions window.</Exp_CapturedText>
+	<Exp_LostLabel>Expedition lost</Exp_LostLabel>
+	<Exp_LostText>Nobody is coming back from the {0}.</Exp_LostText>
+	<Exp_ReturnedLabel>Back from the {0}</Exp_ReturnedLabel>
+	<Exp_ReturnedAsCaravan>The colony is gone, so the squad stayed together as a caravan where they left from.</Exp_ReturnedAsCaravan>
+	<Exp_Outcome_Success>They got in and out.</Exp_Outcome_Success>
+	<Exp_Outcome_Partial>It went partly to plan.</Exp_Outcome_Partial>
+	<Exp_Outcome_Failure>It went badly.</Exp_Outcome_Failure>
+	<Exp_Found>They found what they were looking for.</Exp_Found>
+	<Exp_NotFound>They found nothing worth taking.</Exp_NotFound>
+	<Exp_Fate_Unharmed>unharmed</Exp_Fate_Unharmed>
+	<Exp_Fate_Injured>injured</Exp_Fate_Injured>
+	<Exp_Fate_Killed>killed</Exp_Fate_Killed>
+	<Exp_Fate_Captured>captured</Exp_Fate_Captured>
+	<Exp_LootHeader>Brought home:</Exp_LootHeader>
+	<Exp_LostToHaulHeader>Left behind (could not carry):</Exp_LostToHaulHeader>
 </LanguageData>

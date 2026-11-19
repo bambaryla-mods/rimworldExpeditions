@@ -18,6 +18,24 @@ public static class RideFinder
             .ToList();
     }
 
+    // The ride an away squad holds, rebuilt for scoring at the site.
+    public static RideOption Held(Expedition e) =>
+        new(e.ride, true, null, HeldCargo(e), e.contents.OfType<Pawn>().Count(p => VehicleCompat.IsVehicle(p) && VehicleCompat.Armed(p)),
+            e.contents.Where(t => t is not Pawn || VehicleCompat.IsVehicle((Pawn)t)).ToList());
+
+    // Extra cargo room from a held shuttle or vehicles, beyond what the pawns carry.
+    public static float HeldCargo(Expedition e)
+    {
+        var people = e.contents.OfType<Pawn>().Where(p => !VehicleCompat.IsVehicle(p)).ToList();
+        if (e.ride == Ride.Shuttle)
+        {
+            float capacity = e.contents.Select(t => t.TryGetComp<CompTransporter>()).Where(c => c != null).Sum(c => c!.MassCapacity);
+            return Math.Max(0f, capacity - SquadMass(people));
+        }
+        if (e.ride == Ride.Vehicles) return e.contents.OfType<Pawn>().Where(VehicleCompat.IsVehicle).Sum(VehicleCompat.Cargo);
+        return 0f;
+    }
+
     private static RideOption Foot() => new(Ride.Foot, true, null, 0f, 0, new List<Thing>());
 
     // Drop pods: transporters that launch and are not shuttles. They are used up on launch.

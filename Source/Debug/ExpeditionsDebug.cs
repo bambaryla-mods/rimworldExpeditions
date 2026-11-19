@@ -77,6 +77,24 @@ public static class ExpeditionsDebug
         Find.WindowStack.Add(new FloatMenu(options));
     }
 
+    [DebugAction("Expeditions", "Force next outcome...", allowedGameStates = AllowedGameStates.Playing)]
+    private static void ForceOutcome() =>
+        Find.WindowStack.Add(new FloatMenu(Enum.GetValues<Outcome>()
+            .Select(o => new FloatMenuOption(o.ToString(), () => Resolver.forcedOutcome = o)).ToList()));
+
+    [DebugAction("Expeditions", "Advance expedition phase...", allowedGameStates = AllowedGameStates.Playing)]
+    private static void AdvancePhase()
+    {
+        var options = ExpeditionsGame.Instance.active
+            .Select(e => new FloatMenuOption($"{e.id}: {e.opp.Label} ({e.phase})", () =>
+            {
+                e.phaseEndTick = Find.TickManager.TicksGame;
+                ExpeditionsGame.Instance.Tick250();
+            }))
+            .ToList();
+        if (options.Count > 0) Find.WindowStack.Add(new FloatMenu(options));
+    }
+
     private static void LogEvaluation(List<Pawn> pawns, ExpeditionSiteDef site)
     {
         SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, site, Ride.Foot, null, 0);
