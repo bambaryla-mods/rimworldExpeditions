@@ -95,4 +95,6 @@
 	<Exp_SettingRange>Expedition range: {0} tiles</Exp_SettingRange>
 	<Exp_SettingOffers>Ready-made opportunities at a time: {0}</Exp_SettingOffers>
 	<Exp_CallOff>Call off</Exp_CallOff>
+	<Exp_SearchHint>Type at least {0} letters to search this mod's items.</Exp_SearchHint>
+	<Exp_SearchNoMatch>Nothing in {0} matches. Try another mod or other words.</Exp_SearchNoMatch>
 </LanguageData>

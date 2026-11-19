@@ -7,31 +7,61 @@ namespace Expeditions;
 
 public partial class Window_Expeditions
 {
+    // With many mods the full catalog is thousands of items: the list stays empty until the search has this many
+    // letters, and only shows items from the chosen mod.
+    private const int MinSearchLetters = 3;
+
     private string search = "";
     private ThingDef? selectedItem;
-    private List<ThingDef>? filtered;
-    private string filteredFor = "\0";
+    private ModContentPack? prospectMod = LoadedModManager.RunningModsListForReading.FirstOrDefault(m => m.IsCoreMod);
+    private List<ThingDef> filtered = new();
+    private (string search, ModContentPack? mod) filteredFor = ("\0", null);
 
     private List<ThingDef> FilteredItems()
     {
-        if (filtered != null && filteredFor == search) return filtered;
-        filteredFor = search;
         string s = search.Trim();
-        filtered = s.Length == 0
-            ? ProspectCatalog.All.ToList()
-            : ProspectCatalog.All.Where(d => d.label.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        if (filteredFor == (s, prospectMod)) return filtered;
+        filteredFor = (s, prospectMod);
+        filtered = s.Length < MinSearchLetters
+            ? new List<ThingDef>()
+            : ProspectCatalog.All
+                .Where(d => d.modContentPack == prospectMod && d.label.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
         return filtered;
     }
 
+    // Mods that have at least one item that can be prospected: Core first, then the DLCs, then the rest by name.
+    private static List<ModContentPack> ProspectMods() =>
+        ProspectCatalog.All.Select(d => d.modContentPack).Where(m => m != null).Distinct()
+            .OrderByDescending(m => m.IsCoreMod).ThenByDescending(m => m.IsOfficialMod).ThenBy(m => m.Name)
+            .ToList();
+
     private void ProspectList(Rect rect, ExpeditionsLook look)
     {
-        string next = Widgets.TextField(new Rect(rect.x, rect.y, rect.width, 26f), search);
+        if (look.Button(new Rect(rect.x, rect.y, rect.width, 26f), (prospectMod?.Name ?? "?") + " ▾"))
+            Find.WindowStack.Add(new FloatMenu(ProspectMods().Select(m => new FloatMenuOption(m.Name, () =>
+            {
+                prospectMod = m;
+                listScroll = Vector2.zero;
+            })).ToList()));
+
+        string next = Widgets.TextField(new Rect(rect.x, rect.y + 30f, rect.width, 26f), search);
         if (next != search)
         {
             search = next;
             listScroll = Vector2.zero;
         }
-        Rect list = new(rect.x, rect.y + 30f, rect.width, rect.height - 30f);
+        Rect list = new(rect.x, rect.y + 60f, rect.width, rect.height - 60f);
+        if (search.Trim().Length < MinSearchLetters)
+        {
+            Label(list.ContractedBy(4f), "Exp_SearchHint".Translate(MinSearchLetters), GameFont.Tiny, look.TextDim);
+            return;
+        }
+        if (FilteredItems().Count == 0)
+        {
+            Label(list.ContractedBy(4f), "Exp_SearchNoMatch".Translate(prospectMod?.Name ?? "?"), GameFont.Tiny, look.TextDim);
+            return;
+        }
         RowList(list, FilteredItems(), 28f, d => d == selectedItem, (r, d) =>
         {
             Widgets.ThingIcon(new Rect(r.x, r.y, 22f, 22f), d);
