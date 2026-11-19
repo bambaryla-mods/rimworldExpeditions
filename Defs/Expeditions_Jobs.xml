@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<JobDef>
+		<defName>Exp_Prospect</defName>
+		<driverClass>Expeditions.JobDriver_Prospect</driverClass>
+		<reportString>asking around on the comms console.</reportString>
+		<casualInterruptible>false</casualInterruptible>
+	</JobDef>
+</Defs>

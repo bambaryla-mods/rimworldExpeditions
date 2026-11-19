@@ -69,6 +69,7 @@ public static class ExpeditionsDefOf
     public static ExpeditionChallengeDef Exp_Haul = null!;
     public static ExpeditionSiteDef Exp_HoldingCamp = null!;
     public static ExpeditionSiteDef Exp_Rumor = null!;
+    public static JobDef Exp_Prospect = null!;
 
     static ExpeditionsDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(ExpeditionsDefOf));
 

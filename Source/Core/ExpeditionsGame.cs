@@ -31,6 +31,8 @@ public class ExpeditionsGame : GameComponent, IThingHolder
     public ExpeditionsGame(Game game)
     {
         Instance = this;
+        WorldArea.ClearCache();
+        TravelEstimator.ClearCache();
     }
 
     public int NextId() => nextId++;

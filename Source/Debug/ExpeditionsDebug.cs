@@ -55,6 +55,28 @@ public static class ExpeditionsDebug
         }
     }
 
+    [DebugAction("Expeditions", "Spawn offer", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void SpawnOffer()
+    {
+        Opportunity? opp = OfferGenerator.TryMake(null, Find.CurrentMap.Tile, null);
+        if (opp == null)
+        {
+            Log.Warning("[Expeditions] No site fits any tile in range.");
+            return;
+        }
+        ExpeditionsGame.Instance.offers.Add(opp);
+        Log.Message($"[Expeditions] Offer {opp.id}: {opp.site.defName} at tile {opp.tile}, {TravelEstimator.NominalFootDays(Find.CurrentMap.Tile, opp.tile):F1} days on foot.");
+    }
+
+    [DebugAction("Expeditions", "Finish prospect for...", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void FinishProspect()
+    {
+        var options = ProspectCatalog.All
+            .Select(d => new FloatMenuOption($"{d.label} ({ProspectCatalog.Chance(d):P0})", () => ProspectService.Complete(d, Find.CurrentMap)))
+            .ToList();
+        Find.WindowStack.Add(new FloatMenu(options));
+    }
+
     private static void LogEvaluation(List<Pawn> pawns, ExpeditionSiteDef site)
     {
         SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, site, Ride.Foot, null, 0);

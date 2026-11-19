@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
 	<Exp_RescueLabel>Rescue {0}</Exp_RescueLabel>
+	<Exp_NoNewInfo>No new information available yet.</Exp_NoNewInfo>
+	<Exp_ProspectReport>asking around for {0}.</Exp_ProspectReport>
+	<Exp_NoLeadLabel>No lead</Exp_NoLeadLabel>
+	<Exp_NoLeadText>Nobody on the comms has heard of any {0} out there. Maybe later.</Exp_NoLeadText>
+	<Exp_LeadFoundLabel>Lead: {0}</Exp_LeadFoundLabel>
+	<Exp_LeadFoundText>Someone on the comms knows of {0} at a {1} not far from here. It is on the Expeditions map now.</Exp_LeadFoundText>
 </LanguageData>
