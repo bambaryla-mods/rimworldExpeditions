@@ -15,6 +15,7 @@ public partial class Window_Expeditions
 
     private static readonly Color Gold = new(0.85f, 0.71f, 0.35f);
     private static readonly Color SquadBlue = new(0.35f, 0.66f, 0.85f);
+    private static readonly Color HomeBlue = new(0.25f, 0.55f, 1f);
     private static readonly Color HoloCyan = new(0.5f, 0.9f, 1f);
 
     private bool Holo => ExpeditionsMod.Settings.style == MapStyle.Holo;
@@ -31,7 +32,15 @@ public partial class Window_Expeditions
         Rect uv = new(viewCenter.x - spanX / 2f, viewCenter.y - spanY / 2f, spanX, spanY);
 
         Widgets.DrawBoxSolid(rect, Holo ? new Color(0.024f, 0.071f, 0.094f) : new Color(0.08f, 0.09f, 0.1f));
-        GUI.DrawTextureWithTexCoords(stretched, map.texture, new Rect(uv.x, 1f - uv.y - uv.height, uv.width, uv.height));
+        // Draw only the part of the view the texture covers; outside it the background shows instead of the
+        // texture's edge pixels stretched (in holo the edge column is a grid line).
+        float u0 = Mathf.Max(uv.x, 0f), u1 = Mathf.Min(uv.xMax, 1f), v0 = Mathf.Max(uv.y, 0f), v1 = Mathf.Min(uv.yMax, 1f);
+        if (u1 > u0 && v1 > v0)
+        {
+            Rect onScreen = new(stretched.x + (u0 - uv.x) / uv.width * stretched.width, stretched.y + (v0 - uv.y) / uv.height * stretched.height,
+                (u1 - u0) / uv.width * stretched.width, (v1 - v0) / uv.height * stretched.height);
+            GUI.DrawTextureWithTexCoords(onScreen, map.texture, new Rect(u0, 1f - v1, u1 - u0, v1 - v0));
+        }
 
         Widgets.BeginGroup(rect);
         Vector2 ToScreen(Vector2 p) => new((p.x - uv.x) / uv.width * rect.width, (p.y - uv.y) / uv.height * rect.height);
@@ -75,7 +84,9 @@ public partial class Window_Expeditions
             Hover(p, o.Label);
         }
 
-        Diamond(home, 14f, Gold);
+        // Home is blue with a white rim, so it never reads as one of the gold opportunities.
+        Diamond(home, 18f, Color.white);
+        Diamond(home, 14f, HomeBlue);
         Hover(home, "Exp_Home".Translate());
         Widgets.EndGroup();
 
