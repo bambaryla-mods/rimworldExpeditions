@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<!-- The Expeditions windows drawn with [LFS] UI Rethemed - Core. Compiled against its DLL and loaded only when that
+	     mod is active (LoadFolders.xml IfModActive), so Expeditions never depends on it. Building this also builds
+	     Expeditions.csproj. -->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<RootNamespace>Expeditions.UIRethemed</RootNamespace>
+		<AssemblyName>Expeditions.UIRethemed</AssemblyName>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<OutputPath>..\..\Compat\UIRethemed\1.7\Assemblies\</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Optimize>true</Optimize>
+		<DebugType>none</DebugType>
+		<RimWorldDir>$(MSBuildThisFileDirectory)..\..\..\..</RimWorldDir>
+		<!-- [LFS] UI Rethemed - Core, Steam Workshop 3832843406. Override with -p:LfsCoreDir=... for a local copy. -->
+		<LfsCoreDir Condition="'$(LfsCoreDir)' == ''">$(RimWorldDir)\..\..\workshop\content\294100\3832843406\</LfsCoreDir>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="obj/**" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Expeditions.csproj" Private="false" />
+		<Reference Include="UIRethemedCore">
+			<HintPath>$(LfsCoreDir)Versions\1.7\Assemblies\UIRethemedCore.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(RimWorldDir)\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityStubs">
+			<HintPath>$(RimWorldDir)\UnityStubs.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+</Project>

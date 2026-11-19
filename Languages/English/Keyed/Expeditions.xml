@@ -43,4 +43,52 @@
 	<Exp_Fate_Captured>captured</Exp_Fate_Captured>
 	<Exp_LootHeader>Brought home:</Exp_LootHeader>
 	<Exp_LostToHaulHeader>Left behind (could not carry):</Exp_LostToHaulHeader>
+	<Exp_WindowTitle>Expeditions</Exp_WindowTitle>
+	<Exp_GizmoLabel>Expeditions</Exp_GizmoLabel>
+	<Exp_GizmoDesc>Open the expeditions map: send squads out, ask around for items, follow who is away and who is held.</Exp_GizmoDesc>
+	<Exp_TabOpportunities>Opportunities</Exp_TabOpportunities>
+	<Exp_TabProspect>Prospect</Exp_TabProspect>
+	<Exp_TabActive>Active ({0})</Exp_TabActive>
+	<Exp_TabCaptured>Captured ({0})</Exp_TabCaptured>
+	<Exp_Days>{0} d</Exp_Days>
+	<Exp_Expires>expires in {0}</Exp_Expires>
+	<Exp_NoOffers>Nothing on the board right now. New opportunities turn up every few days, or ask around in Prospect.</Exp_NoOffers>
+	<Exp_SelectOpportunity>Pick an opportunity from the list or the map.</Exp_SelectOpportunity>
+	<Exp_Numbers>Success {0} · Find {1} · Away {2}</Exp_Numbers>
+	<Exp_Food>Food: needs {0}, has {1}</Exp_Food>
+	<Exp_Launch>Launch</Exp_Launch>
+	<Exp_PickSquad>Pick a squad.</Exp_PickSquad>
+	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>
+	<Exp_PackAnimal>pack animal</Exp_PackAnimal>
+	<Exp_NobodyFree>Nobody is free.</Exp_NobodyFree>
+	<Exp_Ride_Foot>Foot</Exp_Ride_Foot>
+	<Exp_Ride_DropPods>Pods</Exp_Ride_DropPods>
+	<Exp_Ride_Shuttle>Shuttle</Exp_Ride_Shuttle>
+	<Exp_Ride_Vehicles>Vehicles</Exp_Ride_Vehicles>
+	<Exp_RideTip_Foot>Slow both ways, but quiet: stealth counts in full. They carry only what they can.</Exp_RideTip_Foot>
+	<Exp_RideTip_DropPods>Fast there, the pods are used up, and they walk home. Loud: no sneaking in.</Exp_RideTip_DropPods>
+	<Exp_RideTip_Shuttle>Fast both ways with room for a lot of loot. Loud: no sneaking in.</Exp_RideTip_Shuttle>
+	<Exp_RideTip_Vehicles>Faster than walking, with cargo room. Armed vehicles sometimes help in a fight. Loud.</Exp_RideTip_Vehicles>
+	<Exp_SeedChanges>New rumors in {0}.</Exp_SeedChanges>
+	<Exp_ProspectHelp>Search for an item and ask around for it. The rarer and more advanced it is, the less likely anyone knows where to find it.</Exp_ProspectHelp>
+	<Exp_LeadChance>Chance of a lead: {0}</Exp_LeadChance>
+	<Exp_ProspectInProgress>Someone has already started asking; the next colonist picks up where they stopped.</Exp_ProspectInProgress>
+	<Exp_StartProspect>Ask around</Exp_StartProspect>
+	<Exp_NoActive>No squads out, and no reports yet.</Exp_NoActive>
+	<Exp_Phase_Departing>leaving</Exp_Phase_Departing>
+	<Exp_Phase_Outbound>on the way</Exp_Phase_Outbound>
+	<Exp_Phase_OnSite>on site</Exp_Phase_OnSite>
+	<Exp_Phase_Returning>coming home</Exp_Phase_Returning>
+	<Exp_PhaseLine>{0} by {1} · {2} left in this leg</Exp_PhaseLine>
+	<Exp_OpenReport>Open report</Exp_OpenReport>
+	<Exp_SelectExpedition>Pick a squad or a report.</Exp_SelectExpedition>
+	<Exp_NoCaptives>Nobody from the colony is held by anyone.</Exp_NoCaptives>
+	<Exp_CapturedHelp>Colonists held by other factions, whether taken on an expedition or kidnapped by raiders. Pick one to plan a rescue.</Exp_CapturedHelp>
+	<Exp_HeldBy>Held by {0} for {1}</Exp_HeldBy>
+	<Exp_Rescue>Plan rescue</Exp_Rescue>
+	<Exp_RescuePlanned>Rescue planned</Exp_RescuePlanned>
+	<Exp_NoRescueSite>Nowhere in range to look for them.</Exp_NoRescueSite>
+	<Exp_Home>Home</Exp_Home>
+	<Exp_Style_Vanilla>Vanilla</Exp_Style_Vanilla>
+	<Exp_Style_Holo>Holo</Exp_Style_Holo>
 </LanguageData>

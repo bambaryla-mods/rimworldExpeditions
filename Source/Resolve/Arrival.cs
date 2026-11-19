@@ -42,9 +42,10 @@ public static class Arrival
             }
             foreach (Pawn p in e.contents.OfType<Pawn>().ToList()) e.Release(p, map, cell);
             foreach (Thing t in e.contents.ToList()) e.Release(t, map, cell);
-            Find.LetterStack.ReceiveLetter("Exp_ReturnedLabel".Translate(report.siteLabel), ReportText(report),
-                report.outcome == Outcome.Failure ? LetterDefOf.NegativeEvent : LetterDefOf.PositiveEvent,
-                new LookTargets(pawns.Where(p => p.Spawned)));
+            var letter = (ChoiceLetter_ExpeditionReport)LetterMaker.MakeLetter("Exp_ReturnedLabel".Translate(report.siteLabel), ReportText(report),
+                ExpeditionsDefOf.Exp_ReportLetter, new LookTargets(pawns.Where(p => p.Spawned)));
+            letter.reportTick = report.tick;
+            Find.LetterStack.ReceiveLetter(letter);
         }
         game.HolderChanged();
     }

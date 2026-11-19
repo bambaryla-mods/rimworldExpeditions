@@ -71,6 +71,7 @@ public static class ExpeditionsDefOf
     public static ExpeditionSiteDef Exp_Rumor = null!;
     public static JobDef Exp_Prospect = null!;
     public static JobDef Exp_Depart = null!;
+    public static LetterDef Exp_ReportLetter = null!;
 
     static ExpeditionsDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(ExpeditionsDefOf));
 
