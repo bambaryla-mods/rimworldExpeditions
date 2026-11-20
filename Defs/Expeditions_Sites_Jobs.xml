@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Jobs for other factions: paid in goodwill, silver and training rather than loot. Nothing is searched for, so
+     findChanceBase is 1: a success is a success.
+     The faction that asks is the patron (needsFaction). needsEnemy adds a hostile settlement nearby: who the squad
+     fights, who takes captives, and whose gear the loot is. All numbers are starting points for tuning. -->
+<Defs>
+
+	<!-- ============ Allies ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh">
+		<defName>Exp_RescueKin</defName>
+		<label>rescue for an ally</label>
+		<description>One of theirs was taken by raiders camped nearby. They want them back, and they will remember who brought them.</description>
+		<color>(0.35, 0.66, 0.85)</color>
+		<needsFaction>Ally</needsFaction>
+		<needsEnemy>true</needsEnemy>
+		<challenges>
+			<li><challenge>Exp_Stealth</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>250</requirement></li>
+		</challenges>
+		<goodwillReward>12</goodwillReward>
+		<successText>They brought the ally's people home to them.</successText>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.6</openness>
+		<squadSize>1~4</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh">
+		<defName>Exp_EnemyCamp</defName>
+		<label>enemy camp</label>
+		<description>An ally wants a camp of their enemies gone. Whatever the camp holds is yours to take.</description>
+		<color>(0.35, 0.66, 0.85)</color>
+		<needsFaction>Ally</needsFaction>
+		<needsEnemy>true</needsEnemy>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>350</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>0.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>0.5</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>1~2</count></li>
+			<li><category>WeaponsMelee</category><count>1</count><chance>0.5</chance></li>
+			<li><category>Apparel</category><count>1~2</count></li>
+		</loot>
+		<goodwillReward>10</goodwillReward>
+		<silverReward>200</silverReward>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>1</openness>
+		<squadSize>3~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_Garrison</defName>
+		<label>relieve a garrison</label>
+		<description>An ally's outpost is short of hands. Hold it for three days until their reinforcements arrive.</description>
+		<color>(0.35, 0.66, 0.85)</color>
+		<needsFaction>Ally</needsFaction>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>2</weight><requirement>120</requirement></li>
+		</challenges>
+		<goodwillReward>10</goodwillReward>
+		<silverReward>300</silverReward>
+		<daysOnSite>3</daysOnSite>
+		<openness>0.8</openness>
+		<squadSize>3~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Villages: friendly factions, goodwill with everyone ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_DefendVillage</defName>
+		<label>protect a village</label>
+		<description>Bandits have been circling a village. Stand with the villagers when they come. Word of it travels.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<needsFaction>Friendly</needsFaction>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<goodwillReward>5</goodwillReward>
+		<goodwillAllFriendly>2</goodwillAllFriendly>
+		<silverReward>150</silverReward>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.8</openness>
+		<squadSize>2~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_TeachVillage</defName>
+		<label>teach a village</label>
+		<description>A village wants to learn to defend itself. Two days of drills, and the teachers learn as much as the pupils.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<needsFaction>Friendly</needsFaction>
+		<challenges>
+			<li><challenge>Exp_Teach</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<goodwillReward>3</goodwillReward>
+		<goodwillAllFriendly>2</goodwillAllFriendly>
+		<xpFactor>1.5</xpFactor>
+		<daysOnSite>2</daysOnSite>
+		<squadSize>1~4</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_PlagueVillage</defName>
+		<label>plague village</label>
+		<description>Sickness has gone through a village and nobody there can stand. They need doctors and someone to carry water.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<needsFaction>Friendly</needsFaction>
+		<challenges>
+			<li><challenge>Exp_Endure</challenge><weight>2</weight><requirement>150</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<goodwillReward>6</goodwillReward>
+		<goodwillAllFriendly>1</goodwillAllFriendly>
+		<daysOnSite>2</daysOnSite>
+		<squadSize>1~4</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_Harvest</defName>
+		<label>help with harvest</label>
+		<description>A village has more crop in the fields than hands to bring it in. They will share it.</description>
+		<color>(0.5, 0.69, 0.41)</color>
+		<needsFaction>Friendly</needsFaction>
+		<growingSeason>true</growingSeason>
+		<challenges>
+			<li><challenge>Exp_Farm</challenge><weight>2</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>PlantFoodRaw</category><count>80~200</count></li>
+		</loot>
+		<servesCategories>
+			<li>PlantFoodRaw</li>
+		</servesCategories>
+		<goodwillReward>2</goodwillReward>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~6</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_Rebuild</defName>
+		<label>help rebuild</label>
+		<description>A storm or a raid took half a village's roofs. They pay for builders.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<needsFaction>Friendly</needsFaction>
+		<challenges>
+			<li><challenge>Exp_Build</challenge><weight>2</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<goodwillReward>3</goodwillReward>
+		<silverReward>250</silverReward>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_Escort</defName>
+		<label>caravan escort</label>
+		<description>A friendly trader wants guards for two days on the road.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<needsFaction>Friendly</needsFaction>
+		<needsRoad>true</needsRoad>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<goodwillReward>4</goodwillReward>
+		<silverReward>300</silverReward>
+		<daysOnSite>2</daysOnSite>
+		<openness>0.9</openness>
+		<squadSize>2~5</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Tournaments: one champion, lots of practice ============ -->
+
+	<Expeditions.ExpeditionSiteDef Name="Exp_TournamentBase" ParentName="Exp_SiteGentle" Abstract="True">
+		<color>(0.85, 0.75, 0.4)</color>
+		<needsFaction>Friendly</needsFaction>
+		<commonness>0.2</commonness>
+		<xpFactor>3</xpFactor>
+		<goodwillReward>2</goodwillReward>
+		<silverReward>150</silverReward>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>1~3</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Shooting</defName>
+		<label>shooting contest</label>
+		<description>A friendly settlement holds a shooting match. The prize is silver; the practice is worth more.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Shooting</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Melee</defName>
+		<label>melee bouts</label>
+		<description>Bouts in the ring at a friendly settlement. Blunt weapons, mostly.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Melee</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+		<risk>
+			<success><unharmed>0.7</unharmed><injured>0.3</injured><killed>0</killed><captured>0</captured></success>
+			<partial><unharmed>0.4</unharmed><injured>0.6</injured><killed>0</killed><captured>0</captured></partial>
+			<failure><unharmed>0.2</unharmed><injured>0.75</injured><killed>0.05</killed><captured>0</captured></failure>
+		</risk>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Cooking</defName>
+		<label>cook-off</label>
+		<description>A friendly settlement's harvest feast, with a prize for the best dish.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Cooking</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Artistic</defName>
+		<label>art fair</label>
+		<description>Artists from all around show their work at a friendly settlement.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Artistic</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Crafting</defName>
+		<label>crafting fair</label>
+		<description>Smiths and tailors compete at a friendly settlement's market day.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Crafting</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_TournamentBase">
+		<defName>Exp_Tournament_Debate</defName>
+		<label>debate</label>
+		<description>A friendly settlement settles its arguments in public, and outsiders may speak.</description>
+		<challenges>
+			<li><challenge>Exp_Contest_Debate</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+	</Expeditions.ExpeditionSiteDef>
+
+</Defs>

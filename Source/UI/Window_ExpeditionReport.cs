@@ -37,14 +37,20 @@ public class Window_ExpeditionReport : ExpeditionsWindow
         Widgets.Label(top.ContractedBy(8f, 4f), ("Exp_Outcome_" + report.outcome).Translate());
         Text.Font = GameFont.Small;
         float y = top.yMax + 6f;
-        if (report.outcome != Outcome.Failure)
+        if (report.outcome != Outcome.Failure && report.hasFinds)
         {
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 22f), (report.found ? "Exp_Found" : "Exp_NotFound").Translate());
             y += 26f;
         }
+        if (!report.successText.NullOrEmpty())
+        {
+            Widgets.Label(new Rect(inRect.x, y, inRect.width, 22f), report.successText);
+            y += 26f;
+        }
 
         Rect list = new(inRect.x, y, inRect.width, inRect.yMax - y);
-        float height = report.pawns.Count * 64f + 60f + (report.loot.Count + report.lostToHaul.Count) * 24f;
+        var goodwill = Arrival.GoodwillLines(report).ToList();
+        float height = report.pawns.Count * 64f + 90f + (report.loot.Count + report.lostToHaul.Count + goodwill.Count) * 24f;
         Rect view = new(0f, 0f, list.width - 16f, height);
         Widgets.BeginScrollView(list, ref scroll, view);
         float row = 0f;
@@ -84,6 +90,15 @@ public class Window_ExpeditionReport : ExpeditionsWindow
                 row += 24f;
             }
             GUI.color = Color.white;
+        }
+        if (goodwill.Count > 0)
+        {
+            row += 8f;
+            foreach (string line in goodwill)
+            {
+                Widgets.Label(new Rect(0f, row, view.width, 22f), line);
+                row += 24f;
+            }
         }
         Widgets.EndScrollView();
     }

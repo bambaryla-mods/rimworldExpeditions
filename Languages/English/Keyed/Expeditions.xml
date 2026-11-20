@@ -41,6 +41,12 @@
 	<Exp_Fate_Injured>injured</Exp_Fate_Injured>
 	<Exp_Fate_Killed>killed</Exp_Fate_Killed>
 	<Exp_Fate_Captured>captured</Exp_Fate_Captured>
+	<Exp_Fate_Joined>joined the colony</Exp_Fate_Joined>
+	<Exp_GoodwillLine>Goodwill with {0}: +{1}</Exp_GoodwillLine>
+	<Exp_GoodwillAllLine>Goodwill with every friendly faction: +{0}</Exp_GoodwillAllLine>
+	<Exp_LabelEnemyFor>{0}, for {1}</Exp_LabelEnemyFor>
+	<Exp_PassionMinor>(passion)</Exp_PassionMinor>
+	<Exp_PassionMajor>(burning passion)</Exp_PassionMajor>
 	<Exp_LootHeader>Brought home:</Exp_LootHeader>
 	<Exp_LostToHaulHeader>Left behind (could not carry):</Exp_LostToHaulHeader>
 	<Exp_WindowTitle>Expeditions</Exp_WindowTitle>

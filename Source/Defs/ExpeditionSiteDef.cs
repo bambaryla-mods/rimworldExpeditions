@@ -11,6 +11,7 @@ public enum FactionNeed
     None,
     Hostile,
     Ally,
+    Friendly, // not hostile: neutral or ally
 }
 
 public class SiteChallenge
@@ -27,6 +28,29 @@ public class LootEntry
     public ThingCategoryDef? category;
     public IntRange count = new(1, 1);
     public float chance = 1f;
+    public bool successOnly; // rolled only on a full Success, for single rare items
+}
+
+// People who come home with the squad and join the colony.
+public class JoinerSpec
+{
+    public float chance = 1f;
+    public IntRange count = new(1, 1);
+    public PawnKindDef? kind;
+}
+
+// Wild animals of the site's biome, tamed and brought home.
+public class TamedAnimalsSpec
+{
+    public float chance = 1f;
+    public IntRange count = new(1, 1);
+    public float maxWildness = 1f;
+
+    // The biome's wild animals this site can tame.
+    public List<PawnKindDef> Candidates(BiomeDef biome) =>
+        biome.AllWildAnimals
+            .Where(k => k.RaceProps.Animal && biome.CommonalityOfAnimal(k) > 0f && k.race.GetStatValueAbstract(StatDefOf.Wildness) <= maxWildness)
+            .ToList();
 }
 
 public class FateEntry
@@ -65,6 +89,9 @@ public class ExpeditionSiteDef : Def
     public bool needsRoad;
     public bool needsCoast;
     public FactionNeed needsFaction = FactionNeed.None;
+    public bool needsEnemy; // a hostile settlement near the tile too: who the squad fights for the patron
+    public bool growingSeason;
+    public float commonness = 1f; // weight among ready-made offers
 
     public List<SiteChallenge> challenges = new();
     public List<LootEntry> loot = new();
@@ -79,7 +106,15 @@ public class ExpeditionSiteDef : Def
     public bool fallback;
 
     public int goodwillReward;
+    public int goodwillAllFriendly;
     public int silverReward;
+    public float xpFactor = 1f;
+    public JoinerSpec? joiners;
+    public TamedAnimalsSpec? tamedAnimals;
+    [MustTranslate] public string? successText; // a line in the report on a full Success, for jobs with nothing to bring home
+
+    // Whether there is anything to find here. Without it the report says nothing about finding.
+    public bool HasFinds => loot.Count > 0 || joiners != null || tamedAnimals != null;
 
     public override IEnumerable<string> ConfigErrors()
     {
@@ -93,5 +128,10 @@ public class ExpeditionSiteDef : Def
             if (c == null) yield return "has a missing servesCategories entry";
         foreach (LootEntry l in loot)
             if ((l.thing == null) == (l.category == null)) yield return "has a loot entry that needs exactly one of thing or category";
+        if (commonness < 0f) yield return $"commonness is {commonness}, it must not be negative";
+        if (xpFactor < 0f) yield return $"xpFactor is {xpFactor}, it must not be negative";
+        if (joiners != null && joiners.kind == null) yield return "joiners has no kind";
+        if (joiners != null && joiners.count.min < 1) yield return "joiners.count.min must be at least 1";
+        if (tamedAnimals != null && tamedAnimals.count.min < 1) yield return "tamedAnimals.count.min must be at least 1";
     }
 }

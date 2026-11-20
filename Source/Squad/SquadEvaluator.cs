@@ -3,9 +3,9 @@ using Verse;
 
 namespace Expeditions;
 
-// What one pawn's stat added to a challenge. The explanation is vanilla's stat breakdown, so it names gear,
-// bionics, traits and skills.
-public record Contribution(Pawn pawn, StatDef stat, float value, string explanation);
+// What one pawn's stat or skill added to a challenge. For a stat the explanation is vanilla's stat breakdown, so it
+// names gear, bionics, traits and skills.
+public record Contribution(Pawn pawn, string label, float value, string explanation);
 
 public record ChallengeResult(SiteChallenge site, double score, double chance, List<Contribution> parts);
 
@@ -34,9 +34,9 @@ public static class SquadEvaluator
                 var terms = new List<StatTerm>();
                 foreach (ChallengeStat cs in def.stats)
                 {
-                    float value = cs.stat.Worker.IsDisabledFor(pawn) ? 0f : pawn.GetStatValue(cs.stat);
-                    terms.Add(new StatTerm(value, cs.weight, cs.reference));
-                    parts.Add(new Contribution(pawn, cs.stat, value, Explain(pawn, cs.stat, value)));
+                    Contribution part = cs.stat != null ? StatPart(pawn, cs.stat) : SkillPart(pawn, cs.skill!);
+                    terms.Add(new StatTerm(part.value, cs.weight, cs.reference));
+                    parts.Add(part);
                 }
                 scores.Add(ChallengeMath.PawnScore(terms));
             }
@@ -59,6 +59,26 @@ public static class SquadEvaluator
             ? site.findChanceBase
             : Math.Clamp(site.findChanceBase * (0.5 + 0.5 * search.Max(r => r.chance)), 0.05, 0.95);
         return new SquadEvaluation(results, success, find);
+    }
+
+    private static Contribution StatPart(Pawn pawn, StatDef stat)
+    {
+        float value = stat.Worker.IsDisabledFor(pawn) ? 0f : pawn.GetStatValue(stat);
+        return new Contribution(pawn, stat.LabelCap, value, Explain(pawn, stat, value));
+    }
+
+    // The skill level as the value; a skill the pawn can't use counts as 0.
+    private static Contribution SkillPart(Pawn pawn, SkillDef skill)
+    {
+        SkillRecord? record = pawn.skills?.GetSkill(skill);
+        float value = record == null || record.TotallyDisabled ? 0f : record.Level;
+        string passion = record?.passion switch
+        {
+            Passion.Minor => " " + "Exp_PassionMinor".Translate(),
+            Passion.Major => " " + "Exp_PassionMajor".Translate(),
+            _ => "",
+        };
+        return new Contribution(pawn, skill.LabelCap, value, $"{pawn.LabelShortCap}: {skill.LabelCap} {value:F0}{passion}");
     }
 
     private static string Explain(Pawn pawn, StatDef stat, float value)

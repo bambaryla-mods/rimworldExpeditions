@@ -23,6 +23,7 @@ public enum PawnFate
     Injured,
     Killed,
     Captured,
+    Joined, // never rolled: someone who came home with the squad and joined the colony
 }
 
 public enum Ride

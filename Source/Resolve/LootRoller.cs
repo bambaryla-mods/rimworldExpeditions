@@ -16,9 +16,11 @@ public static class LootRoller
         if (site.silverReward > 0) Add(made, ThingDefOf.Silver, Scale(site.silverReward, factor));
         if (found)
         {
-            TechLevel? limit = e.opp.faction?.def.techLevel;
+            // The loot is whoever holds the site: the enemy on a job for a patron, otherwise the site's faction.
+            TechLevel? limit = (e.opp.enemy ?? e.opp.faction)?.def.techLevel;
             foreach (LootEntry entry in site.loot)
             {
+                if (entry.successOnly && outcome != Outcome.Success) continue;
                 if (!Rand.Chance(entry.chance)) continue;
                 ThingDef? def = entry.thing ?? Pick(entry.category!, limit);
                 if (def != null) Add(made, def, Scale(entry.count.RandomInRange, factor));

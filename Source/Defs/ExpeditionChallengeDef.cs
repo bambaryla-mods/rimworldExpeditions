@@ -3,10 +3,12 @@ using Verse;
 
 namespace Expeditions;
 
-// One stat a challenge reads, its weight, and the value a decent pawn has (scores 100).
+// One stat (or skill level) a challenge reads, its weight, and the value a decent pawn has (scores 100).
+// A skill is for what vanilla has no stat for, such as Artistic or Cooking.
 public class ChallengeStat
 {
-    public StatDef stat = null!;
+    public StatDef? stat;
+    public SkillDef? skill;
     public float weight = 1f;
     public float reference = 1f;
 }
@@ -27,8 +29,8 @@ public class ExpeditionChallengeDef : Def
         if (stats.NullOrEmpty()) yield return "has no stats";
         foreach (ChallengeStat s in stats)
         {
-            if (s.stat == null) yield return "has a stat entry with no stat";
-            if (s.reference <= 0f) yield return $"stat {s.stat?.defName} has reference {s.reference}, it must be above 0";
+            if ((s.stat == null) == (s.skill == null)) yield return "has a stat entry that needs exactly one of stat or skill";
+            if (s.reference <= 0f) yield return $"stat {s.stat?.defName ?? s.skill?.defName} has reference {s.reference}, it must be above 0";
         }
     }
 }

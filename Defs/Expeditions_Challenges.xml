@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A challenge is a weighted list of vanilla stats. "reference" is what a decent pawn has; that pawn scores 100.
+<!-- A challenge is a weighted list of vanilla stats (or skill levels, with <skill> instead of <stat>). "reference" is
+     what a decent pawn has; that pawn scores 100.
      "combine" is how the squad's scores add up: Sum (more pawns help), Min (weakest pawn decides),
      Max (one expert is enough), Average. -->
 <Defs>
@@ -102,6 +103,180 @@
 		</stats>
 		<skills>
 			<li>Medicine</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Farm</defName>
+		<label>farm</label>
+		<description>Bringing in the crop before it spoils. Every pair of hands helps.</description>
+		<combine>Sum</combine>
+		<stats>
+			<li><stat>PlantWorkSpeed</stat><reference>1</reference></li>
+			<li><stat>PlantHarvestYield</stat><reference>1</reference></li>
+		</stats>
+		<skills>
+			<li>Plants</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Build</defName>
+		<label>build</label>
+		<description>Putting walls and roofs back up. Every pair of hands helps.</description>
+		<combine>Sum</combine>
+		<stats>
+			<li><stat>ConstructionSpeed</stat><reference>1</reference></li>
+			<li><stat>ConstructSuccessChance</stat><reference>1</reference></li>
+		</stats>
+		<skills>
+			<li>Construction</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Hack</defName>
+		<label>hack</label>
+		<description>Getting old systems to open up. One expert is enough.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><stat>HackingSpeed</stat><reference>1</reference></li>
+			<li><stat>ResearchSpeed</stat><reference>1</reference><weight>0.5</weight></li>
+		</stats>
+		<skills>
+			<li>Intellectual</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Teach</defName>
+		<label>teach</label>
+		<description>Showing villagers how to hold a line. Everyone teaches, so a poor teacher drags the lesson down.</description>
+		<combine>Average</combine>
+		<stats>
+			<li><stat>SocialImpact</stat><reference>1</reference></li>
+			<li><skill>Shooting</skill><reference>8</reference></li>
+			<li><skill>Melee</skill><reference>8</reference></li>
+		</stats>
+		<skills>
+			<li>Social</li>
+			<li>Shooting</li>
+			<li>Melee</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Tame</defName>
+		<label>tame</label>
+		<description>Winning over wild animals. One good handler is enough.</description>
+		<combine>Max</combine>
+		<stats>
+			<!-- about an Animals 8 handler -->
+			<li><stat>TameAnimalChance</stat><reference>0.28</reference></li>
+		</stats>
+		<skills>
+			<li>Animals</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_SearchDig</defName>
+		<label>search (dig)</label>
+		<description>Knowing where to dig, and digging carefully.</description>
+		<combine>Max</combine>
+		<isSearch>true</isSearch>
+		<stats>
+			<li><stat>MiningSpeed</stat><reference>1</reference></li>
+			<li><stat>ResearchSpeed</stat><reference>1</reference></li>
+		</stats>
+		<skills>
+			<li>Mining</li>
+			<li>Intellectual</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<!-- Tournament contests: the squad's champion decides. Reference 12 is a good local champion. -->
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Shooting</defName>
+		<label>contest (shooting)</label>
+		<description>Hitting the targets in front of a crowd.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><stat>ShootingAccuracyPawn</stat><reference>0.9</reference></li>
+			<li><skill>Shooting</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Shooting</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Melee</defName>
+		<label>contest (melee)</label>
+		<description>Bouts in the ring, to first blood or a yield.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><stat>MeleeHitChance</stat><reference>0.9</reference></li>
+			<li><stat>MeleeDPS</stat><reference>4</reference></li>
+			<li><skill>Melee</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Melee</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Cooking</defName>
+		<label>contest (cooking)</label>
+		<description>One dish, a panel of hungry judges.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><skill>Cooking</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Cooking</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Artistic</defName>
+		<label>contest (art)</label>
+		<description>A piece made on the spot and judged by the crowd.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><skill>Artistic</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Artistic</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Crafting</defName>
+		<label>contest (crafting)</label>
+		<description>Making something useful from a pile of scrap, against the clock.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><skill>Crafting</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Crafting</li>
+		</skills>
+	</Expeditions.ExpeditionChallengeDef>
+
+	<Expeditions.ExpeditionChallengeDef>
+		<defName>Exp_Contest_Debate</defName>
+		<label>contest (debate)</label>
+		<description>Winning the argument, and the room.</description>
+		<combine>Max</combine>
+		<stats>
+			<li><stat>SocialImpact</stat><reference>1</reference></li>
+			<li><stat>NegotiationAbility</stat><reference>1</reference></li>
+			<li><skill>Social</skill><reference>12</reference></li>
+		</stats>
+		<skills>
+			<li>Social</li>
 		</skills>
 	</Expeditions.ExpeditionChallengeDef>
 

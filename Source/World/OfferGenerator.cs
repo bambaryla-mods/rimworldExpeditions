@@ -9,6 +9,9 @@ public static class OfferGenerator
 {
     private const int TileSamples = 300;
     private const int FactionSiteRadius = 5;
+    private const int EnemySiteRadius = 12; // the enemy only needs to be in striking distance, not next door
+    private const float GrowingTempMin = 6f;
+    private const float GrowingTempMax = 42f;
 
     public static int ReadyMadeCount => ExpeditionsGame.Instance.offers.Count(o => !o.prospected && o.captive == null);
 
@@ -16,7 +19,7 @@ public static class OfferGenerator
     {
         var game = ExpeditionsGame.Instance;
         int now = Find.TickManager.TicksGame;
-        game.offers.RemoveAll(o => o.expiresTick >= 0 && now > o.expiresTick);
+        game.offers.RemoveAll(o => (o.expiresTick >= 0 && now > o.expiresTick) || !StillFits(o));
         if (now < game.nextOfferTick) return;
         game.nextOfferTick = now + ExpeditionsDefOf.Tuning.offerIntervalTicks.RandomInRange;
         if (ReadyMadeCount >= ExpeditionsMod.Settings.offerSlots) return;
@@ -26,6 +29,15 @@ public static class OfferGenerator
         if (opp != null) game.offers.Add(opp);
     }
 
+    // An offer whose patron is no longer friendly enough, or whose enemy made peace, is withdrawn.
+    private static bool StillFits(Opportunity o)
+    {
+        if (o.captive != null) return true;
+        if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction)) return false;
+        if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy)) return false;
+        return true;
+    }
+
     // A new opportunity for a site (or a random ready-made one), on a tile in range that fits it.
     public static Opportunity? TryMake(ExpeditionSiteDef? site, PlanetTile home, ThingDef? target)
     {
@@ -33,12 +45,10 @@ public static class OfferGenerator
         List<PlanetTile> tiles = WorldArea.TilesInRange(home, range);
         if (tiles.Count == 0) return null;
 
-        IEnumerable<ExpeditionSiteDef> candidates = site != null
-            ? new[] { site }
-            : DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.rescueOnly && !s.fallback).InRandomOrder();
+        IEnumerable<ExpeditionSiteDef> candidates = site != null ? new[] { site } : ReadyMadeOrder();
         foreach (ExpeditionSiteDef s in candidates)
         {
-            if (!TryFindTile(s, home, tiles, out PlanetTile tile, out Faction? faction)) continue;
+            if (!TryFindTile(s, home, tiles, out PlanetTile tile, out Faction? faction, out Faction? enemy)) continue;
             var tuning = ExpeditionsDefOf.Tuning;
             return new Opportunity
             {
@@ -46,6 +56,7 @@ public static class OfferGenerator
                 site = s,
                 tile = tile,
                 faction = faction,
+                enemy = enemy,
                 target = target,
                 prospected = target != null,
                 expiresTick = Find.TickManager.TicksGame
@@ -55,9 +66,18 @@ public static class OfferGenerator
         return null;
     }
 
-    public static bool SiteFits(ExpeditionSiteDef site, PlanetTile tile, out Faction? faction)
+    // Ready-made sites in a random order weighted by commonness, so a family of similar sites (the tournaments)
+    // doesn't crowd the board.
+    private static IEnumerable<ExpeditionSiteDef> ReadyMadeOrder()
+    {
+        var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.rescueOnly && !s.fallback).ToList();
+        return WeightedOrder.Order(sites.Select(s => (double)s.commonness).ToList(), () => Rand.Value).Select(i => sites[i]);
+    }
+
+    public static bool SiteFits(ExpeditionSiteDef site, PlanetTile tile, out Faction? faction, out Faction? enemy)
     {
         faction = null;
+        enemy = null;
         Tile t = Find.WorldGrid[tile];
         if (t.WaterCovered) return false;
         if (site.biomes.Count > 0 && !site.biomes.Contains(t.PrimaryBiome)) return false;
@@ -65,13 +85,35 @@ public static class OfferGenerator
         if (site.needsRiver && (t as SurfaceTile)?.Rivers.NullOrEmpty() != false) return false;
         if (site.needsRoad && (t as SurfaceTile)?.Roads.NullOrEmpty() != false) return false;
         if (site.needsCoast && !Find.World.CoastDirectionAt(tile).IsValid) return false;
-        if (site.needsFaction == FactionNeed.None) return true;
-        Settlement? s = Find.WorldObjects.Settlements
-            .Where(x => Wants(site.needsFaction, x.Faction) && Find.WorldGrid.ApproxDistanceInTiles(x.Tile, tile) <= FactionSiteRadius)
-            .RandomElementWithFallback();
-        faction = s?.Faction;
-        return s != null;
+        if (site.growingSeason && !GrowingSeason(tile)) return false;
+        if (site.tamedAnimals != null && site.tamedAnimals.Candidates(t.PrimaryBiome).Count == 0) return false;
+        if (site.needsFaction != FactionNeed.None)
+        {
+            faction = NearbyFaction(site.needsFaction, tile, null, FactionSiteRadius);
+            if (faction == null) return false;
+        }
+        if (site.needsEnemy)
+        {
+            enemy = NearbyFaction(FactionNeed.Hostile, tile, faction, EnemySiteRadius);
+            if (enemy == null) return false;
+        }
+        return true;
     }
+
+    // The season's average temperature in the band where crops grow well. The season, not this hour, so a cold night
+    // doesn't hide a harvest.
+    private static bool GrowingSeason(PlanetTile tile)
+    {
+        float temp = Find.World.tileTemperatures.GetSeasonalTemp(tile);
+        return temp >= GrowingTempMin && temp <= GrowingTempMax;
+    }
+
+    // Same layer only: settlements in orbit (Odyssey) have tile ids of another layer, and measuring across layers errors.
+    private static Faction? NearbyFaction(FactionNeed need, PlanetTile tile, Faction? not, int radius) =>
+        Find.WorldObjects.Settlements
+            .Where(x => x.Tile.Layer == tile.Layer && x.Faction != not && Wants(need, x.Faction)
+                && Find.WorldGrid.ApproxDistanceInTiles(x.Tile, tile) <= radius)
+            .RandomElementWithFallback()?.Faction;
 
     public static bool Wants(FactionNeed need, Faction? f)
     {
@@ -80,20 +122,24 @@ public static class OfferGenerator
         {
             FactionNeed.Hostile => f.HostileTo(Faction.OfPlayer),
             FactionNeed.Ally => f.PlayerRelationKind == FactionRelationKind.Ally,
+            FactionNeed.Friendly => !f.HostileTo(Faction.OfPlayer),
             _ => true,
         };
     }
 
-    private static bool TryFindTile(ExpeditionSiteDef site, PlanetTile home, List<PlanetTile> tiles, out PlanetTile tile, out Faction? faction)
+    private static bool TryFindTile(ExpeditionSiteDef site, PlanetTile home, List<PlanetTile> tiles, out PlanetTile tile,
+        out Faction? faction, out Faction? enemy)
     {
         faction = null;
+        enemy = null;
         tile = PlanetTile.Invalid;
         IEnumerable<PlanetTile> pool = tiles;
-        if (site.needsFaction != FactionNeed.None)
+        FactionNeed anchor = site.needsFaction != FactionNeed.None ? site.needsFaction : site.needsEnemy ? FactionNeed.Hostile : FactionNeed.None;
+        if (anchor != FactionNeed.None)
         {
             // Only tiles near a qualifying settlement in range; far cheaper than testing random tiles.
             var near = Find.WorldObjects.Settlements
-                .Where(s => Wants(site.needsFaction, s.Faction) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range))
+                .Where(s => Wants(anchor, s.Faction) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range))
                 .SelectMany(s => tiles.Where(t => Find.WorldGrid.ApproxDistanceInTiles(s.Tile, t) <= FactionSiteRadius))
                 .ToList();
             if (near.Count == 0) return false;
@@ -101,7 +147,7 @@ public static class OfferGenerator
         }
         foreach (PlanetTile t in pool.InRandomOrder().Take(TileSamples))
         {
-            if (t == home || !SiteFits(site, t, out faction)) continue;
+            if (t == home || !SiteFits(site, t, out faction, out enemy)) continue;
             tile = t;
             return true;
         }

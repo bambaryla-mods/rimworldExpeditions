@@ -31,12 +31,15 @@ public static class Resolver
             bool found = outcome != Outcome.Failure && Rand.Value < eval.find;
             report.outcome = outcome;
             report.found = found;
+            report.hasFinds = site.HasFinds || e.opp.target != null || e.opp.captive != null;
+            if (outcome == Outcome.Success) report.successText = site.successText;
 
             foreach (Pawn p in pawns) report.pawns.Add(ApplyFate(e, p, outcome, report));
 
             if (found && outcome == Outcome.Success && e.opp.captive is { } captive) Rescue(e, captive, report);
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
-            Reward(e, outcome);
+            if (found && outcome == Outcome.Success) Recruits(e, report);
+            Reward(e, outcome, report);
         }
         finally
         {
@@ -82,7 +85,8 @@ public static class Resolver
             foreach (SkillDef skill in sc.challenge.skills)
             {
                 if (p.skills.GetSkill(skill).TotallyDisabled) continue;
-                float xp = ExpeditionsDefOf.Tuning.xpPerChallengeWeight * sc.weight;
+                float xp = ExpeditionsDefOf.Tuning.xpPerChallengeWeight * sc.weight * site.xpFactor;
+                if (xp <= 0f) continue;
                 p.skills.Learn(skill, xp, direct: true);
                 result.xp[skill] = (result.xp.TryGetValue(skill, out float had) ? had : 0f) + xp;
             }
@@ -109,11 +113,13 @@ public static class Resolver
                 "Exp_DeathText".Translate(p.LabelShortCap, e.opp.Label), LetterDefOf.Death);
     }
 
-    // Taken by the site's faction, or any enemy faction. Vanilla's kidnapping then applies: they may be sold,
-    // recruited, or turn up in raids.
+    // Taken by the enemy the squad was sent against, else the site's faction if hostile, else any enemy faction.
+    // Vanilla's kidnapping then applies: they may be sold, recruited, or turn up in raids.
     private static bool Capture(Expedition e, Pawn p)
     {
-        Faction? captor = e.opp.faction is { } f && f.HostileTo(Faction.OfPlayer) ? f : Find.FactionManager.RandomEnemyFaction(false, false, true);
+        Faction? captor = e.opp.enemy is { defeated: false } en && en.HostileTo(Faction.OfPlayer) ? en
+            : e.opp.faction is { defeated: false } f && f.HostileTo(Faction.OfPlayer) ? f
+            : Find.FactionManager.RandomEnemyFaction(false, false, true);
         if (captor?.kidnapped == null) return false;
         e.contents.Remove(p);
         captor.kidnapped.Kidnap(p, null);
@@ -129,11 +135,64 @@ public static class Resolver
         report.pawns.Add(new PawnResult { pawn = captive, fate = PawnFate.Unharmed });
     }
 
-    private static void Reward(Expedition e, Outcome outcome)
+    // Goodwill from the patron, then a little from every friendly faction. Halved on Partial, nothing on Failure.
+    private static void Reward(Expedition e, Outcome outcome, ExpeditionReport report)
     {
-        int goodwill = e.opp.site.goodwillReward;
-        if (goodwill <= 0 || e.opp.faction == null || outcome == Outcome.Failure) return;
-        if (outcome == Outcome.Partial) goodwill /= 2;
-        e.opp.faction.TryAffectGoodwillWith(Faction.OfPlayer, goodwill, true, true, null, null);
+        if (outcome == Outcome.Failure) return;
+        ExpeditionSiteDef site = e.opp.site;
+        int goodwill = outcome == Outcome.Partial ? HalfUp(site.goodwillReward) : site.goodwillReward;
+        // Only a patron that still is one: a faction that turned hostile since the offer pays nothing.
+        if (goodwill > 0 && e.opp.faction is { } patron && (site.needsFaction == FactionNeed.None || OfferGenerator.Wants(site.needsFaction, patron))
+            && patron.TryAffectGoodwillWith(Faction.OfPlayer, goodwill, true, true, null, null))
+        {
+            report.goodwillFaction = patron;
+            report.goodwill = goodwill;
+        }
+
+        int all = outcome == Outcome.Partial ? HalfUp(site.goodwillAllFriendly) : site.goodwillAllFriendly;
+        if (all <= 0) return;
+        foreach (Faction f in Find.FactionManager.AllFactionsListForReading.ToList())
+        {
+            if (!OfferGenerator.Wants(FactionNeed.Friendly, f)) continue;
+            // The report carries this line; a message per faction would only be noise.
+            if (f.TryAffectGoodwillWith(Faction.OfPlayer, all, false, true, null, null)) report.goodwillAll = all;
+        }
+    }
+
+    private static int HalfUp(int n) => (n + 1) / 2;
+
+    // People who join and animals tamed on site. They come home in the holder with the squad.
+    private static void Recruits(Expedition e, ExpeditionReport report)
+    {
+        ExpeditionSiteDef site = e.opp.site;
+        var made = new List<Pawn>();
+        if (site.joiners is { kind: { } kind } j && Rand.Chance(j.chance))
+        {
+            int n = j.count.RandomInRange;
+            for (int i = 0; i < n; i++)
+                made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(kind, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
+                    tile: e.opp.tile, forceGenerateNewPawn: true)));
+        }
+        if (site.tamedAnimals is { } a && Rand.Chance(a.chance))
+        {
+            BiomeDef biome = Find.WorldGrid[e.opp.tile].PrimaryBiome;
+            List<PawnKindDef> kinds = a.Candidates(biome);
+            int n = kinds.Count == 0 ? 0 : a.count.RandomInRange;
+            for (int i = 0; i < n; i++)
+            {
+                PawnKindDef k = kinds.RandomElementByWeight(biome.CommonalityOfAnimal);
+                made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(k, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
+                    tile: e.opp.tile, forceGenerateNewPawn: true)));
+            }
+        }
+        foreach (Pawn p in made)
+        {
+            if (!e.contents.TryAdd(p))
+            {
+                Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Discard);
+                continue;
+            }
+            report.pawns.Add(new PawnResult { pawn = p, fate = PawnFate.Joined });
+        }
     }
 }

@@ -1,6 +1,7 @@
 using LudeonTK;
 using UnityEngine;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace Expeditions;
@@ -67,6 +68,61 @@ public static class ExpeditionsDebug
         }
         ExpeditionsGame.Instance.offers.Add(opp);
         Log.Message($"[Expeditions] Offer {opp.id}: {opp.site.defName} at tile {opp.tile}, {TravelEstimator.NominalFootDays(Find.CurrentMap.Tile, opp.tile):F1} days on foot.");
+    }
+
+    [DebugAction("Expeditions", "Spawn offer of...", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void SpawnOfferOf()
+    {
+        var options = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading
+            .Where(s => !s.rescueOnly)
+            .Select(site => new FloatMenuOption(site.label, () =>
+            {
+                Opportunity? opp = OfferGenerator.TryMake(site, Find.CurrentMap.Tile, null);
+                if (opp == null)
+                {
+                    Log.Warning($"[Expeditions] {site.defName} fits no tile in range (terrain, faction, enemy or season).");
+                    return;
+                }
+                ExpeditionsGame.Instance.offers.Add(opp);
+                Log.Message($"[Expeditions] Offer {opp.id}: {opp.Label} at tile {opp.tile}.");
+            }))
+            .ToList();
+        Find.WindowStack.Add(new FloatMenu(options));
+    }
+
+    // Fills the board past the usual slot limit: some random offers, or one of every site that fits somewhere.
+    [DebugAction("Expeditions", "Spawn many offers...", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+    private static void SpawnManyOffers()
+    {
+        var options = new List<FloatMenuOption>();
+        foreach (int n in new[] { 5, 10, 25 })
+            options.Add(new FloatMenuOption($"{n} random", () => SpawnOffers(Enumerable.Repeat<ExpeditionSiteDef?>(null, n))));
+        options.Add(new FloatMenuOption("one of every site", () =>
+            SpawnOffers(DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.rescueOnly))));
+        Find.WindowStack.Add(new FloatMenu(options));
+    }
+
+    private static void SpawnOffers(IEnumerable<ExpeditionSiteDef?> sites)
+    {
+        PlanetTile home = Find.CurrentMap.Tile;
+        var made = new List<string>();
+        var misfits = new List<string>();
+        foreach (ExpeditionSiteDef? site in sites)
+        {
+            Opportunity? opp = OfferGenerator.TryMake(site, home, null);
+            if (opp == null)
+            {
+                misfits.Add(site?.defName ?? "random");
+                continue;
+            }
+            ExpeditionsGame.Instance.offers.Add(opp);
+            made.Add(opp.Label);
+        }
+        Log.Message($"[Expeditions] Spawned {made.Count} offers: {string.Join(", ", made)}");
+        if (misfits.Count > 0)
+            Log.Warning($"[Expeditions] No tile in range fits (terrain, faction, enemy or season): {string.Join(", ", misfits)}");
+        Messages.Message($"Spawned {made.Count} offers" + (misfits.Count > 0 ? $", {misfits.Count} fit nowhere (see log)" : ""),
+            MessageTypeDefOf.NeutralEvent, false);
     }
 
     [DebugAction("Expeditions", "Finish prospect for...", allowedGameStates = AllowedGameStates.PlayingOnMap)]

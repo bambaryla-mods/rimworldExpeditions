@@ -35,6 +35,14 @@ public class ExpeditionReport : IExposable
     public List<ThingDefCountClass> loot = new();
     public List<ThingDefCountClass> lostToHaul = new();
 
+    // Goodwill earned: from the patron, and from each friendly faction.
+    public Faction? goodwillFaction;
+    public int goodwill;
+    public int goodwillAll;
+
+    public bool hasFinds = true;  // false for jobs with nothing to find: no "found nothing" line
+    public string? successText;
+
     public void ExposeData()
     {
         Scribe_Values.Look(ref siteLabel, "siteLabel", "");
@@ -44,6 +52,11 @@ public class ExpeditionReport : IExposable
         Scribe_Collections.Look(ref pawns, "pawns", LookMode.Deep);
         Scribe_Collections.Look(ref loot, "loot", LookMode.Deep);
         Scribe_Collections.Look(ref lostToHaul, "lostToHaul", LookMode.Deep);
+        Scribe_References.Look(ref goodwillFaction, "goodwillFaction");
+        Scribe_Values.Look(ref goodwill, "goodwill");
+        Scribe_Values.Look(ref goodwillAll, "goodwillAll");
+        Scribe_Values.Look(ref hasFinds, "hasFinds", true);
+        Scribe_Values.Look(ref successText, "successText");
         pawns ??= new();
         loot ??= new();
         lostToHaul ??= new();

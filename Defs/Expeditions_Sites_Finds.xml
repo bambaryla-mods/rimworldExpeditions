@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Places with something to take. Sites that need a DLC or mod carry MayRequire on the def, so without it they are
+     never loaded. successOnly loot drops only on a full Success. All numbers are starting points for tuning. -->
+<Defs>
+
+	<!-- ============ Rare implants (hard) ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Biotech">
+		<defName>Exp_MechanitorComplex</defName>
+		<label>ancient mechanitor complex</label>
+		<description>A sealed complex in the hills where a mechanitor once worked. Its guards still run, and somewhere inside is a mechlink.</description>
+		<color>(0.75, 0.3, 0.3)</color>
+		<hilliness>
+			<li>LargeHills</li>
+			<li>Mountainous</li>
+		</hilliness>
+		<commonness>0.3</commonness>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>130</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>350</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Mechlink</thing><count>1</count><successOnly>true</successOnly></li>
+			<li><thing>ComponentSpacer</thing><count>1~3</count></li>
+			<li><thing>Plasteel</thing><count>30~80</count></li>
+		</loot>
+		<findChanceBase>0.7</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.3</openness>
+		<squadSize>2~6</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Royalty">
+		<defName>Exp_ImperialTemple</defName>
+		<label>ruined imperial temple</label>
+		<description>An old imperial temple, looted and squatted in. The squatters never found the vault with the psylink neuroformer.</description>
+		<color>(0.75, 0.6, 0.85)</color>
+		<commonness>0.3</commonness>
+		<challenges>
+			<li><challenge>Exp_Stealth</challenge><weight>2</weight><requirement>120</requirement></li>
+			<li><challenge>Exp_Hack</challenge><weight>1</weight><requirement>120</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>300</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>PsychicAmplifier</thing><count>1</count><successOnly>true</successOnly></li>
+			<li><thing>Gold</thing><count>10~40</count></li>
+			<li><thing>Silver</thing><count>100~300</count></li>
+		</loot>
+		<findChanceBase>0.7</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.4</openness>
+		<squadSize>1~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Military dumps (medium) ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_MilitaryDump</defName>
+		<label>military dump</label>
+		<description>An old army stockpile behind wire, with a few guards who never got the order to leave.</description>
+		<color>(0.6, 0.6, 0.45)</color>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1.5</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>1~3</count></li>
+			<li><category>WeaponsMelee</category><count>1</count><chance>0.5</chance></li>
+			<li><thing>Chemfuel</thing><count>30~80</count></li>
+			<li><thing>ComponentIndustrial</thing><count>1~3</count><chance>0.5</chance></li>
+		</loot>
+		<servesCategories>
+			<li>Weapons</li>
+		</servesCategories>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.7</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- Combat Extended (CETeam.CombatExtended): CE's ammo categories, all children of Ammo. Without CE this def is
+	     never loaded. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase" MayRequire="CETeam.CombatExtended">
+		<defName>Exp_AmmoDump</defName>
+		<label>ammunition dump</label>
+		<description>Crates of ammunition stacked in an old depot. Heavy, and worth every trip.</description>
+		<color>(0.6, 0.6, 0.45)</color>
+		<challenges>
+			<li><challenge>Exp_Haul</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<!-- Small arms in bulk; heavier rounds in small lots. Charged and other spacer ammo (AmmoAdvanced) is left out. -->
+			<li><category>AmmoRifles</category><count>100~400</count></li>
+			<li><category>AmmoPistols</category><count>100~300</count></li>
+			<li><category>AmmoShotguns</category><count>50~200</count><chance>0.6</chance></li>
+			<li><category>AmmoHighCaliber</category><count>30~100</count><chance>0.5</chance></li>
+			<li><category>AmmoShells</category><count>5~15</count><chance>0.3</chance></li>
+			<li><category>AmmoGrenades</category><count>5~15</count><chance>0.3</chance></li>
+		</loot>
+		<servesCategories>
+			<li>Ammo</li>
+		</servesCategories>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.7</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Easy finds (low) ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_ColonyRuins</defName>
+		<label>ruins of a colony</label>
+		<description>Somebody tried to make a life here. Whatever ended it left most of their things behind.</description>
+		<challenges>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Steel</thing><count>30~80</count></li>
+			<li><category>Textiles</category><count>20~60</count></li>
+			<li><thing>MedicineIndustrial</thing><count>1~4</count><chance>0.5</chance></li>
+			<li><category>Apparel</category><count>1~2</count><chance>0.6</chance></li>
+			<li><category>Manufactured</category><count>1~3</count><chance>0.5</chance></li>
+			<li><category>Foods</category><count>10~40</count><chance>0.5</chance></li>
+		</loot>
+		<servesCategories>
+			<li>ResourcesRaw</li>
+			<li>Manufactured</li>
+		</servesCategories>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.5</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_Shipwreck</defName>
+		<label>beached shipwreck</label>
+		<description>A cargo ship run aground on the coast. The tide has done half the unloading already.</description>
+		<color>(0.4, 0.6, 0.75)</color>
+		<needsCoast>true</needsCoast>
+		<challenges>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1.5</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>Textiles</category><count>30~100</count></li>
+			<li><thing>Steel</thing><count>30~80</count></li>
+			<li><thing>ComponentIndustrial</thing><count>1~4</count></li>
+			<li><thing>Silver</thing><count>50~200</count></li>
+		</loot>
+		<servesCategories>
+			<li>Textiles</li>
+			<li>Manufactured</li>
+		</servesCategories>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.6</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Beasts and machines ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors">
+		<defName>Exp_InsectHive</defName>
+		<label>insect hive</label>
+		<description>A hive dug into the hillside. Clear it and the jelly is yours.</description>
+		<color>(0.7, 0.55, 0.3)</color>
+		<hilliness>
+			<li>LargeHills</li>
+			<li>Mountainous</li>
+		</hilliness>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>InsectJelly</thing><count>40~120</count></li>
+		</loot>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.4</openness>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors">
+		<defName>Exp_LegendaryBeast</defName>
+		<label>legendary beast</label>
+		<description>A thrumbo has been seen in the area. Bringing one down takes a lot of guns and a good tracker.</description>
+		<color>(0.5, 0.69, 0.41)</color>
+		<biomes>
+			<li>TemperateForest</li>
+			<li>BorealForest</li>
+			<li>TropicalRainforest</li>
+			<li>TemperateSwamp</li>
+			<li>TropicalSwamp</li>
+		</biomes>
+		<commonness>0.4</commonness>
+		<challenges>
+			<li><challenge>Exp_SearchGame</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>ThrumboHorn</thing><count>1</count><successOnly>true</successOnly></li>
+			<li><thing>Leather_Thrumbo</thing><count>40~80</count></li>
+			<li><thing>Meat_Thrumbo</thing><count>100~200</count></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>1</openness>
+		<squadSize>2~6</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors">
+		<defName>Exp_MechCluster</defName>
+		<label>downed mech cluster</label>
+		<description>A mech cluster came down hard. Some of it still fights; all of it is worth stripping.</description>
+		<color>(0.75, 0.3, 0.3)</color>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>350</requirement></li>
+			<li><challenge>Exp_Hack</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Plasteel</thing><count>30~80</count></li>
+			<li><thing>Steel</thing><count>50~150</count></li>
+			<li><thing>ComponentSpacer</thing><count>1~2</count><chance>0.4</chance></li>
+		</loot>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.8</openness>
+		<squadSize>2~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ============ Digs, vaults and herds ============ -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_Dig</defName>
+		<label>archaeology dig</label>
+		<description>Something old under the sand. Two days of careful digging might turn up an artifact.</description>
+		<color>(0.8, 0.65, 0.4)</color>
+		<biomes>
+			<li>Desert</li>
+			<li>ExtremeDesert</li>
+			<li>AridShrubland</li>
+		</biomes>
+		<challenges>
+			<li><challenge>Exp_SearchDig</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>Artifacts</category><count>1</count><chance>0.6</chance><successOnly>true</successOnly></li>
+			<li><thing>Gold</thing><count>5~20</count></li>
+			<li><thing>Silver</thing><count>50~150</count></li>
+		</loot>
+		<servesCategories>
+			<li>Artifacts</li>
+		</servesCategories>
+		<daysOnSite>2</daysOnSite>
+		<openness>0.5</openness>
+		<squadSize>1~4</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_CryptoVault</defName>
+		<label>cryptosleep vault</label>
+		<description>A buried vault of cryptosleep caskets, some still running. Whoever wakes up may want to come along.</description>
+		<color>(0.35, 0.66, 0.85)</color>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>0.5</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>Apparel</category><count>1~2</count><chance>0.5</chance></li>
+			<li><thing>MedicineIndustrial</thing><count>2~5</count></li>
+		</loot>
+		<joiners>
+			<chance>0.6</chance>
+			<count>1~2</count>
+			<kind>Colonist</kind>
+		</joiners>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.3</openness>
+		<squadSize>1~4</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle">
+		<defName>Exp_TamingGrounds</defName>
+		<label>taming grounds</label>
+		<description>A valley full of animals that have never seen people. A patient handler could bring a few home.</description>
+		<color>(0.5, 0.69, 0.41)</color>
+		<challenges>
+			<li><challenge>Exp_Tame</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<tamedAnimals>
+			<chance>0.8</chance>
+			<count>1~3</count>
+			<maxWildness>0.85</maxWildness>
+		</tamedAnimals>
+		<findChanceBase>0.7</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<openness>1</openness>
+		<squadSize>1~4</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+</Defs>

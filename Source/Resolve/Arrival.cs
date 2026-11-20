@@ -93,7 +93,8 @@ public static class Arrival
     {
         var sb = new System.Text.StringBuilder();
         sb.AppendLine(("Exp_Outcome_" + r.outcome).Translate());
-        if (r.outcome != Outcome.Failure) sb.AppendLine((r.found ? "Exp_Found" : "Exp_NotFound").Translate());
+        if (r.outcome != Outcome.Failure && r.hasFinds) sb.AppendLine((r.found ? "Exp_Found" : "Exp_NotFound").Translate());
+        if (!r.successText.NullOrEmpty()) sb.AppendLine(r.successText);
         sb.AppendLine();
         foreach (PawnResult p in r.pawns)
             sb.AppendLine($"{p.pawn.LabelShortCap}: {("Exp_Fate_" + p.fate).Translate()}" + (p.injuries.Count > 0 ? $" ({string.Join(", ", p.injuries)})" : ""));
@@ -101,6 +102,13 @@ public static class Arrival
             sb.AppendLine().AppendLine("Exp_LootHeader".Translate() + " " + string.Join(", ", r.loot.Select(l => l.Label)));
         if (r.lostToHaul.Count > 0)
             sb.AppendLine("Exp_LostToHaulHeader".Translate() + " " + string.Join(", ", r.lostToHaul.Select(l => l.Label)));
+        foreach (string line in GoodwillLines(r)) sb.AppendLine(line);
         return sb.ToString().TrimEnd();
+    }
+
+    public static IEnumerable<string> GoodwillLines(ExpeditionReport r)
+    {
+        if (r.goodwill > 0 && r.goodwillFaction != null) yield return "Exp_GoodwillLine".Translate(r.goodwillFaction.Name, r.goodwill);
+        if (r.goodwillAll > 0) yield return "Exp_GoodwillAllLine".Translate(r.goodwillAll);
     }
 }
