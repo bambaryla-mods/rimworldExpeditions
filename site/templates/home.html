@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block description %}{{ meta.get("summary") or "A RimWorld mod: send squads out from your comms console and read what happened when they come home." }}{% endblock %}
+{% block body %}
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-swatches" aria-hidden="true">{% for s in hero %}<span class="dot big" style="--c: {{ s.color }}" title="{{ s.label }}"></span>{% endfor %}</div>
+    <h1 class="hero-title">Expeditions</h1>
+    <p class="tagline">{{ meta.get("tagline", "") }}</p>
+    <p class="cta">
+      {% if workshop %}<a class="btn primary" href="{{ workshop }}">Steam Workshop</a>{% endif %}
+      <a class="btn{% if not workshop %} primary{% endif %}" href="guide.html">How it works</a>
+      <a class="btn" href="{{ github }}">GitHub</a>
+    </p>
+  </div>
+</section>
+<main id="main" class="home">
+  <div class="home-intro">{{ content }}</div>
+  <h2 class="cards-head">What's in the mod</h2>
+  <div class="cards">
+    {% for c in cards %}
+    <a class="card" href="{{ c.slug }}.html">
+      <div class="thumb">{% for s in c.swatches %}<span class="dot" style="--c: {{ s.color }}"></span>{% endfor %}</div>
+      <span class="card-group">{{ c.group }}</span>
+      <h3>{{ c.title }}</h3>
+      <p>{{ c.summary }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}

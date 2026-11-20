@@ -1,11 +1,11 @@
 # Expeditions: Design
 
-Standalone RimWorld 1.7 mod: **Expeditions** (`bambaryla.expeditions`). This document lives in BOR's `openspec/` until the mod has its own folder; it moves there when work starts.
+Standalone RimWorld 1.7 mod: Expeditions (`bambaryla.expeditions`).
 
 ## Intent
 Let a colony go looking for things instead of buying them. The player picks a point of interest (PoI) on the colony's own flat map, sends a squad as they stand, and the squad is gone for the trip. The result is rolled off-screen and comes home as a report: what they found, what they could carry, who got hurt, who did not come back. Sometimes they find nothing.
 
-Inspired by the idea of Stellar Logistics (order, wait, receive), but questing instead of buying.
+The idea comes from Stellar Logistics (order, wait, receive), with questing in place of buying.
 
 ## Goals
 - Squads leave and return on their own; the player never manages them on the world map.
@@ -74,7 +74,7 @@ The window's home tile is the tile of the map the console stands on.
 - The drawer shows the PoI (name, place, distance, known hostiles), one bar per challenge (squad score against the PoI's requirement), the squad slots, the ride picker, and three numbers: **Success**, **Find**, and **Away** (days). Hovering a bar lists each contribution: pawn, stat, and what moved it (for example "Ann: Shooting accuracy 94% (bionic eye +12%)").
 - The style toggle (Vanilla / Holo) sits on the map and is remembered in the mod settings.
 
-Mockups: `expedition-layouts.html` (layout A) and `expedition-map-styles.html` (styles 1 and 2), from the brainstorm session.
+Mockups: `mockups/expedition-layouts.html` (layout A) and `mockups/expedition-map-styles.html` (styles 1 and 2).
 
 ### The flat map
 - **Projection:** azimuthal equidistant around the home tile, out to the expedition range (default 60 tiles, a mod setting). Distance on the map then matches distance in the world.
@@ -98,7 +98,7 @@ Up to 5 at a time. A new one appears every 1-3 days while there is room, and eac
 - **Seed:** a world-wide seed changes every 2.5 days. The seed and the item decide whether a lead exists, so reloading or retrying cannot change the answer. The Prospect tab shows when the seed next changes.
 - **Repeat:** asking for an item already prospected under the current seed says "No new information available yet" before the job starts.
 - **Lead found:** a PoI appears from a site def that serves the item's category, with the item guaranteed in its loot. **Nothing found:** a short report.
-- Finding a lead is not finding the item: the squad must succeed, pass the Find roll, and carry it home.
+- A lead only says where to look. The squad still has to succeed, pass the Find roll, and carry the item home.
 
 ### Squad and ride
 - The squad is picked from colonists on the console's map who are not downed, in a mental state, prisoners, guests, or already away. They go as they stand: equipped gear and inventory are what they have.

@@ -1,0 +1,57 @@
+name: Website
+
+# Rebuilds the player site from the mod's files and publishes it to GitHub Pages.
+# One-time setup: repository Settings > Pages > Source: GitHub Actions.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "Defs/**"
+      - "Languages/**"
+      - "About/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false  # never cut off a deployment halfway
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: site/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r site/requirements.txt
+
+      # --strict fails the run (and skips the deploy) if the build finds a problem,
+      # such as a site def without a label or a loot item with no label in build.py, so a broken page never goes live.
+      - name: Build site
+        run: python site/build.py --out _site --strict
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

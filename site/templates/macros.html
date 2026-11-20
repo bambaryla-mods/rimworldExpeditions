@@ -1,0 +1,102 @@
+{# ---------- sites ---------- #}
+
+{% macro find_chance(s) %}
+{% if s.has_search %}{{ (s.find * 0.5)|pct }}–{{ ([s.find, 0.95]|min)|pct }}{% else %}{{ s.find|pct }}{% endif %}
+{% endmacro %}
+
+{% macro risk_line(name, r) %}
+{% set bits = [] %}
+{% if r.injured %}{% set _ = bits.append((r.injured|pct0) ~ " hurt") %}{% endif %}
+{% if r.killed %}{% set _ = bits.append((r.killed|pct0) ~ " killed") %}{% endif %}
+{% if r.captured %}{% set _ = bits.append((r.captured|pct0) ~ " taken") %}{% endif %}
+<span class="risk"><b>{{ name }}</b> {{ bits|join(" · ") or "nobody hurt" }}</span>
+{% endmacro %}
+
+{% macro sites(rows) %}
+<div class="table-scroll"><table class="stats sites">
+  <thead><tr>
+    <th scope="col">Site</th>
+    <th scope="col" title="Where on the map this site can turn up">Where</th>
+    <th scope="col" title="What the squad is scored on, against the site's requirement. The share is how much each counts toward Success.">Challenges</th>
+    <th scope="col">What's there</th>
+    <th scope="col" title="Days spent at the site, on top of the travel">On site</th>
+    <th scope="col" title="Each pawn's odds, by outcome">Risk per pawn</th>
+  </tr></thead>
+  <tbody>
+  {% for s in rows %}
+    <tr id="{{ s.label|slug }}">
+      <th scope="row" class="name"><div class="name-wrap">
+        <span class="dot" style="--c: {{ s.color }}" aria-hidden="true"></span>
+        <div><span class="label">{{ s.label|cap }}</span>
+        {% for r in s.requires %}<span class="badge dlc">{{ r }}</span>{% endfor %}
+        <span class="badge">squad {{ s.squad }}</span>
+        {% if s.rare %}<span class="badge">rare</span>{% endif %}
+        {% if s.fallback %}<span class="badge">when nothing else fits</span>{% endif %}
+        {% if s.description %}<span class="rdesc">{{ s.description }}</span>{% endif %}</div>
+      </div></th>
+      <td class="wrap">{{ (s.conditions|join("; "))|cap if s.conditions else "Anywhere in range" }}</td>
+      <td class="wrap">{% for c in s.challenges %}<span class="chal"><a href="challenges.html#{{ c.label|slug }}">{{ c.label|cap }}</a> {{ c.requirement|num(0) }} <span class="muted">({{ (c.share * 100)|num(0) }}%)</span></span>{% endfor %}</td>
+      <td class="wrap">
+        {% for l in s.loot %}<span class="loot">{{ l.count }} {{ l.label }}{% if l.chance < 1 %} <span class="muted">({{ l.chance|pct }})</span>{% endif %}{% if l.success_only %} <span class="badge">full success only</span>{% endif %}{% for r in l.requires %} <span class="badge dlc">{{ r }}</span>{% endfor %}</span>{% endfor %}
+        {% for r in s.rewards %}<span class="effect">{{ r }}</span>{% endfor %}
+        {% if s.page == "rescue" %}<span class="effect">Your captive, who comes home with the squad</span>
+        {% elif s.fallback %}<span class="effect">The item you asked around for</span>{% endif %}
+        {% if s.has_finds or s.page == "rescue" or s.fallback %}<span class="note">Chance it's there: {{ find_chance(s)|trim }}</span>{% endif %}
+      </td>
+      <td>{{ s.days|num }} d</td>
+      <td class="wrap">{{ risk_line("Success", s.risk.success) }}{{ risk_line("Partial", s.risk.partial) }}{{ risk_line("Failure", s.risk.failure) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% endmacro %}
+
+{# ---------- challenges ---------- #}
+
+{% macro challenges(rows) %}
+<div class="table-scroll"><table class="stats challenges">
+  <thead><tr>
+    <th scope="col">Challenge</th>
+    <th scope="col" title="How the pawns' scores make the squad's score">Squad</th>
+    <th scope="col" title="What a decent pawn has; that pawn scores 100">Reads (a decent pawn)</th>
+    <th scope="col" title="Skills that gain experience from it">Trains</th>
+    <th scope="col">Sites</th>
+  </tr></thead>
+  <tbody>
+  {% for c in rows %}
+    <tr id="{{ c.label|slug }}">
+      <th scope="row" class="name"><span class="label">{{ c.label|cap }}</span>
+        {% if "stealth" in c.flags %}<span class="badge">quiet arrivals only</span>{% endif %}
+        {% if "haul" in c.flags %}<span class="badge">ride cargo counts</span>{% endif %}
+        {% if "search" in c.flags %}<span class="badge">finds the loot</span>{% endif %}
+        {% if c.description %}<span class="rdesc">{{ c.description }}</span>{% endif %}</th>
+      <td class="wrap"><span title="{{ c.combine_long }}">{{ c.combine_short|cap }}</span></td>
+      <td class="wrap">{% for s in c.stats %}<span class="loot">{{ s.label|cap }}: {{ s.reference }}{% if s.weight != 1 %} <span class="muted">(×{{ s.weight|num }})</span>{% endif %}</span>{% endfor %}</td>
+      <td class="wrap">{{ (c.skills|join(", "))|cap or "—" }}</td>
+      <td class="wrap">{{ (c.used_by|join(", "))|cap or "—" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% endmacro %}
+
+{# ---------- other ---------- #}
+
+{% macro curve(rows, head) %}
+<div class="table-scroll narrow"><table class="stats">
+  <thead><tr><th scope="col">{{ head[0] }}</th><th scope="col">{{ head[1] }}</th></tr></thead>
+  <tbody>
+  {% for a, b in rows %}<tr><td>{{ a }}</td><td>{{ b }}</td></tr>{% endfor %}
+  </tbody>
+</table></div>
+{% endmacro %}
+
+{% macro requirements(deps) %}
+<ul class="deps">
+  {% for d in deps %}<li>{% if d.url %}<a href="{{ d.url }}">{{ d.name }}</a>{% else %}{{ d.name }}{% endif %}</li>{% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro screenshot(src, caption) %}
+<figure class="shot"><a href="{{ src }}"><img src="{{ src }}" alt="{{ caption or '' }}" loading="lazy"></a>{% if caption %}<figcaption>{{ caption }}</figcaption>{% endif %}</figure>
+{% endmacro %}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Excluded>
+    <!-- VCS / IDE -->
+    <exclude>.git</exclude>
+    <exclude>.github</exclude>
+    <exclude>.gitignore</exclude>
+    <exclude>.vs</exclude>
+    <exclude>.vscode</exclude>
+    <!-- AI tooling -->
+    <exclude>.claude</exclude>
+    <exclude>.codex</exclude>
+    <exclude>.cursor</exclude>
+    <exclude>.aider</exclude>
+    <exclude>.windsurf</exclude>
+    <exclude>.opencode</exclude>
+    <exclude>.copilot</exclude>
+    <exclude>.superpowers</exclude>
+    <exclude>AGENTS.md</exclude>
+    <exclude>CLAUDE.md</exclude>
+    <exclude>GEMINI.md</exclude>
+    <exclude>openspec</exclude>
+    <!-- Publisher config itself -->
+    <exclude>_PublisherPlus.xml</exclude>
+    <!-- Source (single backslash, PublisherPlus does not unescape) -->
+    <exclude>Source</exclude>
+    <!-- Player site (GitHub Pages) -->
+    <exclude>site</exclude>
+    <exclude>README.md</exclude>
+  </Excluded>
+</Configuration>

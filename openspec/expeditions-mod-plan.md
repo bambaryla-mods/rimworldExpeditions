@@ -1,16 +1,14 @@
-# Expeditions Implementation Plan
+# Expeditions: implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+Build Expeditions, a standalone RimWorld 1.7 mod. Squads leave the map for points of interest on the colony's own flat map, results are rolled off-screen, and the survivors come home with a report.
 
-**Goal:** Build Expeditions, a standalone RimWorld 1.7 mod. Squads leave the map for points of interest on the colony's own flat map, results are rolled off-screen, and the survivors come home with a report.
+Pure math (scoring, odds, seeds, food, loot fit, travel, projection) lives in `Source/Logic/` with no Verse, RimWorld or Unity references. It is unit tested by a separate xunit project that compiles those files directly. Everything that touches the game sits on top: defs, a game component that holds away pawns in per-expedition `ThingOwner`s, Harmony patches that keep them counted as colonists, generators, departure and return, and the window. Game-facing tasks are verified in game with dev mode, through a checklist in each task.
 
-**Architecture:** Pure math (scoring, odds, seeds, food, loot fit, travel, projection) lives in `Source/Logic/` with no Verse, RimWorld or Unity references. It is unit tested by a separate xunit project that compiles those files directly. Everything that touches the game sits on top: defs, a game component that holds away pawns in per-expedition `ThingOwner`s, Harmony patches that keep them counted as colonists, generators, departure and return, and the window. Game-facing tasks are verified in game with dev mode, through a checklist in each task.
+Tech: C# (`LangVersion latest`), .NET SDK 10 (`net10.0`, as in the author's other mods), RimWorld 1.7 `Assembly-CSharp.dll` and `UnityStubs.dll`, Lib.Harmony 2.4.3, xunit for Logic tests.
 
-**Tech Stack:** C# (`LangVersion latest`), .NET SDK 10 (`net10.0`, as in the author's other mods), RimWorld 1.7 `Assembly-CSharp.dll` and `UnityStubs.dll`, Lib.Harmony 2.4.3, xunit for Logic tests.
+Spec: `openspec/expeditions-mod-design.md`. Mockups: `openspec/mockups/expedition-layouts.html` (layout A) and `openspec/mockups/expedition-map-styles.html` (styles 1 and 2).
 
-**Spec:** `openspec/expeditions-mod-design.md` (moved into the new mod in Task 1). Mockups: `expedition-layouts.html` (layout A) and `expedition-map-styles.html` (styles 1 and 2) in the brainstorm scratchpad. Copy them to `Mods/Expeditions/openspec/mockups/` in Task 1 if they still exist.
-
-## Global Constraints
+## Global constraints
 
 - RimWorld 1.7 only. Mod folder `Mods/Expeditions`, packageId `bambaryla.expeditions`, name "Expeditions".
 - Hard dependency only on Harmony (`brrainz.harmony`). Vehicle Framework and [LFS] UI Rethemed (`LazyFridayStudio.UIRethemed.Core`) are optional and detected at runtime. No dependency on BOR.
@@ -22,7 +20,7 @@
 - Opening the window must feel instant after the first bake.
 - Expedition range defaults to 60 tiles. Ready-made offers: up to 5, a new one every 1-3 days, each lasting 3-8 days. The prospect seed window is 2.5 days (150,000 ticks). Success is clamped to 5%-95%.
 
-## Review Focus
+## Review focus
 
 1. **A squad member becomes unavailable during departure** (downed, drafted, mental break, kidnapped, killed) → they drop out of the squad. If the squad falls below the site's minimum, the expedition is cancelled, nothing is consumed, and food picked up stays in inventories. Covered in Task 9.
 2. **The origin map is gone when the squad returns** → they go to another player home map. With no home map at all, they become a vanilla caravan on the origin tile, so they are never lost. Covered in Task 10.
@@ -30,9 +28,7 @@
 4. **Vanilla or modded code that walks `AllCaravansAndTravellingTransporters` meets an away pawn** (null `GetCaravan()`, invalid `Tile`) → nothing throws. Covered by the smoke checklist in Task 7.
 5. **Vehicle Framework is absent, or present with a changed API** → no type-load errors. The Vehicles ride is hidden, with one warning at most. Covered in Task 9.
 
----
-
-## File Structure
+## File structure
 
 ```
 Mods/Expeditions/
@@ -62,8 +58,6 @@ Mods/Expeditions/
     UIRethemedCompat/ Expeditions.UIRethemed.csproj, LfsExpeditionsLook.cs
 ```
 
----
-
 ### Task 1: Scaffold the mod and the Logic test project
 
 **Files:**
@@ -78,8 +72,6 @@ Mods/Expeditions/
 - [ ] **Step 3:** Write `Source/Tests/Expeditions.Tests.csproj` (net10.0, xunit 2.9.2, xunit.runner.visualstudio 2.8.2, Microsoft.NET.Test.Sdk 17.12.0) with `<Compile Include="..\Logic\**\*.cs" LinkBase="Logic" />` and no game references. Write `SmokeTests.cs` with one test: `Assert.Equal(4, Enum.GetValues<Ride>().Length);`.
 - [ ] **Step 4:** Run `dotnet test Source/Tests` and expect 1 passed. Run `dotnet build Source/Expeditions.csproj -c Release` and expect `1.7/Assemblies/Expeditions.dll`.
 - [ ] **Step 5:** Move both openspec docs and the mockups. Commit: `Scaffold Expeditions mod and Logic tests`.
-
----
 
 ### Task 2: Scoring math (Curve, ChallengeMath, OutcomeRoll)
 
@@ -142,8 +134,6 @@ static readonly Curve Ratio = new([(0, 0), (1, 0.6), (2, 0.95)]);
 - [ ] **Step 3:** Implement the three files to the signatures above.
 - [ ] **Step 4:** Run `dotnet test Source/Tests` and expect everything to pass.
 - [ ] **Step 5:** Commit: `Add challenge and outcome math`.
-
----
 
 ### Task 3: Prospecting, food, loot, travel and projection math
 
@@ -216,8 +206,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
 - [ ] **Step 4:** Run `dotnet test Source/Tests` and expect everything to pass.
 - [ ] **Step 5:** Commit: `Add prospect, food, loot, travel and projection math`.
 
----
-
 ### Task 4: Defs and shipped content
 
 **Files:** Create `Source/Defs/*.cs` and `Defs/Expeditions_Challenges.xml`, `Expeditions_Sites.xml`, `Expeditions_Tuning.xml`, `Expeditions_Jobs.xml` (the job defs for Tasks 8-9).
@@ -287,8 +275,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
 - [ ] **Step 4:** Enable the mod and run `RimWorldWin64.exe -quicktest`. Then check `%USERPROFILE%\AppData\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios\Player.log` with `grep -n "Exp_\|Expeditions" Player.log`. Expect no config errors and no XML errors.
 - [ ] **Step 5:** Commit: `Add expedition defs and shipped content`.
 
----
-
 ### Task 5: Squad evaluation (stats to scores, with breakdowns)
 
 **Files:** Create `Source/Squad/SquadEvaluator.cs`.
@@ -313,8 +299,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
 - [ ] **Step 2:** Add a dev action, "Expeditions: evaluate selected pawns against site...". It opens a float menu of site defs and logs every challenge's score, chance and contributions.
 - [ ] **Step 3:** Check it in game. For `Exp_HostileOutpost`, a pawn in power armor and a pawn in a parka should show Fight higher for the armored pawn. Stealth for the pair should follow the lower of the two pawns. Each contribution line should name the gear.
 - [ ] **Step 4:** Commit: `Add squad evaluation`.
-
----
 
 ### Task 6: Game state, the holder and saving
 
@@ -371,8 +355,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
 - [ ] **Step 3:** Check in game: send two pawns away, save, load, bring them back. They come back with the same gear, health and needs as when they left. Their needs didn't move while they were away, because nothing ticks them.
 - [ ] **Step 4:** Commit: `Add expedition state and holder`.
 
----
-
 ### Task 7: Keep away pawns counted as colonists
 
 **Files:** Create `Source/Core/HolderPatches.cs`.
@@ -390,10 +372,8 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - Send every colonist away and wait one in-game day: the game does not end.
   - The colonist bar shows the away pawns in their own group, and clicking one doesn't throw.
   - The pawns count toward the colonist count in the world tab and in wealth.
-- [ ] **Step 3, Review Focus 4 smoke checklist:** with a pawn away, open the colonist bar tooltip, the pawn's info card from the colonist bar, the Ideology roles window, the Factions tab, the Assign tab, the History tab, and the Caravan formation dialog on the home map. Expect no errors in the log. Fix anything that throws, usually with a null guard in a small patch, and list it in `HolderPatches.cs`.
+- [ ] **Step 3, review focus 4 smoke checklist:** with a pawn away, open the colonist bar tooltip, the pawn's info card from the colonist bar, the Ideology roles window, the Factions tab, the Assign tab, the History tab, and the Caravan formation dialog on the home map. Expect no errors in the log. Fix anything that throws, usually with a null guard in a small patch, and list it in `HolderPatches.cs`.
 - [ ] **Step 4:** Commit: `Keep away pawns counted as colonists`.
-
----
 
 ### Task 8: World area, offers, travel estimates and prospecting
 
@@ -432,8 +412,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - After the window changes, the item can be asked again.
 - [ ] **Step 5:** Commit: `Add offers, travel estimates and prospecting`.
 
----
-
 ### Task 9: Rides, food and departure
 
 **Files:** Create `Source/Squad/RideFinder.cs`, `FoodPlanner.cs`, `Departure.cs`, `JobDriver_ExpeditionDepart.cs`.
@@ -446,7 +424,7 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
     - **Foot:** always available.
     - **DropPods:** a group of `CompTransporter` and `CompLaunchable` buildings without `CompShuttle`. Total `MassCapacity` ≥ the squad's mass, and `MaxLaunchDistanceAtFuelLevel(MinFuelLevelInGroup)` ≥ tiles.
     - **Shuttle:** a spawned player-owned thing with `CompShuttle`, or with `CompLaunchable` whose def is a shuttle (check how Odyssey's passenger shuttle is identified in 1.7 and record the rule in a comment). Its fuel must cover twice the tiles.
-    - **Vehicles:** only when a type named `Vehicles.VehiclePawn` loads (`GenTypes.GetTypeInAnyAssembly`). Use reflection for seats and cargo. Check the member names against the installed Vehicle Framework assembly and keep them in one `VehicleCompat` nested class. If any lookup fails, log one warning and treat Vehicles as unavailable (Review Focus 5).
+    - **Vehicles:** only when a type named `Vehicles.VehiclePawn` loads (`GenTypes.GetTypeInAnyAssembly`). Use reflection for seats and cargo. Check the member names against the installed Vehicle Framework assembly and keep them in one `VehicleCompat` nested class. If any lookup fails, log one warning and treat Vehicles as unavailable (review focus 5).
   - `FoodPlanner`:
     - `float DailyNeed(Pawn p)` = `p.needs.food.FoodFallPerTickAssumingCategory(HungerCategory.Fed) × 60000`, or 0 without a food need.
     - `float Available(List<Pawn> squad, Map map, out List<(Thing thing, int count)> pickups)`: inventory food first (`FoodUtility.WillEat` for any member), then the nearest reachable unforbidden stockpile food until the requirement is met.
@@ -455,9 +433,9 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - `static Expedition Departure.Launch(Opportunity, List<Pawn>, RideOption, Map)`:
     - Creates the expedition in `Phase.Departing` and removes the opportunity from `offers`.
     - Gives each pawn its pickups (`JobDefOf.TakeInventory`), then `Exp_Depart`.
-    - `JobDriver_ExpeditionDepart`: on Foot and Vehicles it goes to an exit cell from `RCellFinder.TryFindBestExitSpot`; on DropPods and Shuttle it goes to the ride's position. On arrival it calls `Departure.Board(pawn, expeditionId)`, which despawns the pawn (with its carried things) into `contents`. Expedition ids are saved on the job (`job.count`), so a load mid-departure resumes (Review Focus 3).
+    - `JobDriver_ExpeditionDepart`: on Foot and Vehicles it goes to an exit cell from `RCellFinder.TryFindBestExitSpot`; on DropPods and Shuttle it goes to the ride's position. On arrival it calls `Departure.Board(pawn, expeditionId)`, which despawns the pawn (with its carried things) into `contents`. Expedition ids are saved on the job (`job.count`), so a load mid-departure resumes (review focus 3).
   - `static void Departure.Tick(Expedition e)` while Departing:
-    - Drops squad members who are downed, dead, mentally broken, drafted, or no longer on the map. If the squad falls below `squadSize.min`, it cancels: board-ins are spawned back at the exit spot, nothing is consumed, and the opportunity goes back on the board (Review Focus 1).
+    - Drops squad members who are downed, dead, mentally broken, drafted, or no longer on the map. If the squad falls below `squadSize.min`, it cancels: board-ins are spawned back at the exit spot, nothing is consumed, and the opportunity goes back on the board (review focus 1).
     - When everyone has boarded:
       - DropPods: destroy the pods and consume the launcher fuel for `tiles`, with a leaving skyfaller for looks.
       - Shuttle and Vehicles: move them into `contents`.
@@ -471,8 +449,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - Without VF: no errors in the log.
 - [ ] **Step 4:** Commit: `Add rides, food and departure`.
 
----
-
 ### Task 10: Resolution, return and captives
 
 **Files:** Create `Source/Resolve/Resolver.cs`, `LootRoller.cs`, `InjuryMaker.cs`, `Arrival.cs`, `Source/World/CaptiveTracker.cs`.
@@ -485,7 +461,7 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
     2. Roll the outcome (`OutcomeRoll.Roll`, `partialBand`) and the find (`Rand.Value < find`), seeded with `Rand.PushState(opp.Seed)`.
     3. Loot: `LootRoller.Roll(e)`.
     4. For each pawn, `PickFate` from the site's risk for the outcome, then apply it:
-       - **Injured:** `InjuryMaker.Apply(pawn, severity: 0.3–0.7, allowPartLoss: outcome == Failure)`.
+       - **Injured:** `InjuryMaker.Apply(pawn, severity: 0.3 to 0.7, allowPartLoss: outcome == Failure)`.
        - **Killed:** remove from `contents`, `Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever)`, `pawn.Kill(null)`, then send a death letter at once.
        - **Captured:** remove from `contents`, then `captor.kidnapped.Kidnap(pawn, null)`. The captor is `opp.faction`, or a random hostile, non-hidden faction. Check `Kidnap` with a null kidnapper in the decompiled source first; if it needs a pawn, pass one of the captor's world pawns or generate one. Record `capturedTick[pawn]`.
     5. Gear: each worn apparel and equipment loses `HitPoints × {0.05, 0.2, 0.35}` for Unharmed, Injured and Captured-or-Killed.
@@ -500,7 +476,7 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
     - What doesn't fit is recorded in `report.lostToHaul` and destroyed. What fits goes into `contents`.
   - `static void InjuryMaker.Apply(Pawn pawn, float severity01, bool allowPartLoss)`: adds `Gunshot`, `Cut` and `Bruise` hediffs to random non-vital outer parts until the summed injury severity reaches `severity01 × the pawn's summed part health × 0.5`. It never takes a part below 1 HP unless `allowPartLoss`, and never makes `ShouldBeDead` true.
   - `Arrival.Return(Expedition e)` at the end of Returning:
-    - The target map is `originMap` if it is still a player home, otherwise the first player home map. With none, it makes a vanilla caravan on `originTile` with `CaravanMaker.MakeCaravan` (Review Focus 2).
+    - The target map is `originMap` if it is still a player home, otherwise the first player home map. With none, it makes a vanilla caravan on `originTile` with `CaravanMaker.MakeCaravan` (review focus 2).
     - Foot, Pods and Vehicles: spawn at an edge cell from `CellFinder.TryFindRandomEdgeCellWith` (standable, can reach the colony). Shuttle: spawn the shuttle at a roofless cell near the console with a drop effect, then the pawns next to it.
     - Then `FoodPlanner.ConsumeOnReturn(returning, foodNeeded)`. Cargo is placed next to the pawns. Push the report to `history` (capped at 20), send a letter with an "Open report" choice, `MarkColonistsDirty`, and remove the expedition.
   - `CaptiveTracker`:
@@ -518,8 +494,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - Abandon the origin map while a squad is away (dev: destroy map): they return to the other home map. With no home map, they appear as a caravan.
   - Save and load in each phase.
 - [ ] **Step 5:** Commit: `Add resolution, return and captives`.
-
----
 
 ### Task 11: Map bake
 
@@ -541,8 +515,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
 - [ ] **Step 2:** Add a dev action "Expeditions: dump map bake" that writes the texture to PNG in the save folder for both styles, and logs the bake time.
 - [ ] **Step 3:** Check: both PNGs show coastlines, mountains and rivers in the right places compared with the vanilla world map, and the map is not mirrored (if it is, negate x in `ToPixel`). The bake takes under 300 ms at range 60.
 - [ ] **Step 4:** Commit: `Add flat map bake`.
-
----
 
 ### Task 12: The Expeditions window, the look and the report
 
@@ -577,8 +549,6 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - A full loop: launch on foot, report, rescue.
 - [ ] **Step 5:** Commit: `Add Expeditions window and report`.
 
----
-
 ### Task 13: Settings, debug menu, About and the release check
 
 **Files:** Modify `Source/Core/ExpeditionsMod.cs` (settings window), `About/About.xml` (final description). Create `Source/Debug/ExpeditionsDebug.cs` (collect the dev actions from Tasks 5-11 under the "Expeditions" category).
@@ -591,5 +561,5 @@ static readonly Curve Value = new([(0, 1), (50, 0.85), (500, 0.55), (2000, 0.3),
   - `dotnet build -c Release` passes for both projects.
   - A new colony with only Harmony and this mod: no errors in the log.
   - The same with UI Rethemed and with Vehicle Framework.
-  - Go through Review Focus 1-5 again.
+  - Go through review focus 1-5 again.
 - [ ] **Step 5:** Commit: `Expeditions 1.0 settings, debug and About`.

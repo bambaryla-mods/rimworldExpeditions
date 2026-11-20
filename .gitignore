@@ -1,3 +1,55 @@
+# AI assistants and agent tooling
+.claude/
+.codex/
+.cursor/
+.cursorrules
+.aider*
+.windsurf/
+.windsurfrules
+.opencode/
+.copilot/
+.continue/
+.gemini/
+.superpowers/
+.github/copilot-instructions.md
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+docs/superpowers/
+
+# Editors and IDEs
+.vscode/
+*.code-workspace
+.history/
+.vs/
+.idea/
+*.suo
+*.user
+*.swp
+*~
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output of every project under Source
 Source/**/obj/
 Source/**/bin/
-.superpowers/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Player site build output (site/build.py)
+site/_build/
+_site/
+
+# Archives and logs
+*.zip
+*.7z
+*.rar
+*.log
