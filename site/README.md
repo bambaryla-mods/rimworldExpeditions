@@ -1,6 +1,6 @@
 # Player site
 
-The site at https://databobek.github.io/rimworldExpeditions/ shows players what Expeditions does and what every site and challenge asks of a squad. It is not part of the mod: `_PublisherPlus.xml` keeps this folder out of the Workshop upload.
+The site at https://bambaryla-mods.github.io/rimworldExpeditions/ shows players what Expeditions does and what every site and challenge asks of a squad. It is not part of the mod: `_PublisherPlus.xml` keeps this folder out of the Workshop upload.
 
 ## How it works
 
