@@ -36,7 +36,7 @@ public class SiteLinkProps
     public float fightMin = 100f;
 
     public List<ThingDefCountClass> rewardCounts = new(); // counts for rewards the quest lists without one
-    public ThingSetMakerDef? lootMaker;
+    public List<ThingSetMakerDef> lootMakers = new(); // vanilla loot makers, each rolled lootMakerRolls times
     public int lootMakerRolls = 1;
 
     public RetaliationProps? retaliation;
@@ -58,6 +58,7 @@ public class SiteLinkProps
         questRoots.RemoveAll(q => q == null);
         siteParts.RemoveAll(p => p == null);
         rewardCounts.RemoveAll(r => r?.thingDef == null);
+        lootMakers.RemoveAll(m => m == null);
     }
 
     public IEnumerable<string> ConfigErrors()

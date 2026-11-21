@@ -6,6 +6,67 @@
      makes when it generates the site's map. All numbers are starting points for tuning. -->
 <Defs>
 
+	<!-- ===== Biotech and Ideology: ancient complexes ===== -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Biotech">
+		<defName>Exp_MechanitorComplexSite</defName>
+		<label>ancient mechanitor complex</label>
+		<description>A sealed complex where a mechanitor once worked. Their mechlink is still inside, behind locked doors and waking mechs.</description>
+		<color>(0.55, 0.75, 0.8)</color>
+		<link>
+			<workerClass>Expeditions.SiteLinkWorker_Complex</workerClass>
+			<questRoots>
+				<li>OpportunitySite_AncientComplex_Mechanitor</li>
+			</questRoots>
+			<lootMakers>
+				<li MayRequire="Ludeon.RimWorld.Ideology">MapGen_AncientComplexRoomLoot_Better</li>
+			</lootMakers>
+			<lootMakerRolls>3</lootMakerRolls>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>130</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Mechlink</thing><count>1</count></li>
+			<li><thing>ComponentIndustrial</thing><count>2~6</count></li>
+			<li><thing>Plasteel</thing><count>20~50</count></li>
+			<li><thing>ComponentSpacer</thing><count>1~2</count><chance>0.4</chance></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.3</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_AncientComplexSite</defName>
+		<label>ancient complex</label>
+		<description>A buried complex from before the fall, its rooms still sealed. Something in there keeps it guarded.</description>
+		<color>(0.6, 0.65, 0.75)</color>
+		<link>
+			<workerClass>Expeditions.SiteLinkWorker_Complex</workerClass>
+			<questRoots>
+				<li>OpportunitySite_AncientComplex</li>
+				<li>OpportunitySite_AncientComplex_Giver</li>
+			</questRoots>
+			<lootMakers>
+				<li>MapGen_AncientComplexRoomLoot_Better</li>
+			</lootMakers>
+			<lootMakerRolls>3</lootMakerRolls>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>130</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1.5</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.3</openness>
+	</Expeditions.ExpeditionSiteDef>
+
 	<!-- ===== Odyssey: ancient structures ===== -->
 
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
