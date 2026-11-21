@@ -42,8 +42,8 @@ public static class Resolver
             Reward(e, outcome, report);
             if (e.opp.worksite is { } ws && WorksiteLink.Alive(ws))
             {
-                WorksiteLink.Raid(ws, outcome, report);
-                e.opp.worksite = null; // destroyed now; a saved reference to it would not resolve on load
+                WorksiteLink.Raid(ws, outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
+                e.opp.worksite = null; // destroyed now
             }
         }
         finally
@@ -119,11 +119,12 @@ public static class Resolver
     }
 
     // Taken by the enemy the squad was sent against, else the site's faction if hostile, else any enemy faction.
+    // Never a temporary faction (most work site owners): vanilla removes it once its site is gone, captives and all.
     // Vanilla's kidnapping then applies: they may be sold, recruited, or turn up in raids.
     private static bool Capture(Expedition e, Pawn p)
     {
         Faction? captor = e.opp.enemy is { defeated: false } en && en.HostileTo(Faction.OfPlayer) ? en
-            : e.opp.faction is { defeated: false } f && f.HostileTo(Faction.OfPlayer) ? f
+            : e.opp.faction is { defeated: false, temporary: false } f && f.HostileTo(Faction.OfPlayer) ? f
             : Find.FactionManager.RandomEnemyFaction(false, false, true);
         if (captor?.kidnapped == null) return false;
         e.contents.Remove(p);

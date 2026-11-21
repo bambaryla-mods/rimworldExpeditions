@@ -9,7 +9,7 @@ namespace Expeditions;
 public static class WorksiteLink
 {
     public static bool IsWorksite(Site s) =>
-        s.MainSitePartDef is { } def && def.tags != null && def.tags.Contains("WorkSite")
+        s.parts.Count > 0 && s.MainSitePartDef is { } def && def.tags != null && def.tags.Contains("WorkSite")
         && typeof(SitePartWorker_WorkSite).IsAssignableFrom(def.workerClass);
 
     // Still there and nobody is raiding it in person. A null link (lost on load) counts as gone.
@@ -32,10 +32,11 @@ public static class WorksiteLink
         return game.offers.Any(o => o.worksite == s) || game.active.Any(e => e.opp.worksite == s);
     }
 
-    // What raiding it in person would do: the owner turns hostile, the quest ends (Success counts as raiding for
-    // Ideology precepts), and the site is gone.
-    public static void Raid(Site s, Outcome outcome, ExpeditionReport report)
+    // What raiding it in person would do: the owner turns hostile, the quest ends, and the site is gone. A Success or
+    // Partial is a raid for Ideology: the squad gets the credit as vanilla's raiders do (precept moods, raid clock).
+    public static void Raid(Site s, Outcome outcome, ExpeditionReport report, List<Pawn> raiders)
     {
+        if (outcome != Outcome.Failure) IdeoUtility.Notify_PlayerRaidedSomeone(raiders);
         if (s.Faction is { } f && !f.IsPlayer && !f.defeated)
         {
             TaggedString text = "";
@@ -64,7 +65,7 @@ public static class WorksiteLink
             int tiles = e.originMap != null ? Departure.Tiles(e.originMap, e.opp) : (int)Find.WorldGrid.ApproxDistanceInTiles(e.originTile, e.opp.tile);
             spent = (int)(TravelMath.OutDays(e.ride, e.tripFootDays, tiles, ExpeditionsDefOf.Tuning.Travel) * GenDate.TicksPerDay);
         }
-        e.opp.worksite = null; // gone or about to be; a saved reference to it would not resolve on load
+        e.opp.worksite = null; // gone, or being raided in person; the squad is done with it
         e.StartPhase(Phase.Returning, spent);
         ExpeditionsGame.Instance.HolderChanged();
     }
@@ -78,7 +79,7 @@ public static class WorksiteLink
         var game = ExpeditionsGame.Instance;
         foreach (Site s in Find.WorldObjects.Sites)
         {
-            if (!IsWorksite(s) || !Alive(s) || s.parts.Count == 0 || Linked(s)) continue;
+            if (!IsWorksite(s) || !Alive(s) || Linked(s)) continue;
             if (!WorldArea.InRange(home.Tile, s.Tile, ExpeditionsMod.Settings.range) || Stash(s).Count == 0) continue;
             var opp = new Opportunity { id = game.NextId(), site = def, tile = s.Tile, worksite = s, faction = s.Faction, expiresTick = -1 };
             game.offers.Add(opp);
