@@ -14,3 +14,13 @@ How to read it:
 - **Risk per pawn**: what each pawn's roll can bring, by outcome. Whatever is left is "unharmed".
 
 A site marked with a DLC or mod only turns up when you have it. "Rare" sites turn up less often than the rest.
+
+## Ideology work sites
+
+With Ideology, the camps other factions set up to farm, log, mine or hunt show up on the board too, as long as they are in range. You can still raid one yourself and take the whole stash, or send a squad and let them bring back up to {{ tuning("worksiteShare", "pct") }} of it. A Partial brings back half of that, and a Failure nothing.
+
+The guards decide how hard the fight is: every guard adds {{ tuning("worksiteFightPerGuard") }} to the [fight](challenges.html#fight) the squad needs, with 100 as the minimum, so the fight number in the table below is only an example. The offer shows how many guards there are and the most the squad can bring home. A small squad on foot may still have to leave some of it behind.
+
+A squad's raid counts as yours. The owner turns hostile if it wasn't already (a small independent group always is), and the camp is gone afterwards. On a Success or Partial it also counts as a raid for an ideoligion that cares about raiding. If the camp packs up, or you raid it yourself while the squad is on the road, they turn back and come home with nothing.
+
+{{ sites("worksites") }}

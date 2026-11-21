@@ -108,7 +108,7 @@ TUNING_DEFAULTS = {
     "partialBand": 0.15, "offerIntervalTicks": "60000~180000", "offerLifetimeTicks": "180000~480000",
     "prospectLifetimeTicks": "300000~480000", "loudStealthCap": 30, "armedFightBonus": 60, "armedSpread": 0.5,
     "flightBaseDays": 0.25, "flightDaysPerTile": 0.01, "vehicleFootFactor": 0.5, "prospectBaseTicks": 15000,
-    "xpPerChallengeWeight": 800,
+    "xpPerChallengeWeight": 800, "worksiteShare": 0.6, "worksiteFightPerGuard": 90,
 }
 SITE_DEFAULTS = {"findChanceBase": 0.6, "daysOnSite": 0.5, "openness": 1, "squadSize": "1~6", "commonness": 1,
                  "xpFactor": 1}
@@ -389,6 +389,8 @@ class Mod:
         need = d.findtext("needsFaction") or "None"
         if flag("rescueOnly"):
             page = "rescue"
+        elif flag("worksiteOnly"):
+            page = "worksites"
         elif need in ("Ally", "Friendly"):
             page = "jobs"
         else:
