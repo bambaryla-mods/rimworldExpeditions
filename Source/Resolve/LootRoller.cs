@@ -13,6 +13,18 @@ public static class LootRoller
         ExpeditionSiteDef site = e.opp.site;
         float factor = outcome == Outcome.Partial ? 0.5f : 1f;
 
+        // A work site: the squad's cut of its stash, nothing else. The stash is known, so it is always found.
+        if (e.opp.worksite is { } ws && WorksiteLink.Alive(ws))
+        {
+            float share = ExpeditionsDefOf.Tuning.worksiteShare;
+            foreach (ThingDefCountClass s in WorksiteLink.Stash(ws))
+            {
+                int n = WorksiteMath.Share(s.count, share, outcome);
+                if (n > 0) Add(made, s.thingDef, n);
+            }
+            return Fit(e, made, report);
+        }
+
         if (site.silverReward > 0) Add(made, ThingDefOf.Silver, Scale(site.silverReward, factor));
         if (found)
         {

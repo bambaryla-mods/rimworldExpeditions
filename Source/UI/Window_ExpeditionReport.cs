@@ -47,6 +47,12 @@ public class Window_ExpeditionReport : ExpeditionsWindow
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 22f), report.successText);
             y += 26f;
         }
+        if (!report.relationsText.NullOrEmpty())
+        {
+            float h = Text.CalcHeight(report.relationsText, inRect.width);
+            Widgets.Label(new Rect(inRect.x, y, inRect.width, h), report.relationsText);
+            y += h + 4f;
+        }
 
         Rect list = new(inRect.x, y, inRect.width, inRect.yMax - y);
         var goodwill = Arrival.GoodwillLines(report).ToList();

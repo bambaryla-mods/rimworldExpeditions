@@ -32,6 +32,22 @@ public static class WorksiteLink
         return game.offers.Any(o => o.worksite == s) || game.active.Any(e => e.opp.worksite == s);
     }
 
+    // What raiding it in person would do: the owner turns hostile, the quest ends (Success counts as raiding for
+    // Ideology precepts), and the site is gone.
+    public static void Raid(Site s, Outcome outcome, ExpeditionReport report)
+    {
+        if (s.Faction is { } f && !f.IsPlayer && !f.defeated)
+        {
+            TaggedString text = "";
+            SettlementUtility.AffectRelationsOnAttacked(s, ref text);
+            if (!text.NullOrEmpty()) report.relationsText = text.Resolve().Trim();
+        }
+        Quest? quest = Find.QuestManager.QuestsListForReading.FirstOrDefault(q => q.State == QuestState.Ongoing
+            && q.PartsListForReading.OfType<QuestPart_WorldObjectTimeout>().Any(p => p.worldObject == s));
+        quest?.End(outcome == Outcome.Failure ? QuestEndOutcome.Fail : QuestEndOutcome.Success, sendLetter: false);
+        if (!s.Destroyed) s.Destroy();
+    }
+
     // One offer for each work site in range that has something to take and isn't offered or raided already.
     public static void Tick()
     {

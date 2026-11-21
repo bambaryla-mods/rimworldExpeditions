@@ -103,6 +103,7 @@ public static class Arrival
         if (r.lostToHaul.Count > 0)
             sb.AppendLine("Exp_LostToHaulHeader".Translate() + " " + string.Join(", ", r.lostToHaul.Select(l => l.Label)));
         foreach (string line in GoodwillLines(r)) sb.AppendLine(line);
+        if (!r.relationsText.NullOrEmpty()) sb.AppendLine(r.relationsText);
         return sb.ToString().TrimEnd();
     }
 

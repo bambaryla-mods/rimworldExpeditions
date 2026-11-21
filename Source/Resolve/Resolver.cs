@@ -40,6 +40,11 @@ public static class Resolver
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
             if (found && outcome == Outcome.Success) Recruits(e, report);
             Reward(e, outcome, report);
+            if (e.opp.worksite is { } ws && WorksiteLink.Alive(ws))
+            {
+                WorksiteLink.Raid(ws, outcome, report);
+                e.opp.worksite = null; // destroyed now; a saved reference to it would not resolve on load
+            }
         }
         finally
         {
