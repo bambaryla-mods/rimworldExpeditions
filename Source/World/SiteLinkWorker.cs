@@ -17,18 +17,69 @@ public class SiteLinkWorker
 
     public virtual bool CanOffer(Site s) => true;
 
-    public virtual float FightRequirement(Site s) => Props.fightMin;
+    // The site's own threat points: the strongest part's, or the site's total when no part has any.
+    public virtual float FightRequirement(Site s)
+    {
+        float threat = s.parts.Count == 0 ? 0f : s.parts.Max(p => p.parms?.threatPoints ?? 0f);
+        if (threat <= 0f) threat = s.ActualThreatPoints;
+        return (float)SiteLinkMath.FightRequirement(threat, Props.fightPerThreatPoint, Props.fightMin);
+    }
 
-    // What the squad brings back, before the carry limit.
-    public virtual List<Thing> MakeLoot(Expedition e, Outcome outcome) => new();
+    // The whole prize: the def's table rolled once (no cut on Partial), and the quest's own item rewards.
+    public virtual List<Thing> MakeLoot(Expedition e, Outcome outcome)
+    {
+        var made = new List<Thing>();
+        LootRoller.AddTable(made, def.loot, outcome, (e.opp.faction)?.def.techLevel, 1f);
+        if (SiteLinks.QuestOf(e.opp.linkedSite!) is { } q)
+            foreach (Thing t in RewardItems(q)) made.Add(Copy(t));
+        return made;
+    }
 
-    // Extra rows for the offer panel.
-    public virtual IEnumerable<TaggedString> InfoLines(Opportunity o) => Enumerable.Empty<TaggedString>();
+    // "At best": every sure table entry at its most, and the quest's item rewards.
+    public virtual IEnumerable<TaggedString> InfoLines(Opportunity o)
+    {
+        var parts = new List<string>();
+        foreach (LootEntry l in def.loot.Where(l => l.chance >= 1f))
+            parts.Add($"{(l.thing?.label ?? l.category!.label)} ×{l.count.max}");
+        if (SiteLinks.QuestOf(o.linkedSite!) is { } q)
+            parts.AddRange(RewardItems(q).Select(t => $"{t.def.label} ×{t.stackCount}"));
+        parts.AddRange(ExtraHaul(o));
+        if (parts.Count > 0) yield return "Exp_WorksiteHaul".Translate(string.Join(", ", parts));
+    }
+
+    // More of the haul, for subclasses that know of it.
+    protected virtual IEnumerable<string> ExtraHaul(Opportunity o) => Enumerable.Empty<string>();
 
     public bool RemovesOnFailure => !Props.failureKeepsSite;
 
     // What happens to the site, its quest and its owner once the squad is done. Runs outside the seeded Rand state.
     public virtual void Conclude(Site s, Quest? q, Outcome outcome, ExpeditionReport report, List<Pawn> raiders)
     {
+        bool won = outcome != Outcome.Failure;
+        if (won && Props.raidCredit) IdeoUtility.Notify_PlayerRaidedSomeone(raiders);
+        if (won && q != null)
+            foreach (Reward_Goodwill g in Rewards(q).OfType<Reward_Goodwill>())
+                if (g.faction is { defeated: false } f && !f.IsPlayer && g.amount != 0)
+                    f.TryAffectGoodwillWith(Faction.OfPlayer, g.amount, true, true, null, null);
+        if (won) q?.End(QuestEndOutcome.Success, sendLetter: false);
+        else if (RemovesOnFailure) q?.End(QuestEndOutcome.Fail, sendLetter: false);
+        if ((won || RemovesOnFailure) && !s.Destroyed) s.Destroy();
+    }
+
+    // The rewards of the quest's first choice, as the quest window lists them.
+    protected static IEnumerable<Reward> Rewards(Quest q) =>
+        q.PartsListForReading.OfType<QuestPart_Choice>().FirstOrDefault()?.choices.FirstOrDefault()?.rewards
+        ?? Enumerable.Empty<Reward>();
+
+    protected static IEnumerable<Thing> RewardItems(Quest q) =>
+        Rewards(q).OfType<Reward_Items>().SelectMany(r => r.items).Where(t => t != null);
+
+    // A new thing like a quest's reward item, so vanilla's own reward is left where it is.
+    protected static Thing Copy(Thing t)
+    {
+        Thing c = ThingMaker.MakeThing(t.def, t.Stuff);
+        c.stackCount = t.stackCount;
+        if (t.TryGetQuality(out QualityCategory qc)) c.TryGetComp<CompQuality>()?.SetQuality(qc, ArtGenerationContext.Outsider);
+        return c;
     }
 }

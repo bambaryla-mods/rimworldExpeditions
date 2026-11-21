@@ -50,7 +50,9 @@ THINGS = {
     "Steel": "steel", "Plasteel": "plasteel", "Uranium": "uranium", "Gold": "gold", "Silver": "silver",
     "ComponentIndustrial": "components", "ComponentSpacer": "advanced components",
     "MedicineIndustrial": "medicine", "Chemfuel": "chemfuel", "InsectJelly": "insect jelly",
-    "Mechlink": "mechlink", "PsychicAmplifier": "psylink neuroformer", "ThrumboHorn": "thrumbo horn",
+    "Mechlink": "mechlink", "PsychicAmplifier": "psylink neuroformer", "ThrumboHorn": "thrumbo horn", "TransportPod": "transport pods", "AlphaThrumboHorn": "alpha thrumbo horn",
+    "Leather_AlphaThrumbo": "thrumbomane", "Meat_AlphaThrumbo": "alpha thrumbo meat", "Gravcore": "gravcore",
+    "GravlitePanel": "gravlite panels",
     "Leather_Thrumbo": "thrumbofur", "Meat_Thrumbo": "thrumbo meat",
 }
 CATEGORIES = {

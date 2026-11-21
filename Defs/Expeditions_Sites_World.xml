@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- DLC quest sites on the world map, offered on the board while their quest runs (see SiteLinks). A squad brings
+     back the whole prize on Success; on Partial too, but whoever held the site raids the colony in answer. A Failure
+     abandons a prize site; a harmful one stays. "fightPerThreatPoint" turns the site's threat points into the Fight
+     requirement; the Fight number below is only for the debug evaluator. Loot tables stand in for loot vanilla only
+     makes when it generates the site's map. All numbers are starting points for tuning. -->
+<Defs>
+
+	<!-- ===== Odyssey: ancient structures ===== -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AncientWarehouse</defName>
+		<label>ancient warehouse</label>
+		<description>A warehouse sealed since before the fall, its shelves still stocked. Old security still watches the doors.</description>
+		<color>(0.7, 0.65, 0.45)</color>
+		<link>
+			<questRoots>
+				<li>Opportunity_AncientStructureWarehouse</li>
+			</questRoots>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Silver</thing><count>200~600</count></li>
+			<li><thing>Gold</thing><count>10~40</count></li>
+			<li><thing>ComponentIndustrial</thing><count>3~8</count></li>
+			<li><thing>MedicineIndustrial</thing><count>4~10</count></li>
+			<li><category>Textiles</category><count>60~150</count></li>
+			<li><category>Apparel</category><count>1~3</count><chance>0.5</chance></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.4</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AncientRefinery</defName>
+		<label>ancient chemfuel refinery</label>
+		<description>An old refinery with its tanks still full. Moving that much chemfuel is the hard part.</description>
+		<color>(0.75, 0.55, 0.3)</color>
+		<link>
+			<questRoots>
+				<li>Opportunity_AncientStructureChemfuelRefinery</li>
+			</questRoots>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>200</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Chemfuel</thing><count>300~700</count></li>
+			<li><thing>ComponentIndustrial</thing><count>2~5</count></li>
+			<li><thing>Steel</thing><count>50~150</count></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.5</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AncientGarrison</defName>
+		<label>ancient garrison</label>
+		<description>A military post nobody came back to. Its armoury is still locked, and its defences still work.</description>
+		<color>(0.75, 0.4, 0.3)</color>
+		<link>
+			<questRoots>
+				<li>Opportunity_AncientStructureGarrison</li>
+			</questRoots>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>2~4</count></li>
+			<li><category>WeaponsMelee</category><count>1~2</count><chance>0.6</chance></li>
+			<li><category>Apparel</category><count>2~4</count></li>
+			<li><thing>MedicineIndustrial</thing><count>2~6</count></li>
+			<li><thing>Silver</thing><count>100~300</count></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.4</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AncientLaunchSite</defName>
+		<label>ancient launch site</label>
+		<description>Launch pads that once supplied the orbital platforms. Some of the transport pods still work.</description>
+		<color>(0.55, 0.65, 0.75)</color>
+		<link>
+			<questRoots>
+				<li>Opportunity_AncientStructureLaunchSite</li>
+			</questRoots>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1.5</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>200</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>TransportPod</thing><count>2~4</count></li>
+			<li><thing>Chemfuel</thing><count>100~250</count></li>
+			<li><thing>Steel</thing><count>80~200</count></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.8</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_InfestedSettlement</defName>
+		<label>infested settlement</label>
+		<description>A town the insects took. Whatever its people left is still there, under the hive.</description>
+		<color>(0.6, 0.55, 0.3)</color>
+		<link>
+			<questRoots>
+				<li>Opportunity_AncientInfestedSettlement</li>
+			</questRoots>
+			<retaliation><source>Insects</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>InsectJelly</thing><count>50~150</count></li>
+			<li><thing>Steel</thing><count>50~150</count></li>
+			<li><thing>Silver</thing><count>100~300</count></li>
+			<li><thing>ComponentIndustrial</thing><count>1~4</count></li>
+			<li><category>Manufactured</category><count>1~3</count><chance>0.5</chance></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.5</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- ===== Odyssey: other opportunities ===== -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AncientMercenaries</defName>
+		<label>ancient mercenaries</label>
+		<description>Soldiers woken from an old vault, camped with the gear they were frozen with.</description>
+		<color>(0.8, 0.33, 0.24)</color>
+		<link>
+			<questRoots>
+				<li>OpportunitySite_AncientMercenaries</li>
+			</questRoots>
+			<raidCredit>true</raidCredit>
+			<retaliation><source>Pirates</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>2~4</count></li>
+			<li><category>Apparel</category><count>2~4</count></li>
+			<li><thing>Silver</thing><count>200~500</count></li>
+			<li><thing>MedicineIndustrial</thing><count>2~6</count></li>
+		</loot>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>1</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_AlphaThrumbo</defName>
+		<label>alpha thrumbo</label>
+		<description>An alpha thrumbo has been seen grazing nearby. Bringing it down takes a tracker and a lot of guns.</description>
+		<color>(0.6, 0.7, 0.85)</color>
+		<link>
+			<questRoots>
+				<li>OpportunitySite_AlphaThrumbo_Giver</li>
+			</questRoots>
+			<retaliation><source>Manhunters</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_SearchGame</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>200</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>AlphaThrumboHorn</thing><count>1</count></li>
+			<li><thing>Leather_AlphaThrumbo</thing><count>60~120</count></li>
+			<li><thing>Meat_AlphaThrumbo</thing><count>150~300</count></li>
+		</loot>
+		<daysOnSite>1</daysOnSite>
+		<openness>1</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+</Defs>

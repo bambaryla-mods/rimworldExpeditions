@@ -22,16 +22,22 @@ public static class LootRoller
         {
             // The loot is whoever holds the site: the enemy on a job for a patron, otherwise the site's faction.
             TechLevel? limit = (e.opp.enemy ?? e.opp.faction)?.def.techLevel;
-            foreach (LootEntry entry in site.loot)
-            {
-                if (entry.successOnly && outcome != Outcome.Success) continue;
-                if (!Rand.Chance(entry.chance)) continue;
-                ThingDef? def = entry.thing ?? Pick(entry.category!, limit);
-                if (def != null) Add(made, def, Scale(entry.count.RandomInRange, factor));
-            }
+            AddTable(made, site.loot, outcome, limit, factor);
             if (e.opp.target != null) Add(made, e.opp.target, Scale(e.opp.targetCount, factor));
         }
         return Fit(e, made, report);
+    }
+
+    // One roll of a loot table: each entry by its chance, a category picking one eligible item.
+    public static void AddTable(List<Thing> made, List<LootEntry> loot, Outcome outcome, TechLevel? limit, float factor)
+    {
+        foreach (LootEntry entry in loot)
+        {
+            if (entry.successOnly && outcome != Outcome.Success) continue;
+            if (!Rand.Chance(entry.chance)) continue;
+            ThingDef? def = entry.thing ?? Pick(entry.category!, limit);
+            if (def != null) Add(made, def, Scale(entry.count.RandomInRange, factor));
+        }
     }
 
     private static int Scale(int count, float factor) => Math.Max(1, (int)Math.Round(count * factor));
