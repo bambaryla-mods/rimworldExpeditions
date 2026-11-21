@@ -42,8 +42,8 @@ public static class Departure
         if (!ride.available) return ride.reason ?? "";
         double trip = TripDays(map, opp, squad, ride.ride);
         if (trip < 0) return "Exp_NoPath".Translate();
-        // A work site leaves on its quest's timer; a squad that would get there after it is gone is not sent.
-        if (opp.worksite != null && opp.expiresTick >= 0)
+        // A linked site leaves on its quest's timer; a squad that would get there after it is gone is not sent.
+        if (opp.linkedSite != null && opp.expiresTick >= 0)
         {
             double outDays = TravelMath.OutDays(ride.ride, Math.Max(FootDays(map, opp, squad), 0), Tiles(map, opp), ExpeditionsDefOf.Tuning.Travel);
             if (Find.TickManager.TicksGame + outDays * GenDate.TicksPerDay >= opp.expiresTick) return "Exp_WorksiteTooFar".Translate();

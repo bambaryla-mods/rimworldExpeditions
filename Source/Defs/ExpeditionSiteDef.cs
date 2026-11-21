@@ -103,11 +103,13 @@ public class ExpeditionSiteDef : Def
 
     public List<ThingCategoryDef> servesCategories = new();
     public bool rescueOnly;
-    public bool worksiteOnly; // offered only for an Ideology work site on the world map
     public bool fallback;
+    public SiteLinkProps? link; // offered only for a vanilla quest site on the world map
 
-    // Made only from something in the world (a captive, a work site): never a random offer, a lead, or a debug spawn.
-    public bool FromWorldOnly => rescueOnly || worksiteOnly;
+    // Made only from something in the world (a captive, a quest site): never a random offer, a lead, or a debug spawn.
+    public bool FromWorldOnly => rescueOnly || link != null;
+
+    public SiteLinkWorker? LinkWorker => link?.Worker(this);
 
     public int goodwillReward;
     public int goodwillAllFriendly;
@@ -120,9 +122,17 @@ public class ExpeditionSiteDef : Def
     // Whether there is anything to find here. Without it the report says nothing about finding.
     public bool HasFinds => loot.Count > 0 || joiners != null || tamedAnimals != null;
 
+    public override void ResolveReferences()
+    {
+        base.ResolveReferences();
+        link?.ResolveReferences();
+    }
+
     public override IEnumerable<string> ConfigErrors()
     {
         foreach (string e in base.ConfigErrors()) yield return e;
+        if (link != null)
+            foreach (string e in link.ConfigErrors()) yield return e;
         if (challenges.NullOrEmpty()) yield return "has no challenges";
         foreach (SiteChallenge c in challenges)
             if (c.challenge == null) yield return "has a challenge entry with no challenge";

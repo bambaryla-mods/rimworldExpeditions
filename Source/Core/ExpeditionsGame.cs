@@ -66,10 +66,10 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         int now = Find.TickManager.TicksGame;
         foreach (Expedition e in active.ToList())
         {
-            if (WorksiteLink.Lost(e))
+            if (SiteLinks.Lost(e))
             {
                 if (e.phase == Phase.Departing) Departure.CallOff(e, "Exp_WorksiteGoneCancelled");
-                else WorksiteLink.TurnBack(e);
+                else SiteLinks.TurnBack(e);
                 continue;
             }
             switch (e.phase)

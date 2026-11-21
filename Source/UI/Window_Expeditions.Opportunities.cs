@@ -92,22 +92,15 @@ public partial class Window_Expeditions
         Label(new Rect(info.x, info.y + 28f, info.width, 20f), where, GameFont.Tiny, look.TextDim);
         Label(new Rect(info.x, info.y + 46f, info.width, 40f), o.site.description, GameFont.Tiny, look.TextDim);
         float infoY = info.y + 92f;
-        if (o.worksite != null && WorksiteLink.Alive(o.worksite))
+        if (o.linkedSite != null && SiteLinks.Alive(o.linkedSite) && o.site.LinkWorker is { } worker)
         {
-            // The guards, and the most the squad can bring back of each stash item.
-            Label(new Rect(info.x, infoY - 4f, info.width, 20f), "Exp_WorksiteGuards".Translate(WorksiteLink.Guards(o.worksite)), GameFont.Tiny);
-            float share = ExpeditionsDefOf.Tuning.worksiteShare;
-            string haul = string.Join(", ", WorksiteLink.Stash(o.worksite)
-                .Select(s => (s.thingDef, n: WorksiteMath.Share(s.count, share, Outcome.Success)))
-                .Where(s => s.n > 0)
-                .Select(s => $"{s.thingDef.label} ×{s.n}"));
-            Label(new Rect(info.x, infoY + 14f, info.width, 20f), "Exp_WorksiteHaul".Translate(haul), GameFont.Tiny);
-            infoY += 40f;
-            if (o.faction != null && !o.faction.HostileTo(Faction.OfPlayer))
+            // What the site's worker says about it: guards, the best haul, warnings.
+            foreach (TaggedString line in worker.InfoLines(o))
             {
-                Label(new Rect(info.x, infoY - 4f, info.width, 20f), "Exp_WorksiteTurnsHostile".Translate(o.faction.Name), GameFont.Tiny, ColorLibrary.RedReadable);
+                Label(new Rect(info.x, infoY - 4f, info.width, 20f), line, GameFont.Tiny);
                 infoY += 18f;
             }
+            infoY += 4f;
         }
         if (eval != null)
         {

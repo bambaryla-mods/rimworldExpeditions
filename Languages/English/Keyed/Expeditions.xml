@@ -35,7 +35,7 @@
 	<Exp_Outcome_Success>They got in and out.</Exp_Outcome_Success>
 	<Exp_Outcome_Partial>It went partly to plan.</Exp_Outcome_Partial>
 	<Exp_Outcome_Failure>It went badly.</Exp_Outcome_Failure>
-	<Exp_Outcome_Gone>The work site was gone by the time they got there.</Exp_Outcome_Gone>
+	<Exp_Outcome_Gone>The site was gone by the time they got there.</Exp_Outcome_Gone>
 	<Exp_Found>They found what they were looking for.</Exp_Found>
 	<Exp_NotFound>They found nothing worth taking.</Exp_NotFound>
 	<Exp_Fate_Unharmed>unharmed</Exp_Fate_Unharmed>
@@ -66,8 +66,8 @@
 	<Exp_WorksiteGuards>{0} guards</Exp_WorksiteGuards>
 	<Exp_WorksiteHaul>At best: {0}</Exp_WorksiteHaul>
 	<Exp_WorksiteTurnsHostile>Raiding it turns {0} hostile.</Exp_WorksiteTurnsHostile>
-	<Exp_WorksiteTooFar>The work site will be gone before this squad gets there.</Exp_WorksiteTooFar>
-	<Exp_WorksiteGoneCancelled>The expedition to the {0} was called off: the work site is gone.</Exp_WorksiteGoneCancelled>
+	<Exp_WorksiteTooFar>The site will be gone before this squad gets there.</Exp_WorksiteTooFar>
+	<Exp_WorksiteGoneCancelled>The expedition to the {0} was called off: the site is gone.</Exp_WorksiteGoneCancelled>
 	<Exp_Launch>Launch</Exp_Launch>
 	<Exp_PickSquad>Pick a squad.</Exp_PickSquad>
 	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>

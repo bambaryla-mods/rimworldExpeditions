@@ -389,8 +389,9 @@ class Mod:
         need = d.findtext("needsFaction") or "None"
         if flag("rescueOnly"):
             page = "rescue"
-        elif flag("worksiteOnly"):
-            page = "worksites"
+        elif d.find("link") is not None:
+            worker = d.findtext("link/workerClass") or ""
+            page = "worksites" if worker.endswith("_Worksite") else "worldsites"
         elif need in ("Ally", "Friendly"):
             page = "jobs"
         else:
@@ -492,7 +493,7 @@ class Helpers:
         s = self._site(def_name)
         if s is None:
             return Markup("?")
-        page = {"finds": "finds", "worksites": "finds", "jobs": "jobs"}.get(s["page"], "captives")
+        page = {"finds": "finds", "worksites": "finds", "worldsites": "finds", "jobs": "jobs"}.get(s["page"], "captives")
         return Markup(f'<a href="{page}.html#{slugify(s["label"])}">{escape(s["label"])}</a>')
 
     def requirements(self):

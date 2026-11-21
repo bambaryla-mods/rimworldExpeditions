@@ -13,17 +13,9 @@ public static class LootRoller
         ExpeditionSiteDef site = e.opp.site;
         float factor = outcome == Outcome.Partial ? 0.5f : 1f;
 
-        // A work site: the squad's cut of its stash, nothing else. The stash is known, so it is always found.
-        if (e.opp.worksite is { } ws && WorksiteLink.Alive(ws))
-        {
-            float share = ExpeditionsDefOf.Tuning.worksiteShare;
-            foreach (ThingDefCountClass s in WorksiteLink.Stash(ws))
-            {
-                int n = WorksiteMath.Share(s.count, share, outcome);
-                if (n > 0) Add(made, s.thingDef, n);
-            }
-            return Fit(e, made, report);
-        }
+        // A linked vanilla site: its worker says what is there. Its prize is known, so it is always found.
+        if (site.LinkWorker is { } worker && SiteLinks.Alive(e.opp.linkedSite))
+            return Fit(e, worker.MakeLoot(e, outcome), report);
 
         if (site.silverReward > 0) Add(made, ThingDefOf.Silver, Scale(site.silverReward, factor));
         if (found)
@@ -48,6 +40,14 @@ public static class LootRoller
         category.DescendantThingDefs
             .Where(d => ProspectCatalog.Eligible(d) && (limit == null || d.techLevel <= limit))
             .RandomElementWithFallback();
+
+    // Things of one def, split into stacks, quality rolled as a trader's would be.
+    public static List<Thing> Make(ThingDef def, int count)
+    {
+        var made = new List<Thing>();
+        Add(made, def, count);
+        return made;
+    }
 
     private static void Add(List<Thing> made, ThingDef def, int count)
     {

@@ -19,15 +19,15 @@ public class Opportunity : IExposable
     public Faction? faction; // the site's own faction, or the patron for a job
     public Faction? enemy;   // who the squad fights for the patron (sites with needsEnemy)
     public Pawn? captive;
-    public Site? worksite; // an Ideology work site on the world map this offer raids
+    public Site? linkedSite; // the vanilla quest site on the world map this offer is for
 
     public int Seed => id * 7919 + Find.World.info.Seed;
 
-    // A work site's guards set its Fight requirement; every other challenge asks what the def says.
+    // A linked site's own strength sets its Fight requirement; every other challenge asks what the def says.
     public float Requirement(SiteChallenge sc)
     {
-        if (worksite != null && sc.challenge == ExpeditionsDefOf.Exp_Fight)
-            return (float)WorksiteMath.FightRequirement(WorksiteLink.Guards(worksite), ExpeditionsDefOf.Tuning.worksiteFightPerGuard);
+        if (linkedSite != null && sc.challenge == ExpeditionsDefOf.Exp_Fight && site.LinkWorker is { } w)
+            return w.FightRequirement(linkedSite);
         return sc.requirement;
     }
 
@@ -36,8 +36,8 @@ public class Opportunity : IExposable
         get
         {
             if (captive != null) return "Exp_RescueLabel".Translate(captive.LabelShortCap);
-            if (worksite != null)
-                return faction != null ? $"{worksite.LabelCap} ({faction.Name})" : worksite.LabelCap;
+            if (linkedSite != null)
+                return faction != null ? $"{linkedSite.LabelCap} ({faction.Name})" : linkedSite.LabelCap;
             var notes = new List<string>();
             if (target != null) notes.Add(target.label);
             if (enemy != null && faction != null) notes.Add("Exp_LabelEnemyFor".Translate(enemy.Name, faction.Name));
@@ -58,6 +58,6 @@ public class Opportunity : IExposable
         Scribe_References.Look(ref faction, "faction");
         Scribe_References.Look(ref enemy, "enemy");
         Scribe_References.Look(ref captive, "captive");
-        Scribe_References.Look(ref worksite, "worksite");
+        Scribe_References.Look(ref linkedSite, "worksite"); // the label from when only work sites were linked
     }
 }

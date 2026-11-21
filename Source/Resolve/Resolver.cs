@@ -20,13 +20,14 @@ public static class Resolver
         ExpeditionSiteDef site = e.opp.site;
         var tuning = ExpeditionsDefOf.Tuning;
         var report = new ExpeditionReport { siteLabel = e.opp.Label, tick = Find.TickManager.TicksGame };
+        Outcome outcome;
 
         Rand.PushState(e.opp.Seed);
         try
         {
             var pawns = e.AwayPawns.Where(p => !RideFinder.VehicleCompat.IsVehicle(p)).ToList();
             SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, e.opp, e.ride, RideFinder.Held(e));
-            Outcome outcome = forcedOutcome ?? OutcomeRoll.Roll(eval.success, Rand.Value, tuning.partialBand);
+            outcome = forcedOutcome ?? OutcomeRoll.Roll(eval.success, Rand.Value, tuning.partialBand);
             forcedOutcome = null;
             bool found = outcome != Outcome.Failure && Rand.Value < eval.find;
             report.outcome = outcome;
@@ -40,17 +41,20 @@ public static class Resolver
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
             if (found && outcome == Outcome.Success) Recruits(e, report);
             Reward(e, outcome, report);
-            if (e.opp.worksite is { } ws && WorksiteLink.Alive(ws))
-            {
-                WorksiteLink.Raid(ws, outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
-                e.opp.worksite = null; // destroyed now
-                // A temporary owner is removed with its site; a saved reference to it would not resolve on load.
-                if (e.opp.faction is { temporary: true }) e.opp.faction = null;
-            }
         }
         finally
         {
             Rand.PopState();
+        }
+
+        // A linked vanilla site ends as its worker says, outside the seeded state: these are vanilla calls.
+        if (site.LinkWorker is { } worker)
+        {
+            if (e.opp.linkedSite is { } ls && SiteLinks.Alive(ls))
+                worker.Conclude(ls, SiteLinks.QuestOf(ls), outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
+            e.opp.linkedSite = null; // gone now, or still there for another try; this squad is done with it
+            // A temporary owner is removed with its site; a saved reference to it would not resolve on load.
+            if (e.opp.faction is { temporary: true }) e.opp.faction = null;
         }
 
         e.report = report;
@@ -126,7 +130,7 @@ public static class Resolver
     private static bool Capture(Expedition e, Pawn p)
     {
         Faction? captor = e.opp.enemy is { defeated: false } en && en.HostileTo(Faction.OfPlayer) ? en
-            : e.opp.faction is { defeated: false, temporary: false } f && f.HostileTo(Faction.OfPlayer) ? f
+            : e.opp.faction is { defeated: false, temporary: false, Hidden: false } f && f.HostileTo(Faction.OfPlayer) ? f
             : Find.FactionManager.RandomEnemyFaction(false, false, true);
         if (captor?.kidnapped == null) return false;
         e.contents.Remove(p);
