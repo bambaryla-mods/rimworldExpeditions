@@ -42,6 +42,12 @@ public static class Departure
         if (!ride.available) return ride.reason ?? "";
         double trip = TripDays(map, opp, squad, ride.ride);
         if (trip < 0) return "Exp_NoPath".Translate();
+        // A work site leaves on its quest's timer; a squad that would get there after it is gone is not sent.
+        if (opp.worksite != null && opp.expiresTick >= 0)
+        {
+            double outDays = TravelMath.OutDays(ride.ride, Math.Max(FootDays(map, opp, squad), 0), Tiles(map, opp), ExpeditionsDefOf.Tuning.Travel);
+            if (Find.TickManager.TicksGame + outDays * GenDate.TicksPerDay >= opp.expiresTick) return "Exp_WorksiteTooFar".Translate();
+        }
         float need = FoodPlanner.Required(squad, trip);
         float have = FoodPlanner.Available(squad, map, need, out _);
         if (FoodMath.Shortfall(need, have) > 0.001) return "Exp_NotEnoughFood".Translate(need.ToString("F1"), have.ToString("F1"));
@@ -174,11 +180,11 @@ public static class Departure
     }
 
     // The player calls it off from the Active tab.
-    public static void CallOff(Expedition e) => Cancel(e, e.originMap);
+    public static void CallOff(Expedition e, string messageKey = "Exp_DepartureCancelled") => Cancel(e, e.originMap, messageKey);
 
     // Nothing is lost: boarded pawns come back where they left (or to another home map, or as a caravan when there
     // is no home left), food stays in their pockets, the offer returns.
-    private static void Cancel(Expedition e, Map? map)
+    private static void Cancel(Expedition e, Map? map, string messageKey = "Exp_DepartureCancelled")
     {
         var game = ExpeditionsGame.Instance;
         Map? target = map != null && Find.Maps.Contains(map) ? map : Find.AnyPlayerHomeMap;
@@ -194,7 +200,7 @@ public static class Departure
         foreach (Pawn p in e.squad.Where(p => p.Spawned && p.CurJobDef == ExpeditionsDefOf.Exp_Depart)) p.jobs.EndCurrentJob(JobCondition.InterruptForced);
         game.active.Remove(e);
         if (e.opp.expiresTick < 0 || e.opp.expiresTick > Find.TickManager.TicksGame) game.offers.Add(e.opp);
-        Messages.Message("Exp_DepartureCancelled".Translate(e.opp.Label), MessageTypeDefOf.NegativeEvent, false);
+        Messages.Message(messageKey.Translate(e.opp.Label), MessageTypeDefOf.NegativeEvent, false);
     }
 
     private static void Order(Pawn p, Job job, bool queue)

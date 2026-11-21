@@ -65,6 +65,9 @@
 	<Exp_Food>Food: needs {0}, has {1}</Exp_Food>
 	<Exp_WorksiteGuards>{0} guards</Exp_WorksiteGuards>
 	<Exp_WorksiteHaul>At best: {0}</Exp_WorksiteHaul>
+	<Exp_WorksiteTurnsHostile>Raiding it turns {0} hostile.</Exp_WorksiteTurnsHostile>
+	<Exp_WorksiteTooFar>The work site will be gone before this squad gets there.</Exp_WorksiteTooFar>
+	<Exp_WorksiteGoneCancelled>The expedition to the {0} was called off: the work site is gone.</Exp_WorksiteGoneCancelled>
 	<Exp_Launch>Launch</Exp_Launch>
 	<Exp_PickSquad>Pick a squad.</Exp_PickSquad>
 	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>

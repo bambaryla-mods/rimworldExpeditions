@@ -44,6 +44,8 @@ public static class Resolver
             {
                 WorksiteLink.Raid(ws, outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
                 e.opp.worksite = null; // destroyed now
+                // A temporary owner is removed with its site; a saved reference to it would not resolve on load.
+                if (e.opp.faction is { temporary: true }) e.opp.faction = null;
             }
         }
         finally

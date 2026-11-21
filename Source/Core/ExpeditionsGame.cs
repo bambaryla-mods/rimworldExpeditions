@@ -68,7 +68,8 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         {
             if (WorksiteLink.Lost(e))
             {
-                WorksiteLink.TurnBack(e);
+                if (e.phase == Phase.Departing) Departure.CallOff(e, "Exp_WorksiteGoneCancelled");
+                else WorksiteLink.TurnBack(e);
                 continue;
             }
             switch (e.phase)

@@ -88,7 +88,7 @@ public partial class Window_Expeditions
         Label(new Rect(info.x, info.y, info.width, 26f), o.Label, GameFont.Medium);
         var tile = Find.WorldGrid[o.tile];
         string where = $"{tile.PrimaryBiome.LabelCap} · {Days(TravelEstimator.NominalFootDays(Home, o.tile))}";
-        if (o.faction != null) where += " · " + o.faction.Name;
+        if (o.faction != null && !o.Label.Contains(o.faction.Name)) where += " · " + o.faction.Name;
         Label(new Rect(info.x, info.y + 28f, info.width, 20f), where, GameFont.Tiny, look.TextDim);
         Label(new Rect(info.x, info.y + 46f, info.width, 40f), o.site.description, GameFont.Tiny, look.TextDim);
         float infoY = info.y + 92f;
@@ -103,6 +103,11 @@ public partial class Window_Expeditions
                 .Select(s => $"{s.thingDef.label} ×{s.n}"));
             Label(new Rect(info.x, infoY + 14f, info.width, 20f), "Exp_WorksiteHaul".Translate(haul), GameFont.Tiny);
             infoY += 40f;
+            if (o.faction != null && !o.faction.HostileTo(Faction.OfPlayer))
+            {
+                Label(new Rect(info.x, infoY - 4f, info.width, 20f), "Exp_WorksiteTurnsHostile".Translate(o.faction.Name), GameFont.Tiny, ColorLibrary.RedReadable);
+                infoY += 18f;
+            }
         }
         if (eval != null)
         {

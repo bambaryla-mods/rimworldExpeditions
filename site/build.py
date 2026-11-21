@@ -492,7 +492,7 @@ class Helpers:
         s = self._site(def_name)
         if s is None:
             return Markup("?")
-        page = "finds" if s["page"] == "finds" else "jobs" if s["page"] == "jobs" else "captives"
+        page = {"finds": "finds", "worksites": "finds", "jobs": "jobs"}.get(s["page"], "captives")
         return Markup(f'<a href="{page}.html#{slugify(s["label"])}">{escape(s["label"])}</a>')
 
     def requirements(self):

@@ -16,6 +16,10 @@ public static class WorksiteMath
         };
     }
 
+    // A squad that turns back eats for the days it is actually away (there and home again), never more than it packed.
+    public static double TurnBackFood(double food, double awayDays, double tripDays) =>
+        tripDays <= 0 ? food : food * Math.Clamp(awayDays / tripDays, 0, 1);
+
     // Fight is a Sum challenge, so each guard adds to what the squad must bring.
     public static double FightRequirement(int guards, double perGuard, double min = 100) => Math.Max(min, guards * perGuard);
 }

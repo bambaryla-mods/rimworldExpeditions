@@ -80,7 +80,7 @@
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
 		<defName>Exp_WorkSite</defName>
 		<label>work site</label>
-		<description>Another faction's camp, out working the land. Its guards stand over a stash; a squad can bring back at most 60% of it.</description>
+		<description>Another faction's camp, out working the land. Its guards stand over a stash, and a squad can only carry off part of it.</description>
 		<color>(0.8, 0.33, 0.24)</color>
 		<worksiteOnly>true</worksiteOnly>
 		<findChanceBase>1</findChanceBase>
