@@ -1,5 +1,5 @@
 ---
-summary: Mines, wrecks, hives, digs, vaults and Ideology work sites, what they ask of a squad and what they hold.
+summary: Mines, wrecks, hives, digs, vaults and the DLC quest sites, what they ask of a squad and what they hold.
 card: Exp_AbandonedMine, Exp_CrashedShip, Exp_HostileOutpost, Exp_MechCluster, Exp_Dig
 ---
 ## Every site with something to take
@@ -24,3 +24,13 @@ The guards decide how hard the fight is: every guard adds {{ tuning("worksiteFig
 A squad's raid counts as yours. The owner turns hostile if it wasn't already (a small independent group always is), and the camp is gone afterwards. On a Success or Partial it also counts as a raid for an ideoligion that cares about raiding. If the camp packs up, or you raid it yourself while the squad is on the road, they turn back and come home with nothing.
 
 {{ sites("worksites") }}
+
+## DLC quest sites
+
+Quest sites from Royalty, Biotech, Ideology and Odyssey show up on the board while their quest runs and the site is in range. That covers the ancient complexes and the mechanitor complex, Odyssey's gravcore sites, ancient structures, ancient mercenaries and the alpha thrumbo, and Royalty's outposts and mech clusters that carry a machine harming your colony. Sites in orbit aren't included: squads only travel on the ground.
+
+These sites have no cut. A Success brings back the whole prize, or destroys the machine so its effect wears off. A Partial does the same, but whoever held the site saw the squad leave: about half a day after they get home, a raid comes for the colony at half the usual strength. Mechs answer for mech sites, insects for their nests, and raiders for the mercenaries. A Failure brings nothing back. A site with a prize is lost along with its quest, but a site that is harming you stays where it is and can be tried again.
+
+The fight follows the site's own threat, so the fight numbers in the table below are only examples. Most of these sites only fill up with loot when the game makes their map, so the haul here is a table the mod keeps for each one. The complexes also roll vanilla's own room loot, and the gravcore sites bring the gravcore their quest names. Mechs, insects and the ancients don't take prisoners.
+
+{{ sites("worldsites") }}
