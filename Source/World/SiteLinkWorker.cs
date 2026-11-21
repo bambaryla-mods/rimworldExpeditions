@@ -17,13 +17,17 @@ public class SiteLinkWorker
 
     public virtual bool CanOffer(Site s) => true;
 
-    // The site's own threat points: the strongest part's, or the site's total when no part has any.
-    public virtual float FightRequirement(Site s)
+    // The site's own threat points: the strongest part's, or the site's total. Some quests give their site none
+    // (ancient structures, the mercenaries); those are as strong as a site made now would be.
+    public static float Threat(Site s)
     {
         float threat = s.parts.Count == 0 ? 0f : s.parts.Max(p => p.parms?.threatPoints ?? 0f);
         if (threat <= 0f) threat = s.ActualThreatPoints;
-        return (float)SiteLinkMath.FightRequirement(threat, Props.fightPerThreatPoint, Props.fightMin);
+        return (float)SiteLinkMath.EffectiveThreat(threat, StorytellerUtility.DefaultSiteThreatPointsNow());
     }
+
+    public virtual float FightRequirement(Site s) =>
+        (float)SiteLinkMath.FightRequirement(Threat(s), Props.fightPerThreatPoint, Props.fightMin);
 
     // The whole prize: the def's table rolled once (no cut on Partial), and the quest's own item rewards.
     public virtual List<Thing> MakeLoot(Expedition e, Outcome outcome)
@@ -38,6 +42,7 @@ public class SiteLinkWorker
     // "At best": every sure table entry at its most, and the quest's item rewards.
     public virtual IEnumerable<TaggedString> InfoLines(Opportunity o)
     {
+        yield return "Exp_LinkThreat".Translate(Threat(o.linkedSite!).ToString("F0"));
         var parts = new List<string>();
         foreach (LootEntry l in def.loot.Where(l => l.chance >= 1f))
             parts.Add($"{(l.thing?.label ?? l.category!.label)} ×{l.count.max}");
@@ -62,7 +67,11 @@ public class SiteLinkWorker
                 if (g.faction is { defeated: false } f && !f.IsPlayer && g.amount != 0)
                     f.TryAffectGoodwillWith(Faction.OfPlayer, g.amount, true, true, null, null);
         if (won) q?.End(QuestEndOutcome.Success, sendLetter: false);
-        else if (RemovesOnFailure) q?.End(QuestEndOutcome.Fail, sendLetter: false);
+        else if (RemovesOnFailure)
+        {
+            q?.End(QuestEndOutcome.Fail, sendLetter: false);
+            report.siteFateText = "Exp_LinkSiteLost".Translate();
+        }
         if ((won || RemovesOnFailure) && !s.Destroyed) s.Destroy();
     }
 
@@ -77,6 +86,7 @@ public class SiteLinkWorker
     // A new thing like a quest's reward item, so vanilla's own reward is left where it is.
     protected static Thing Copy(Thing t)
     {
+        if (t is MinifiedThing { InnerThing: { } inner }) return MinifyUtility.MakeMinified(Copy(inner));
         Thing c = ThingMaker.MakeThing(t.def, t.Stuff);
         c.stackCount = t.stackCount;
         if (t.TryGetQuality(out QualityCategory qc)) c.TryGetComp<CompQuality>()?.SetQuality(qc, ArtGenerationContext.Outsider);

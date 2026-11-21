@@ -58,7 +58,8 @@ public static class SquadEvaluator
 
         double success = ChallengeMath.SuccessChance(results.Select(r => (r.chance, (double)r.site.weight)).ToList());
         var search = results.Where(r => r.site.challenge.isSearch).ToList();
-        double find = search.Count == 0
+        double find = site.link != null ? 1 // a linked site's prize is known: there is nothing to miss
+            : search.Count == 0
             ? site.findChanceBase
             : Math.Clamp(site.findChanceBase * (0.5 + 0.5 * search.Max(r => r.chance)), 0.05, 0.95);
         return new SquadEvaluation(results, success, find);

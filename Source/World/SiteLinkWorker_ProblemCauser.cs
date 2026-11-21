@@ -11,6 +11,7 @@ public class SiteLinkWorker_ProblemCauser : SiteLinkWorker
     public override void Conclude(Site s, Quest? q, Outcome outcome, ExpeditionReport report, List<Pawn> raiders)
     {
         if (outcome == Outcome.Failure) return;
+        report.successText ??= def.successText;
         // The quest first, so destroying the causer below can't count as its own "destroyed" signal.
         q?.End(QuestEndOutcome.Success, sendLetter: false);
         foreach (SitePart part in s.parts)

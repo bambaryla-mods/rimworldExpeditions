@@ -106,6 +106,7 @@ public static class Arrival
         foreach (string line in GoodwillLines(r)) sb.AppendLine(line);
         if (!r.relationsText.NullOrEmpty()) sb.AppendLine(r.relationsText);
         if (!r.retaliationText.NullOrEmpty()) sb.AppendLine(r.retaliationText);
+        if (!r.siteFateText.NullOrEmpty()) sb.AppendLine(r.siteFateText);
         return sb.ToString().TrimEnd();
     }
 

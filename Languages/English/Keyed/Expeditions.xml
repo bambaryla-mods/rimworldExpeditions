@@ -66,6 +66,8 @@
 	<Exp_WorksiteGuards>{0} guards</Exp_WorksiteGuards>
 	<Exp_WorksiteHaul>At best: {0}</Exp_WorksiteHaul>
 	<Exp_LinkComplexLoot>the complex's own loot</Exp_LinkComplexLoot>
+	<Exp_LinkThreat>Threat: {0} points</Exp_LinkThreat>
+	<Exp_LinkSiteLost>The site is lost: whatever was there is out of reach now.</Exp_LinkSiteLost>
 	<Exp_RetaliationLine>They were seen leaving. Expect {0} to answer within a day of their return.</Exp_RetaliationLine>
 	<Exp_RaidMechs>mechanoids</Exp_RaidMechs>
 	<Exp_RaidInsects>insects</Exp_RaidInsects>

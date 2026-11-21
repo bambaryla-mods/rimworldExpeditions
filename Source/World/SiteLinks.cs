@@ -11,7 +11,8 @@ public static class SiteLinks
     private static List<ExpeditionSiteDef>? linkDefs;
 
     private static List<ExpeditionSiteDef> LinkDefs =>
-        linkDefs ??= DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(d => d.link != null).ToList();
+        linkDefs ??= DefDatabase<ExpeditionSiteDef>.AllDefsListForReading
+            .Where(d => d.link?.workerClass != null && typeof(SiteLinkWorker).IsAssignableFrom(d.link.workerClass)).ToList();
 
     // The ongoing quest that spawned the site, found as vanilla does it (Site.CanBeSettled).
     public static Quest? QuestOf(Site s) =>
@@ -57,7 +58,7 @@ public static class SiteLinks
         Find.QuestManager.QuestsListForReading
             .Where(q => q.State == QuestState.Ongoing)
             .SelectMany(q => q.PartsListForReading.OfType<QuestPart_WorldObjectTimeout>())
-            .FirstOrDefault(p => p.worldObject == s)?.TicksLeft ?? -1;
+            .FirstOrDefault(p => p.worldObject == s && p.State == QuestPartState.Enabled)?.TicksLeft ?? -1;
 
     // One offer for each linked site in range that isn't offered or being done already.
     public static void Tick()

@@ -19,6 +19,7 @@ public class PendingRaid : IExposable
 
     public void ExposeData()
     {
+        if (Scribe.mode == LoadSaveMode.Saving && map != null && !Find.Maps.Contains(map)) map = null;
         Scribe_Values.Look(ref source, "source");
         Scribe_References.Look(ref faction, "faction");
         Scribe_Defs.Look(ref animal, "animal");

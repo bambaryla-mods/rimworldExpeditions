@@ -97,8 +97,11 @@ public partial class Window_Expeditions
             // What the site's worker says about it: guards, the best haul, warnings.
             foreach (TaggedString line in worker.InfoLines(o))
             {
-                Label(new Rect(info.x, infoY - 4f, info.width, 20f), line, GameFont.Tiny);
-                infoY += 18f;
+                Text.Font = GameFont.Tiny;
+                float h = Math.Max(20f, Text.CalcHeight(line, info.width));
+                Text.Font = GameFont.Small;
+                Label(new Rect(info.x, infoY - 4f, info.width, h), line, GameFont.Tiny);
+                infoY += h - 2f;
             }
             infoY += 4f;
         }

@@ -57,6 +57,17 @@ public static class LootRoller
 
     private static void Add(List<Thing> made, ThingDef def, int count)
     {
+        // A building only travels packed up; one that can't be (no minified form) isn't loot.
+        if (def.category == ThingCategory.Building)
+        {
+            if (def.minifiedDef == null)
+            {
+                Log.Warning($"[Expeditions] {def.defName} is a building that can't be packed up; left out of the loot.");
+                return;
+            }
+            for (int i = 0; i < count; i++) made.Add(MinifyUtility.MakeMinified(ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def))));
+            return;
+        }
         while (count > 0)
         {
             Thing t = ThingMaker.MakeThing(def, GenStuff.DefaultStuffFor(def));

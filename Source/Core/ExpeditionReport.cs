@@ -44,6 +44,7 @@ public class ExpeditionReport : IExposable
     public string? successText;
     public string? relationsText; // the site owner's change of heart after a work site raid
     public string? retaliationText; // who will raid the colony for a partial win
+    public string? siteFateText;    // what became of a linked site the squad failed at
 
     public void ExposeData()
     {
@@ -61,6 +62,7 @@ public class ExpeditionReport : IExposable
         Scribe_Values.Look(ref successText, "successText");
         Scribe_Values.Look(ref relationsText, "relationsText");
         Scribe_Values.Look(ref retaliationText, "retaliationText");
+        Scribe_Values.Look(ref siteFateText, "siteFateText");
         pawns ??= new();
         loot ??= new();
         lostToHaul ??= new();

@@ -76,7 +76,7 @@
 			<workerClass>Expeditions.SiteLinkWorker_Complex</workerClass>
 			<questRoots>
 				<li>OpportunitySite_AncientComplex</li>
-				<li>OpportunitySite_AncientComplex_Giver</li>
+				<li MayRequire="Ludeon.RimWorld.Odyssey">OpportunitySite_AncientComplex_Giver</li>
 			</questRoots>
 			<lootMakers>
 				<li>MapGen_AncientComplexRoomLoot_Better</li>
@@ -183,7 +183,7 @@
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteNoCaptors" MayRequire="Ludeon.RimWorld.Odyssey">
 		<defName>Exp_AncientLaunchSite</defName>
 		<label>ancient launch site</label>
-		<description>Launch pads that once supplied the orbital platforms. Some of the transport pods still work.</description>
+		<description>Launch pads that once supplied the orbital platforms. The pods are past saving, but their parts and fuel aren't.</description>
 		<color>(0.55, 0.65, 0.75)</color>
 		<link>
 			<questRoots>
@@ -198,9 +198,9 @@
 			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>200</requirement></li>
 		</challenges>
 		<loot>
-			<li><thing>TransportPod</thing><count>2~4</count></li>
 			<li><thing>Chemfuel</thing><count>100~250</count></li>
-			<li><thing>Steel</thing><count>80~200</count></li>
+			<li><thing>Steel</thing><count>200~400</count></li>
+			<li><thing>ComponentIndustrial</thing><count>2~4</count></li>
 		</loot>
 		<daysOnSite>1</daysOnSite>
 		<openness>0.8</openness>
@@ -250,7 +250,6 @@
 		<link>
 			<workerClass>Expeditions.SiteLinkWorker_QuestReward</workerClass>
 			<questRoots>
-				<li>Gravcore_AbandonedSettlement</li>
 				<li>Gravcore_MechanoidRelay</li>
 				<li>Gravcore_AncientReactor</li>
 				<li>Gravcore_AncientStockpile</li>

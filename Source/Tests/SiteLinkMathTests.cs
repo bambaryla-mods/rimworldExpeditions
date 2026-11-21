@@ -12,6 +12,14 @@ public class SiteLinkMathTests
     }
 
     [Fact]
+    public void A_site_without_threat_points_uses_the_fallback()
+    {
+        Assert.Equal(450, SiteLinkMath.EffectiveThreat(450, 800), 9);
+        Assert.Equal(800, SiteLinkMath.EffectiveThreat(0, 800), 9);   // ancient structures, mercenaries
+        Assert.Equal(800, SiteLinkMath.EffectiveThreat(-5, 800), 9);
+    }
+
+    [Fact]
     public void Retaliation_is_half_the_raid_points_with_a_floor()
     {
         Assert.Equal(1000, SiteLinkMath.RetaliationPoints(2000, 0.5, 300), 9);

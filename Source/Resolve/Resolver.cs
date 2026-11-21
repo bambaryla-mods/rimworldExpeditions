@@ -51,7 +51,7 @@ public static class Resolver
         if (site.LinkWorker is { } worker)
         {
             // A partial win is answered: who will come is read now, before the site is gone.
-            if (outcome == Outcome.Partial && Retaliation.For(e) is { } raid)
+            if (outcome == Outcome.Partial && e.AwayPawns.Any(p => p.RaceProps.Humanlike && !p.Dead) && Retaliation.For(e) is { } raid)
             {
                 e.retaliation = raid;
                 report.retaliationText = "Exp_RetaliationLine".Translate(Retaliation.Who(raid));
