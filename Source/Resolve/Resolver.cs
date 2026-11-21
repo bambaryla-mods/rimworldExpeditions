@@ -52,7 +52,9 @@ public static class Resolver
         {
             if (e.opp.linkedSite is { } ls && SiteLinks.Alive(ls))
                 worker.Conclude(ls, SiteLinks.QuestOf(ls), outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
-            e.opp.linkedSite = null; // gone now, or still there for another try; this squad is done with it
+            // A site that is gone is unlinked. One still standing (a harmful site after a failure) stays linked
+            // until the squad is home, so it isn't offered again while they walk back.
+            if (e.opp.linkedSite is { Destroyed: true }) e.opp.linkedSite = null;
             // A temporary owner is removed with its site; a saved reference to it would not resolve on load.
             if (e.opp.faction is { temporary: true }) e.opp.faction = null;
         }
@@ -129,6 +131,8 @@ public static class Resolver
     // Vanilla's kidnapping then applies: they may be sold, recruited, or turn up in raids.
     private static bool Capture(Expedition e, Pawn p)
     {
+        // Mechs, insects and the ancients (hidden factions) hold a quest site but take no prisoners.
+        if (e.opp.linkedSite?.Faction is { Hidden: true }) return false;
         Faction? captor = e.opp.enemy is { defeated: false } en && en.HostileTo(Faction.OfPlayer) ? en
             : e.opp.faction is { defeated: false, temporary: false, Hidden: false } f && f.HostileTo(Faction.OfPlayer) ? f
             : Find.FactionManager.RandomEnemyFaction(false, false, true);

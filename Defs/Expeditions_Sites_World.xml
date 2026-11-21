@@ -6,6 +6,33 @@
      makes when it generates the site's map. All numbers are starting points for tuning. -->
 <Defs>
 
+	<!-- ===== Royalty: problem causers (harmful: a failure leaves the site) ===== -->
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Royalty">
+		<defName>Exp_ProblemCauser</defName>
+		<label>problem causer</label>
+		<description>An outpost or a mech cluster with a machine that is changing the weather, the air or the minds back home. Destroy the machine and its effect ends.</description>
+		<color>(0.8, 0.33, 0.24)</color>
+		<link>
+			<workerClass>Expeditions.SiteLinkWorker_ProblemCauser</workerClass>
+			<questRoots>
+				<li>ProblemCauser</li>
+			</questRoots>
+			<failureKeepsSite>true</failureKeepsSite>
+			<raidCredit>true</raidCredit>
+			<retaliation><source>SiteFaction</source></retaliation>
+		</link>
+		<findChanceBase>1</findChanceBase>
+		<successText>The machine is destroyed, and its effect is wearing off.</successText>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Hack</challenge><weight>1</weight><requirement>120</requirement></li>
+		</challenges>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.8</openness>
+	</Expeditions.ExpeditionSiteDef>
+
 	<!-- ===== Biotech and Ideology: ancient complexes ===== -->
 
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Biotech">
