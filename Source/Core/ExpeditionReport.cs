@@ -43,6 +43,7 @@ public class ExpeditionReport : IExposable
     public bool hasFinds = true;  // false for jobs with nothing to find: no "found nothing" line
     public string? successText;
     public string? relationsText; // the site owner's change of heart after a work site raid
+    public string? retaliationText; // who will raid the colony for a partial win
 
     public void ExposeData()
     {
@@ -59,6 +60,7 @@ public class ExpeditionReport : IExposable
         Scribe_Values.Look(ref hasFinds, "hasFinds", true);
         Scribe_Values.Look(ref successText, "successText");
         Scribe_Values.Look(ref relationsText, "relationsText");
+        Scribe_Values.Look(ref retaliationText, "retaliationText");
         pawns ??= new();
         loot ??= new();
         lostToHaul ??= new();

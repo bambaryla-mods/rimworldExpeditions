@@ -37,6 +37,7 @@ public static class Arrival
         FoodPlanner.ConsumeOnReturn(pawns.Where(p => !RideFinder.VehicleCompat.IsVehicle(p)).ToList(), e.foodNeeded);
 
         Map? map = e.originMap != null && Find.Maps.Contains(e.originMap) && e.originMap.IsPlayerHome ? e.originMap : Find.AnyPlayerHomeMap;
+        Retaliation.Hand(e, map); // somebody came home, as a squad or a caravan: the raid owed starts counting down
         if (map == null)
         {
             BecomeCaravan(e, pawns);
@@ -104,6 +105,7 @@ public static class Arrival
             sb.AppendLine("Exp_LostToHaulHeader".Translate() + " " + string.Join(", ", r.lostToHaul.Select(l => l.Label)));
         foreach (string line in GoodwillLines(r)) sb.AppendLine(line);
         if (!r.relationsText.NullOrEmpty()) sb.AppendLine(r.relationsText);
+        if (!r.retaliationText.NullOrEmpty()) sb.AppendLine(r.retaliationText);
         return sb.ToString().TrimEnd();
     }
 

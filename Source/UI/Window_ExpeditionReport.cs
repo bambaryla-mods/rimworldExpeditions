@@ -48,10 +48,11 @@ public class Window_ExpeditionReport : ExpeditionsWindow
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 22f), report.successText);
             y += 26f;
         }
-        if (!report.relationsText.NullOrEmpty())
+        foreach (string? line in new[] { report.relationsText, report.retaliationText })
         {
-            float h = Text.CalcHeight(report.relationsText, inRect.width);
-            Widgets.Label(new Rect(inRect.x, y, inRect.width, h), report.relationsText);
+            if (line.NullOrEmpty()) continue;
+            float h = Text.CalcHeight(line, inRect.width);
+            Widgets.Label(new Rect(inRect.x, y, inRect.width, h), line);
             y += h + 4f;
         }
 

@@ -50,6 +50,12 @@ public static class Resolver
         // A linked vanilla site ends as its worker says, outside the seeded state: these are vanilla calls.
         if (site.LinkWorker is { } worker)
         {
+            // A partial win is answered: who will come is read now, before the site is gone.
+            if (outcome == Outcome.Partial && Retaliation.For(e) is { } raid)
+            {
+                e.retaliation = raid;
+                report.retaliationText = "Exp_RetaliationLine".Translate(Retaliation.Who(raid));
+            }
             if (e.opp.linkedSite is { } ls && SiteLinks.Alive(ls))
                 worker.Conclude(ls, SiteLinks.QuestOf(ls), outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
             // A site that is gone is unlinked. One still standing (a harmful site after a failure) stays linked

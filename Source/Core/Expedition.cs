@@ -29,6 +29,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
     public int squadMin = 1;
 
     public ExpeditionReport? report;
+    public PendingRaid? retaliation; // owed for a partial win; handed to the game when the squad is home
 
     public Expedition()
     {
@@ -96,6 +97,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
         Scribe_Values.Look(ref foodNeeded, "foodNeeded");
         Scribe_Values.Look(ref squadMin, "squadMin", 1);
         Scribe_Deep.Look(ref report, "report");
+        Scribe_Deep.Look(ref retaliation, "retaliation");
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
         {
             contents ??= new ThingOwner<Thing>(this);

@@ -14,6 +14,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
     public List<Opportunity> offers = new();
     public List<Expedition> active = new();
     public List<ExpeditionReport> history = new();
+    public List<PendingRaid> pendingRaids = new();
 
     public Dictionary<ThingDef, int> prospectTicksDone = new();
     public HashSet<ThingDef> prospectedThisWindow = new();
@@ -89,6 +90,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
             }
         }
         OfferGenerator.Tick();
+        Retaliation.Tick();
     }
 
     public IThingHolder? ParentHolder => null;
@@ -102,6 +104,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         Scribe_Collections.Look(ref offers, "offers", LookMode.Deep);
         Scribe_Collections.Look(ref active, "active", LookMode.Deep);
         Scribe_Collections.Look(ref history, "history", LookMode.Deep);
+        Scribe_Collections.Look(ref pendingRaids, "pendingRaids", LookMode.Deep);
         Scribe_Collections.Look(ref prospectTicksDone, "prospectTicksDone", LookMode.Def, LookMode.Value, ref prospectKeys, ref prospectValues);
         Scribe_Collections.Look(ref prospectedThisWindow, "prospectedThisWindow", LookMode.Def);
         Scribe_Values.Look(ref prospectWindow, "prospectWindow", -1);
@@ -116,6 +119,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
             offers ??= new();
             active ??= new();
             history ??= new();
+            pendingRaids ??= new();
             prospectTicksDone ??= new();
             prospectedThisWindow ??= new();
             capturedTick ??= new();
