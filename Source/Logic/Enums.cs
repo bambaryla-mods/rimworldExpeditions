@@ -15,6 +15,7 @@ public enum Outcome
     Success,
     Partial,
     Failure,
+    Gone, // never rolled: the site was gone by the time the squad got there
 }
 
 public enum PawnFate
