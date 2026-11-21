@@ -146,6 +146,72 @@
 		<openness>0.5</openness>
 	</Expeditions.ExpeditionSiteDef>
 
+	<!-- ===== Odyssey: gravcore sites. The quest names the gravcore (and panels); the table adds the salvage. ===== -->
+
+	<Expeditions.ExpeditionSiteDef Name="Exp_GravcoreSiteBase" ParentName="Exp_SiteHarshNoCaptors" Abstract="True">
+		<color>(0.45, 0.7, 0.8)</color>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.5</openness>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_GravcoreSiteBase" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_GravcoreSite</defName>
+		<label>gravcore site</label>
+		<description>Somewhere out here is a working gravcore, guarded by whatever has kept it all this time.</description>
+		<link>
+			<workerClass>Expeditions.SiteLinkWorker_QuestReward</workerClass>
+			<questRoots>
+				<li>Gravcore_AbandonedSettlement</li>
+				<li>Gravcore_MechanoidRelay</li>
+				<li>Gravcore_AncientReactor</li>
+				<li>Gravcore_AncientStockpile</li>
+				<li>Gravcore_CrashedMechanoidPlatform</li>
+				<li>Gravcore_FrozenTerraformer</li>
+			</questRoots>
+			<rewardCounts>
+				<GravlitePanel>150</GravlitePanel>
+			</rewardCounts>
+			<retaliation><source>Mechanoids</source></retaliation>
+		</link>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Steel</thing><count>50~150</count></li>
+			<li><thing>ComponentIndustrial</thing><count>2~5</count></li>
+			<li><thing>Plasteel</thing><count>10~40</count><chance>0.5</chance></li>
+		</loot>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_GravcoreSiteBase" MayRequire="Ludeon.RimWorld.Odyssey">
+		<defName>Exp_GravcoreCaves</defName>
+		<label>gravcore cave system</label>
+		<description>A cave system the insects call home, with a gravcore somewhere in the deep tunnels.</description>
+		<link>
+			<workerClass>Expeditions.SiteLinkWorker_QuestReward</workerClass>
+			<questRoots>
+				<li>Gravcore_InsectLair</li>
+			</questRoots>
+			<rewardCounts>
+				<GravlitePanel>150</GravlitePanel>
+			</rewardCounts>
+			<retaliation><source>Insects</source></retaliation>
+		</link>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>1.5</weight><requirement>120</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Steel</thing><count>50~150</count></li>
+			<li><thing>ComponentIndustrial</thing><count>2~5</count></li>
+			<li><thing>Plasteel</thing><count>10~40</count><chance>0.5</chance></li>
+			<li><thing>InsectJelly</thing><count>40~120</count></li>
+		</loot>
+	</Expeditions.ExpeditionSiteDef>
+
 	<!-- ===== Odyssey: other opportunities ===== -->
 
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Odyssey">
