@@ -62,6 +62,8 @@
 	<Exp_SelectOpportunity>Pick an opportunity from the list or the map.</Exp_SelectOpportunity>
 	<Exp_Numbers>Success {0} · Find {1} · Away {2}</Exp_Numbers>
 	<Exp_Food>Food: needs {0}, has {1}</Exp_Food>
+	<Exp_WorksiteGuards>{0} guards</Exp_WorksiteGuards>
+	<Exp_WorksiteHaul>At best: {0}</Exp_WorksiteHaul>
 	<Exp_Launch>Launch</Exp_Launch>
 	<Exp_PickSquad>Pick a squad.</Exp_PickSquad>
 	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>

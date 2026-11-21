@@ -13,13 +13,14 @@ public static class OfferGenerator
     private const float GrowingTempMin = 6f;
     private const float GrowingTempMax = 42f;
 
-    public static int ReadyMadeCount => ExpeditionsGame.Instance.offers.Count(o => !o.prospected && o.captive == null);
+    public static int ReadyMadeCount => ExpeditionsGame.Instance.offers.Count(o => !o.prospected && o.captive == null && !o.site.worksiteOnly);
 
     public static void Tick()
     {
         var game = ExpeditionsGame.Instance;
         int now = Find.TickManager.TicksGame;
         game.offers.RemoveAll(o => (o.expiresTick >= 0 && now > o.expiresTick) || !StillFits(o));
+        WorksiteLink.Tick();
         if (now < game.nextOfferTick) return;
         game.nextOfferTick = now + ExpeditionsDefOf.Tuning.offerIntervalTicks.RandomInRange;
         if (ReadyMadeCount >= ExpeditionsMod.Settings.offerSlots) return;
@@ -33,6 +34,7 @@ public static class OfferGenerator
     private static bool StillFits(Opportunity o)
     {
         if (o.captive != null) return true;
+        if (o.site.worksiteOnly) return WorksiteLink.Alive(o.worksite);
         if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction)) return false;
         if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy)) return false;
         return true;

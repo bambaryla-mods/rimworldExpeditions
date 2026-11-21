@@ -27,7 +27,7 @@ public class Opportunity : IExposable
     public float Requirement(SiteChallenge sc)
     {
         if (worksite != null && sc.challenge == ExpeditionsDefOf.Exp_Fight)
-            return (float)WorksiteMath.FightRequirement(worksite.parts[0].expectedEnemyCount, ExpeditionsDefOf.Tuning.worksiteFightPerGuard);
+            return (float)WorksiteMath.FightRequirement(WorksiteLink.Guards(worksite), ExpeditionsDefOf.Tuning.worksiteFightPerGuard);
         return sc.requirement;
     }
 

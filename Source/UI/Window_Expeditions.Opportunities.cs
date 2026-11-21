@@ -91,13 +91,26 @@ public partial class Window_Expeditions
         if (o.faction != null) where += " · " + o.faction.Name;
         Label(new Rect(info.x, info.y + 28f, info.width, 20f), where, GameFont.Tiny, look.TextDim);
         Label(new Rect(info.x, info.y + 46f, info.width, 40f), o.site.description, GameFont.Tiny, look.TextDim);
+        float infoY = info.y + 92f;
+        if (o.worksite != null && WorksiteLink.Alive(o.worksite))
+        {
+            // The guards, and the most the squad can bring back of each stash item.
+            Label(new Rect(info.x, infoY - 4f, info.width, 20f), "Exp_WorksiteGuards".Translate(WorksiteLink.Guards(o.worksite)), GameFont.Tiny);
+            float share = ExpeditionsDefOf.Tuning.worksiteShare;
+            string haul = string.Join(", ", WorksiteLink.Stash(o.worksite)
+                .Select(s => (s.thingDef, n: WorksiteMath.Share(s.count, share, Outcome.Success)))
+                .Where(s => s.n > 0)
+                .Select(s => $"{s.thingDef.label} ×{s.n}"));
+            Label(new Rect(info.x, infoY + 14f, info.width, 20f), "Exp_WorksiteHaul".Translate(haul), GameFont.Tiny);
+            infoY += 40f;
+        }
         if (eval != null)
         {
-            Label(new Rect(info.x, info.y + 92f, info.width, 24f),
+            Label(new Rect(info.x, infoY, info.width, 24f),
                 "Exp_Numbers".Translate(Pct(eval.success), Pct(eval.find), Days((float)tripDays)));
         }
         GUI.color = foodHave + 0.001f < foodNeed ? ColorLibrary.RedReadable : Color.white;
-        Label(new Rect(info.x, info.y + 116f, info.width, 20f), "Exp_Food".Translate(foodNeed.ToString("F1"), foodHave.ToString("F1")), GameFont.Tiny);
+        Label(new Rect(info.x, infoY + 24f, info.width, 20f), "Exp_Food".Translate(foodNeed.ToString("F1"), foodHave.ToString("F1")), GameFont.Tiny);
         GUI.color = Color.white;
 
         // Column 2: one bar per challenge; hover lists who and what gave the score.
