@@ -48,6 +48,27 @@ public static class WorksiteLink
         if (!s.Destroyed) s.Destroy();
     }
 
+    // The site went away (timed out, or the player is raiding it in person) before the squad got to it: they come
+    // home the way they went, with nothing resolved.
+    public static bool Lost(Expedition e) =>
+        e.opp.site.worksiteOnly && (e.phase == Phase.Outbound || e.phase == Phase.OnSite) && !Alive(e.opp.worksite);
+
+    public static void TurnBack(Expedition e)
+    {
+        int now = Find.TickManager.TicksGame;
+        e.report = new ExpeditionReport { siteLabel = e.opp.Label, tick = now, outcome = Outcome.Gone, hasFinds = false };
+        int spent;
+        if (e.phase == Phase.Outbound) spent = now - e.phaseStartTick;
+        else
+        {
+            int tiles = e.originMap != null ? Departure.Tiles(e.originMap, e.opp) : (int)Find.WorldGrid.ApproxDistanceInTiles(e.originTile, e.opp.tile);
+            spent = (int)(TravelMath.OutDays(e.ride, e.tripFootDays, tiles, ExpeditionsDefOf.Tuning.Travel) * GenDate.TicksPerDay);
+        }
+        e.opp.worksite = null; // gone or about to be; a saved reference to it would not resolve on load
+        e.StartPhase(Phase.Returning, spent);
+        ExpeditionsGame.Instance.HolderChanged();
+    }
+
     // One offer for each work site in range that has something to take and isn't offered or raided already.
     public static void Tick()
     {

@@ -35,6 +35,7 @@
 	<Exp_Outcome_Success>They got in and out.</Exp_Outcome_Success>
 	<Exp_Outcome_Partial>It went partly to plan.</Exp_Outcome_Partial>
 	<Exp_Outcome_Failure>It went badly.</Exp_Outcome_Failure>
+	<Exp_Outcome_Gone>The work site was gone by the time they got there.</Exp_Outcome_Gone>
 	<Exp_Found>They found what they were looking for.</Exp_Found>
 	<Exp_NotFound>They found nothing worth taking.</Exp_NotFound>
 	<Exp_Fate_Unharmed>unharmed</Exp_Fate_Unharmed>

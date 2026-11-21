@@ -66,6 +66,11 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         int now = Find.TickManager.TicksGame;
         foreach (Expedition e in active.ToList())
         {
+            if (WorksiteLink.Lost(e))
+            {
+                WorksiteLink.TurnBack(e);
+                continue;
+            }
             switch (e.phase)
             {
                 case Phase.Departing:
