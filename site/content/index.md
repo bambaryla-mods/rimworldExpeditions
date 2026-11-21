@@ -15,12 +15,13 @@ Gear, skills, bionics and traits all count, and every number is shown before you
 - [Jobs for other factions](jobs.html): {{ site_count("jobs") }} kinds of work for allies and villages, paid in silver, goodwill and practice.
 - [Prospecting](prospecting.html): ask around on the comms for any item.
 - [Captives](captives.html): colonists taken on an expedition, or kidnapped by raiders, can be rescued.
+- [Quest sites from the DLCs](finds.html#dlc-quest-sites): Ideology's work sites, Royalty's machines harming your colony, Biotech's and Ideology's ancient complexes, and Odyssey's gravcore sites, ancient structures, mercenaries and alpha thrumbo. A squad can do them instead of a caravan.
 
 ## What you need
 
 {{ requirements() }}
 
-Vehicle Framework and [LFS] UI Rethemed are supported but optional. See [Settings and mods](settings.html).
+Vehicle Framework, [LFS] UI Rethemed and Combat Extended are supported but optional, and so is every DLC. See [Settings and mods](settings.html).
 
 ## Credits
 

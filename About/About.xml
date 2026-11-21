@@ -35,5 +35,19 @@ Ask around on the comms for any item. The rarer and more advanced it is, the les
 [b]Captives[/b]
 Colonists taken on an expedition, or kidnapped by raiders, are listed with who holds them. Plan a rescue: storm the camp or slip in and out.
 
-Squads need food for the whole trip. Optional support for Vehicle Framework and [LFS] UI Rethemed.</description>
+[b]Quest sites from the DLCs[/b]
+Sites your DLCs put on the world map show up on the board too, so a squad can do them instead of a caravan:
+- Ideology work sites: the squad brings back up to 60% of the stash.
+- Royalty outposts and mech clusters carrying a sun blocker, psychic droner or other machine: destroy it and the effect ends.
+- Biotech's ancient mechanitor complex (with its mechlink) and Ideology's ancient complexes.
+- Odyssey's gravcore sites, ancient structures (warehouse, chemfuel refinery, garrison, launch site, infested settlement), ancient mercenaries and the alpha thrumbo.
+A win brings back the whole prize. A partial win does too, but whoever held the site raids your colony soon after. Fail at a prize site and it is lost; fail at a harmful one and it stays for another try. Sites in orbit aren't included.
+
+[b]Other mods[/b]
+- Vehicle Framework: vehicles as a ride; armed ones can help in a fight.
+- [LFS] UI Rethemed: the Expeditions window is drawn in its theme.
+- Combat Extended: adds an ammunition dump to raid.
+All of them are optional.
+
+Squads need food for the whole trip.</description>
 </ModMetaData>

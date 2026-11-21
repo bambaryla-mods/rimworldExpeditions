@@ -19,5 +19,9 @@ In the mod settings you can change:
 - **Vehicle Framework**: adds vehicles as a ride. Armed vehicles can help in a fight. See [Rides and food](rides.html).
 - **[LFS] UI Rethemed**: the Expeditions window is drawn in its theme.
 - **Combat Extended**: adds the {{ site_link("Exp_AmmoDump") }}.
-- **Royalty** and **Biotech**: each adds a site with its rare implant. The sites pages mark which.
-- **Odyssey**: game herds also turn up in its grasslands.
+- **Royalty**: adds the ruined imperial temple, and its outposts and mech clusters with a machine harming your colony show up on the board.
+- **Biotech**: adds a site with a mechlink, and its ancient mechanitor complex shows up on the board.
+- **Ideology**: its work sites and ancient complexes show up on the board.
+- **Odyssey**: its gravcore sites, ancient structures, ancient mercenaries and alpha thrumbo show up on the board, and game herds also turn up in its grasslands.
+
+The DLC quest sites are on [Places to search](finds.html#ideology-work-sites). Sites in orbit aren't included.
