@@ -103,7 +103,11 @@ public class ExpeditionSiteDef : Def
 
     public List<ThingCategoryDef> servesCategories = new();
     public bool rescueOnly;
+    public bool worksiteOnly; // offered only for an Ideology work site on the world map
     public bool fallback;
+
+    // Made only from something in the world (a captive, a work site): never a random offer, a lead, or a debug spawn.
+    public bool FromWorldOnly => rescueOnly || worksiteOnly;
 
     public int goodwillReward;
     public int goodwillAllFriendly;

@@ -40,6 +40,11 @@
 			</points>
 		</valueCurve>
 
+		<!-- Ideology work sites: the most of each stash item a squad brings back (Partial halves it) -->
+		<worksiteShare>0.6</worksiteShare>
+		<!-- squad Fight score asked per guard at a work site (100 is one decent fighter), at least 100 in all -->
+		<worksiteFightPerGuard>90</worksiteFightPerGuard>
+
 		<biomeColors>
 			<li><biome>TemperateForest</biome><color>(0.36, 0.48, 0.27)</color></li>
 			<li><biome>BorealForest</biome><color>(0.30, 0.42, 0.30)</color></li>

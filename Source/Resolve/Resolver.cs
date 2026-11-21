@@ -25,7 +25,7 @@ public static class Resolver
         try
         {
             var pawns = e.AwayPawns.Where(p => !RideFinder.VehicleCompat.IsVehicle(p)).ToList();
-            SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, site, e.ride, RideFinder.Held(e), e.opp.Seed);
+            SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, e.opp, e.ride, RideFinder.Held(e));
             Outcome outcome = forcedOutcome ?? OutcomeRoll.Roll(eval.success, Rand.Value, tuning.partialBand);
             forcedOutcome = null;
             bool found = outcome != Outcome.Failure && Rand.Value < eval.find;

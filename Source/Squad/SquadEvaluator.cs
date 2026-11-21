@@ -7,7 +7,7 @@ namespace Expeditions;
 // names gear, bionics, traits and skills.
 public record Contribution(Pawn pawn, string label, float value, string explanation);
 
-public record ChallengeResult(SiteChallenge site, double score, double chance, List<Contribution> parts);
+public record ChallengeResult(SiteChallenge site, double requirement, double score, double chance, List<Contribution> parts);
 
 public record SquadEvaluation(List<ChallengeResult> challenges, double success, double find);
 
@@ -18,8 +18,10 @@ public static class SquadEvaluator
 {
     private const int ExplanationLines = 8;
 
-    public static SquadEvaluation Evaluate(IReadOnlyList<Pawn> pawns, ExpeditionSiteDef site, Ride ride, RideOption? rideOption, int seed)
+    public static SquadEvaluation Evaluate(IReadOnlyList<Pawn> pawns, Opportunity opp, Ride ride, RideOption? rideOption)
     {
+        ExpeditionSiteDef site = opp.site;
+        int seed = opp.Seed;
         ExpeditionTuningDef tuning = ExpeditionsDefOf.Tuning;
         var results = new List<ChallengeResult>();
         foreach (SiteChallenge sc in site.challenges)
@@ -50,7 +52,8 @@ public static class SquadEvaluator
                 score += ChallengeMath.ArmedBonus(tuning.armedFightBonus * rideOption.armedCount, site.openness,
                     ProspectSeed.Roll01(seed, 0, "armed"), tuning.armedSpread);
 
-            results.Add(new ChallengeResult(sc, score, ChallengeMath.ChallengeChance(score, sc.requirement, tuning.RatioCurve), parts));
+            double requirement = opp.Requirement(sc);
+            results.Add(new ChallengeResult(sc, requirement, score, ChallengeMath.ChallengeChance(score, requirement, tuning.RatioCurve), parts));
         }
 
         double success = ChallengeMath.SuccessChance(results.Select(r => (r.chance, (double)r.site.weight)).ToList());

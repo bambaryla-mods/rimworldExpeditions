@@ -74,7 +74,7 @@ public static class ExpeditionsDebug
     private static void SpawnOfferOf()
     {
         var options = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading
-            .Where(s => !s.rescueOnly)
+            .Where(s => !s.FromWorldOnly)
             .Select(site => new FloatMenuOption(site.label, () =>
             {
                 Opportunity? opp = OfferGenerator.TryMake(site, Find.CurrentMap.Tile, null);
@@ -98,7 +98,7 @@ public static class ExpeditionsDebug
         foreach (int n in new[] { 5, 10, 25 })
             options.Add(new FloatMenuOption($"{n} random", () => SpawnOffers(Enumerable.Repeat<ExpeditionSiteDef?>(null, n))));
         options.Add(new FloatMenuOption("one of every site", () =>
-            SpawnOffers(DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.rescueOnly))));
+            SpawnOffers(DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.FromWorldOnly))));
         Find.WindowStack.Add(new FloatMenu(options));
     }
 
@@ -169,11 +169,11 @@ public static class ExpeditionsDebug
 
     private static void LogEvaluation(List<Pawn> pawns, ExpeditionSiteDef site)
     {
-        SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, site, Ride.Foot, null, 0);
+        SquadEvaluation eval = SquadEvaluator.Evaluate(pawns, new Opportunity { id = 0, site = site }, Ride.Foot, null);
         var sb = new System.Text.StringBuilder($"[Expeditions] {site.defName} on foot: success {eval.success:P0}, find {eval.find:P0}\n");
         foreach (ChallengeResult r in eval.challenges)
         {
-            sb.AppendLine($"  {r.site.challenge.defName}: score {r.score:F0} / {r.site.requirement:F0} -> {r.chance:P0}");
+            sb.AppendLine($"  {r.site.challenge.defName}: score {r.score:F0} / {r.requirement:F0} -> {r.chance:P0}");
             foreach (Contribution c in r.parts) sb.AppendLine("    " + c.explanation.Replace("\n", "\n    "));
         }
         Log.Message(sb.ToString());

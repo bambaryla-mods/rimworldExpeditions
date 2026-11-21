@@ -67,7 +67,7 @@ public static class ProspectService
     {
         var cats = ProspectCatalog.CategoriesOf(def).ToHashSet();
         var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading
-            .Where(s => !s.rescueOnly && s.servesCategories.Any(cats.Contains))
+            .Where(s => !s.FromWorldOnly && s.servesCategories.Any(cats.Contains))
             .InRandomOrder()
             .Append(ExpeditionsDefOf.Exp_Rumor);
         foreach (ExpeditionSiteDef site in sites)

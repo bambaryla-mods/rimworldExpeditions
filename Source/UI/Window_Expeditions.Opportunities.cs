@@ -63,7 +63,7 @@ public partial class Window_Expeditions
         squad.RemoveAll(p => p.Destroyed || !p.Spawned || p.Map != Map || Game.IsCommitted(p));
         rides = RideFinder.For(Map, squad, Departure.Tiles(Map, selectedOpp));
         RideOption option = rides.FirstOrDefault(r => r.ride == ride) ?? rides[0];
-        eval = SquadEvaluator.Evaluate(squad, selectedOpp.site, ride, option, selectedOpp.Seed);
+        eval = SquadEvaluator.Evaluate(squad, selectedOpp, ride, option);
         tripDays = squad.Count == 0 ? -1 : Departure.TripDays(Map, selectedOpp, squad, ride);
         foodNeed = tripDays < 0 ? 0f : FoodPlanner.Required(squad, tripDays);
         foodHave = FoodPlanner.Available(squad, Map, foodNeed, out _);
@@ -108,7 +108,7 @@ public partial class Window_Expeditions
             {
                 Rect row = new(bars.x, y, bars.width, 22f);
                 Label(new Rect(row.x, row.y, 70f, row.height), r.site.challenge.LabelCap, GameFont.Tiny);
-                look.Bar(new Rect(row.x + 72f, row.y + 7f, row.width - 112f, 8f), (float)(r.score / (r.site.requirement * 2f)), 0.5f);
+                look.Bar(new Rect(row.x + 72f, row.y + 7f, row.width - 112f, 8f), (float)(r.score / (r.requirement * 2)), 0.5f);
                 Label(new Rect(row.xMax - 36f, row.y, 36f, row.height), r.score.ToString("F0"), GameFont.Tiny, anchor: TextAnchor.UpperRight);
                 if (Mouse.IsOver(row)) TooltipHandler.TipRegion(row, ChallengeTip(r));
                 y += 24f;
@@ -137,7 +137,7 @@ public partial class Window_Expeditions
     private static string ChallengeTip(ChallengeResult r)
     {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"{r.site.challenge.LabelCap}: {r.score:F0} / {r.site.requirement:F0} → {Pct(r.chance)}");
+        sb.AppendLine($"{r.site.challenge.LabelCap}: {r.score:F0} / {r.requirement:F0} → {Pct(r.chance)}");
         sb.AppendLine(r.site.challenge.description);
         foreach (Contribution c in r.parts) sb.AppendLine().AppendLine(c.explanation);
         return sb.ToString().TrimEnd();
@@ -177,7 +177,7 @@ public partial class Window_Expeditions
             string label = p.LabelShortCap;
             if (main != null && p.RaceProps.Humanlike)
             {
-                var e = SquadEvaluator.Evaluate(new[] { p }, o.site, ride, null, o.Seed);
+                var e = SquadEvaluator.Evaluate(new[] { p }, o, ride, null);
                 label += $" ({main.challenge.label} {e.challenges.First(c => c.site == main).score:F0})";
             }
             else if (!p.RaceProps.Humanlike) label += " (" + "Exp_PackAnimal".Translate() + ")";

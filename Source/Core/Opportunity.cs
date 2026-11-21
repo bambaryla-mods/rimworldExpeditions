@@ -19,14 +19,25 @@ public class Opportunity : IExposable
     public Faction? faction; // the site's own faction, or the patron for a job
     public Faction? enemy;   // who the squad fights for the patron (sites with needsEnemy)
     public Pawn? captive;
+    public Site? worksite; // an Ideology work site on the world map this offer raids
 
     public int Seed => id * 7919 + Find.World.info.Seed;
+
+    // A work site's guards set its Fight requirement; every other challenge asks what the def says.
+    public float Requirement(SiteChallenge sc)
+    {
+        if (worksite != null && sc.challenge == ExpeditionsDefOf.Exp_Fight)
+            return (float)WorksiteMath.FightRequirement(worksite.parts[0].expectedEnemyCount, ExpeditionsDefOf.Tuning.worksiteFightPerGuard);
+        return sc.requirement;
+    }
 
     public string Label
     {
         get
         {
             if (captive != null) return "Exp_RescueLabel".Translate(captive.LabelShortCap);
+            if (worksite != null)
+                return faction != null ? $"{worksite.LabelCap} ({faction.Name})" : worksite.LabelCap;
             var notes = new List<string>();
             if (target != null) notes.Add(target.label);
             if (enemy != null && faction != null) notes.Add("Exp_LabelEnemyFor".Translate(enemy.Name, faction.Name));
@@ -47,5 +58,6 @@ public class Opportunity : IExposable
         Scribe_References.Look(ref faction, "faction");
         Scribe_References.Look(ref enemy, "enemy");
         Scribe_References.Look(ref captive, "captive");
+        Scribe_References.Look(ref worksite, "worksite");
     }
 }

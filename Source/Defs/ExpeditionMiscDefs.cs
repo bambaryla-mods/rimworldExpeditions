@@ -40,6 +40,9 @@ public class ExpeditionTuningDef : Def
     public int prospectBaseTicks = 15000;
     public float xpPerChallengeWeight = 800f;
 
+    public float worksiteShare = 0.6f;
+    public float worksiteFightPerGuard = 90f;
+
     public List<BiomeColor> biomeColors = new();
 
     private Curve? ratio, tech, value;
@@ -69,6 +72,7 @@ public static class ExpeditionsDefOf
     public static ExpeditionChallengeDef Exp_Haul = null!;
     public static ExpeditionSiteDef Exp_HoldingCamp = null!;
     public static ExpeditionSiteDef Exp_Rumor = null!;
+    [MayRequireIdeology] public static ExpeditionSiteDef? Exp_WorkSite;
     public static JobDef Exp_Prospect = null!;
     public static JobDef Exp_Depart = null!;
     public static LetterDef Exp_ReportLetter = null!;

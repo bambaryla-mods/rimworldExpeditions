@@ -70,7 +70,7 @@ public static class OfferGenerator
     // doesn't crowd the board.
     private static IEnumerable<ExpeditionSiteDef> ReadyMadeOrder()
     {
-        var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.rescueOnly && !s.fallback).ToList();
+        var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.FromWorldOnly && !s.fallback).ToList();
         return WeightedOrder.Order(sites.Select(s => (double)s.commonness).ToList(), () => Rand.Value).Select(i => sites[i]);
     }
 

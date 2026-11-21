@@ -74,6 +74,26 @@
 		<squadSize>1~5</squadSize>
 	</Expeditions.ExpeditionSiteDef>
 
+	<!-- Ideology work sites: offered only for a real work site on the world map (see WorksiteLink). The Fight
+	     requirement here is only for the debug evaluator; each offer sets it from the site's guards. Loot is the
+	     site's own stash, cut to worksiteShare in Expeditions_Tuning. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_WorkSite</defName>
+		<label>work site</label>
+		<description>Another faction's camp, out working the land. Its guards stand over a stash; a squad can bring back at most 60% of it.</description>
+		<color>(0.8, 0.33, 0.24)</color>
+		<worksiteOnly>true</worksiteOnly>
+		<findChanceBase>1</findChanceBase>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>300</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>1</openness>
+		<squadSize>1~6</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
 	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
 		<defName>Exp_CrashedShip</defName>
 		<label>crashed ship</label>
