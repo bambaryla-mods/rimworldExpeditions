@@ -122,9 +122,9 @@ public static class Resolver
             t.HitPoints = Math.Max(1, t.HitPoints - (int)Math.Ceiling(t.MaxHitPoints * fraction));
     }
 
-    private static void Kill(Expedition e, Pawn p)
+    internal static void Kill(Expedition e, Pawn p)
     {
-        e.contents.Remove(p);
+        e.Forget(p);
         if (!Find.WorldPawns.Contains(p)) Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.KeepForever);
         p.Kill(null);
         if (p.RaceProps.Humanlike)
@@ -143,7 +143,7 @@ public static class Resolver
             : e.opp.faction is { defeated: false, temporary: false, Hidden: false } f && f.HostileTo(Faction.OfPlayer) ? f
             : Find.FactionManager.RandomEnemyFaction(false, false, true);
         if (captor?.kidnapped == null) return false;
-        e.contents.Remove(p);
+        e.Forget(p);
         captor.kidnapped.Kidnap(p, null);
         ExpeditionsGame.Instance.capturedTick[p] = Find.TickManager.TicksGame;
         Find.LetterStack.ReceiveLetter("Exp_CapturedLabel".Translate(p.LabelShortCap),

@@ -48,7 +48,7 @@ public class Window_ExpeditionReport : ExpeditionsWindow
             Widgets.Label(new Rect(inRect.x, y, inRect.width, 22f), report.successText);
             y += 26f;
         }
-        foreach (string? line in new[] { report.relationsText, report.retaliationText, report.siteFateText })
+        foreach (string? line in report.events.Concat(new[] { report.relationsText, report.retaliationText, report.siteFateText }))
         {
             if (line.NullOrEmpty()) continue;
             float h = Text.CalcHeight(line, inRect.width);

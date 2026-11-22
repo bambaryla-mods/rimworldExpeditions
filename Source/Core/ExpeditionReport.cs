@@ -45,6 +45,17 @@ public class ExpeditionReport : IExposable
     public string? relationsText; // the site owner's change of heart after a work site raid
     public string? retaliationText; // who will raid the colony for a partial win
     public string? siteFateText;    // what became of a linked site the squad failed at
+    public List<string> events = new(); // what happened on the road: betrayals, a creepjoiner turning, slaves fleeing
+    public string? lostText;            // the "expedition lost" letter text, when something other than the site did it
+
+    // Records what became of a pawn, updating the line already there (from the site) rather than adding a second.
+    public void SetFate(Pawn p, PawnFate fate, List<string>? injuries = null)
+    {
+        PawnResult? r = pawns.FirstOrDefault(x => x.pawn == p);
+        if (r == null) pawns.Add(r = new PawnResult { pawn = p });
+        r.fate = fate;
+        if (injuries != null) r.injuries.AddRange(injuries);
+    }
 
     public void ExposeData()
     {
@@ -63,7 +74,10 @@ public class ExpeditionReport : IExposable
         Scribe_Values.Look(ref relationsText, "relationsText");
         Scribe_Values.Look(ref retaliationText, "retaliationText");
         Scribe_Values.Look(ref siteFateText, "siteFateText");
+        Scribe_Collections.Look(ref events, "events", LookMode.Value);
+        Scribe_Values.Look(ref lostText, "lostText");
         pawns ??= new();
+        events ??= new();
         loot ??= new();
         lostToHaul ??= new();
         if (Scribe.mode == LoadSaveMode.PostLoadInit) pawns.RemoveAll(p => p.pawn == null);

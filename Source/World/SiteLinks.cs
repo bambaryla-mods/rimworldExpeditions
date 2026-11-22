@@ -35,10 +35,10 @@ public static class SiteLinks
     public static bool Lost(Expedition e) =>
         e.opp.site.link != null && e.phase != Phase.Returning && !Alive(e.opp.linkedSite);
 
-    public static void TurnBack(Expedition e)
+    public static ExpeditionReport TurnBack(Expedition e, Outcome outcome = Outcome.Gone)
     {
         int now = Find.TickManager.TicksGame;
-        e.report = new ExpeditionReport { siteLabel = e.opp.Label, tick = now, outcome = Outcome.Gone, hasFinds = false };
+        e.report = new ExpeditionReport { siteLabel = e.opp.Label, tick = now, outcome = outcome, hasFinds = false };
         var travel = ExpeditionsDefOf.Tuning.Travel;
         int tiles = e.originMap != null ? Departure.Tiles(e.originMap, e.opp) : (int)Find.WorldGrid.ApproxDistanceInTiles(e.originTile, e.opp.tile);
         double outDays = TravelMath.OutDays(e.ride, e.tripFootDays, tiles, travel);
@@ -51,6 +51,7 @@ public static class SiteLinks
         e.opp.linkedSite = null; // gone, or being done in person; the squad is done with it
         e.StartPhase(Phase.Returning, (int)(back * GenDate.TicksPerDay));
         ExpeditionsGame.Instance.HolderChanged();
+        return e.report;
     }
 
     // Ticks until the site's quest packs it up, or -1 when it has no timer.

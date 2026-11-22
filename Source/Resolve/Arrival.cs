@@ -29,7 +29,7 @@ public static class Arrival
                 }
                 else if (!t.Destroyed) t.Destroy();
             }
-            Find.LetterStack.ReceiveLetter("Exp_LostLabel".Translate(), "Exp_LostText".Translate(report.siteLabel), LetterDefOf.NegativeEvent);
+            Find.LetterStack.ReceiveLetter("Exp_LostLabel".Translate(), report.lostText ?? "Exp_LostText".Translate(report.siteLabel), LetterDefOf.NegativeEvent);
             game.HolderChanged();
             return;
         }
@@ -96,6 +96,7 @@ public static class Arrival
         sb.AppendLine(("Exp_Outcome_" + r.outcome).Translate());
         if (r.outcome != Outcome.Failure && r.hasFinds) sb.AppendLine((r.found ? "Exp_Found" : "Exp_NotFound").Translate());
         if (!r.successText.NullOrEmpty()) sb.AppendLine(r.successText);
+        foreach (string line in r.events) sb.AppendLine(line);
         sb.AppendLine();
         foreach (PawnResult p in r.pawns)
             sb.AppendLine($"{p.pawn.LabelShortCap}: {("Exp_Fate_" + p.fate).Translate()}" + (p.injuries.Count > 0 ? $" ({string.Join(", ", p.injuries)})" : ""));
