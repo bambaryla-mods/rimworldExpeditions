@@ -88,6 +88,19 @@
 	<Exp_NoGoContract>contract ends in {0}, trip takes {1} days</Exp_NoGoContract>
 	<Exp_NeedOverlord>Slaves need a free colonist of your own to keep them in line.</Exp_NeedOverlord>
 	<Exp_ChildFactor>Child: x{0}</Exp_ChildFactor>
+	<Exp_Nothing>nothing</Exp_Nothing>
+	<Exp_SlavesFled>With nobody left to keep them in line, the slaves fled.</Exp_SlavesFled>
+	<Exp_PawnPulled>{0} was called away and left the squad.</Exp_PawnPulled>
+	<Exp_HireesTookAll>{0} turned on the squad when {1} broke with the colony, and made off with everything from the {2}.</Exp_HireesTookAll>
+	<Exp_HireesSlipped>{0} slipped away in the night with {1} after their people broke with the colony.</Exp_HireesSlipped>
+	<Exp_HireesCaught>{0} tried to slip away after their people broke with the colony, and were caught.</Exp_HireesCaught>
+	<Exp_HireesWon>{0} got away with the animals, the ride and the cargo. The rest walked home.</Exp_HireesWon>
+	<Exp_CreepLeft>{0} walked off one night and did not come back.</Exp_CreepLeft>
+	<Exp_CreepAssault>{0} turned on the squad.</Exp_CreepAssault>
+	<Exp_CreepFleshbeasts>{0} burst into fleshbeasts in the middle of the camp.</Exp_CreepFleshbeasts>
+	<Exp_CreepSightstealers>{0} let out a howl, and sightstealers came out of nowhere.</Exp_CreepSightstealers>
+	<Exp_FightWon>The squad fought them off.</Exp_FightWon>
+	<Exp_FightLost>The squad was beaten.</Exp_FightLost>
 	<Exp_Ride_Foot>Foot</Exp_Ride_Foot>
 	<Exp_Ride_DropPods>Pods</Exp_Ride_DropPods>
 	<Exp_Ride_Shuttle>Shuttle</Exp_Ride_Shuttle>

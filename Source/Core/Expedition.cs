@@ -30,6 +30,9 @@ public class Expedition : IExposable, ISuspendableThingHolder
     public int squadMin = 1;
 
     public ExpeditionReport? report;
+    // What happened on the road before there was a report; copied into it when one is made.
+    public List<string> pendingEvents = new();
+    public List<PawnResult> pendingFates = new();
     public PendingRaid? retaliation; // owed for a partial win; handed to the game when the squad is home
 
     public Expedition()
@@ -67,6 +70,30 @@ public class Expedition : IExposable, ISuspendableThingHolder
         squad.Remove(p);
         hirees.Remove(p);
         ExpeditionsGame.Instance.HolderChanged();
+    }
+
+    // A line for the report, now or once there is one.
+    public void Note(string line) => (report?.events ?? pendingEvents).Add(line);
+
+    public void NoteFate(Pawn p, PawnFate fate, List<string>? injuries = null)
+    {
+        if (report != null)
+        {
+            report.SetFate(p, fate, injuries);
+            return;
+        }
+        PawnResult? r = pendingFates.FirstOrDefault(x => x.pawn == p);
+        if (r == null) pendingFates.Add(r = new PawnResult { pawn = p });
+        r.fate = fate;
+        if (injuries != null) r.injuries.AddRange(injuries);
+    }
+
+    public void TakePending(ExpeditionReport r)
+    {
+        r.events.InsertRange(0, pendingEvents);
+        foreach (PawnResult f in pendingFates) r.SetFate(f.pawn, f.fate, f.injuries);
+        pendingEvents.Clear();
+        pendingFates.Clear();
     }
 
     // Spawns a held thing back onto a map near a cell.
@@ -109,6 +136,8 @@ public class Expedition : IExposable, ISuspendableThingHolder
         Scribe_Values.Look(ref foodNeeded, "foodNeeded");
         Scribe_Values.Look(ref squadMin, "squadMin", 1);
         Scribe_Deep.Look(ref report, "report");
+        Scribe_Collections.Look(ref pendingEvents, "pendingEvents", LookMode.Value);
+        Scribe_Collections.Look(ref pendingFates, "pendingFates", LookMode.Deep);
         Scribe_Deep.Look(ref retaliation, "retaliation");
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
         {
@@ -116,6 +145,9 @@ public class Expedition : IExposable, ISuspendableThingHolder
             squad ??= new();
             hirees ??= new();
             hirees.RemoveAll(p => p == null);
+            pendingEvents ??= new();
+            pendingFates ??= new();
+            pendingFates.RemoveAll(f => f?.pawn == null);
             rideThings ??= new();
             squad.RemoveAll(p => p == null);
             rideThings.RemoveAll(t => t == null);

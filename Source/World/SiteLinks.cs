@@ -39,6 +39,7 @@ public static class SiteLinks
     {
         int now = Find.TickManager.TicksGame;
         e.report = new ExpeditionReport { siteLabel = e.opp.Label, tick = now, outcome = outcome, hasFinds = false };
+        e.TakePending(e.report);
         var travel = ExpeditionsDefOf.Tuning.Travel;
         int tiles = e.originMap != null ? Departure.Tiles(e.originMap, e.opp) : (int)Find.WorldGrid.ApproxDistanceInTiles(e.originTile, e.opp.tile);
         double outDays = TravelMath.OutDays(e.ride, e.tripFootDays, tiles, travel);

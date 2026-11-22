@@ -20,6 +20,8 @@ public static class Resolver
         ExpeditionSiteDef site = e.opp.site;
         var tuning = ExpeditionsDefOf.Tuning;
         var report = new ExpeditionReport { siteLabel = e.opp.Label, tick = Find.TickManager.TicksGame };
+        e.TakePending(report);
+        e.report = report; // so what happens from here on (slaves fleeing) is noted straight into it
         Outcome outcome;
 
         Rand.PushState(e.opp.Seed);
@@ -36,6 +38,9 @@ public static class Resolver
             if (outcome == Outcome.Success) report.successText = site.successText;
 
             foreach (Pawn p in pawns) report.pawns.Add(ApplyFate(e, p, outcome, report));
+            // Slaves with nobody left to keep them in line all run; the rest may still try.
+            SquadEvents.CheckOverlord(e);
+            SquadEvents.SlaveRoll(e);
 
             if (found && outcome == Outcome.Success && e.opp.captive is { } captive) Rescue(e, captive, report);
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);

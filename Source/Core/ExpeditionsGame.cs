@@ -73,6 +73,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
                 else SiteLinks.TurnBack(e);
                 continue;
             }
+            if (SquadEvents.Tick(e)) continue;
             switch (e.phase)
             {
                 case Phase.Departing:
