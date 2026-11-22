@@ -29,6 +29,7 @@ public static class CreepJoinerCompat
         Pawn_CreepJoinerTracker t = p.creepjoiner;
         CreepJoinerDownsideDef? downside = t.downside;
         if (downside == null) return CreepDue.None;
+        if ((p.IsSlave || p.IsPrisoner) && !downside.canOccurWhenImprisoned) return CreepDue.None;
         try
         {
             // Vanilla's own "disabled" cases: a duplicate, or a pawn whose ego was ever lost.

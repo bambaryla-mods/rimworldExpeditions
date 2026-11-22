@@ -81,7 +81,8 @@ public static class Departure
             squadMin = opp.site.squadSize.min,
         };
         e.squad.AddRange(squad);
-        e.hirees.AddRange(squad.Where(Eligibility.IsHiree));
+        // Every hiree, kept on or not: Comm Recruiter recalls them all if their faction turns hostile.
+        e.hirees.AddRange(squad.Where(p => CommRecruiterCompat.TryGetHiree(p, out _, out _)));
         e.rideThings.AddRange(ride.things);
         e.StartPhase(Phase.Departing, GenDate.TicksPerDay);
         game.offers.Remove(opp);

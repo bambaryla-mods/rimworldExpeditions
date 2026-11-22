@@ -19,7 +19,13 @@ public static class SquadEvents
         Rand.PushState(e.opp.Seed ^ now);
         try
         {
-            return Pulled(e) || Creepjoiners(e, now);
+            bool happened = Pulled(e) | Creepjoiners(e, now);
+            if (!happened) return false;
+            // Whatever happened, slaves may now be on their own, or nobody may be left to lead the way.
+            CheckOverlord(e);
+            if (!ExpeditionsGame.Instance.active.Contains(e)) return true;
+            if (!People(e).Any() && e.phase != Phase.Returning) EndEarly(e);
+            return true;
         }
         catch (Exception ex)
         {
@@ -54,57 +60,61 @@ public static class SquadEvents
     }
 
     // A slave gets away: no longer the colony's, and back with whoever they were taken from, if they still exist.
-    // Done by hand because vanilla's release needs a map to walk off.
+    // Done by hand because vanilla's release needs a map to walk off. SetFaction also clears the slave status,
+    // so the old faction is read first.
     public static void RunAway(Expedition e, Pawn p)
     {
         e.Forget(p);
         Faction? to = p.SlaveFaction is { IsPlayer: false, defeated: false } f ? f : null;
-        p.guest?.SetGuestStatus(null);
-        if (p.Faction != to) p.SetFaction(to);
+        p.SetFaction(to);
         ToWorld(p);
         e.NoteFate(p, PawnFate.RanAway);
     }
 
     // ---------------------------------------------------------------- pulled away
 
+    // True when someone left the squad this tick.
     private static bool Pulled(Expedition e)
     {
         var missing = e.squad.Where(p => !e.contents.Contains(p)).ToList();
         if (missing.Count == 0) return false;
-        var hirees = missing.Where(e.hirees.Contains).ToList();
-        foreach (Pawn p in missing) e.Forget(p);
-
-        foreach (Pawn p in missing.Except(hirees)) e.Note("Exp_PawnPulled".Translate(p.LabelShortCap));
-        if (hirees.Count == 0)
+        // Not pulled away: someone who died in the holder (swapped for a corpse), or, in saves from before every
+        // removal went through Forget, someone already killed or taken at the site.
+        foreach (Pawn p in missing.Where(p => p.Dead || CaptiveTracker.IsHeld(p)
+                     || e.report?.pawns.Any(r => r.pawn == p && r.fate is PawnFate.Killed or PawnFate.Captured) == true).ToList())
         {
-            CheckOverlord(e);
-            return false;
+            e.Forget(p);
+            missing.Remove(p);
         }
+        if (missing.Count == 0) return false;
+
+        var hirees = missing.Where(e.hirees.Contains).ToList();
+        var hostile = hirees.Where(p => !p.Dead && p.Faction != null && p.Faction.HostileTo(Faction.OfPlayer)).ToList();
+        foreach (Pawn p in missing) e.Forget(p);
+        foreach (Pawn p in missing.Except(hostile)) e.Note("Exp_PawnPulled".Translate(p.LabelShortCap));
+        if (hirees.Count == 0) return true; // someone else's pawn: noted, and the trip goes on
 
         // A hiree recalled mid-trip ends the trip. Hostile ones don't leave empty-handed.
-        var hostile = hirees.Where(p => !p.Dead && p.Faction != null && p.Faction.HostileTo(Faction.OfPlayer)).ToList();
-        foreach (Pawn p in hirees.Except(hostile)) e.Note("Exp_PawnPulled".Translate(p.LabelShortCap));
-        if (hostile.Count > 0 && Betrayal(e, hostile)) return true;
-        CheckOverlord(e);
-        EndEarly(e);
+        if (hostile.Count > 0) Betrayal(e, hostile);
+        if (ExpeditionsGame.Instance.active.Contains(e)) EndEarly(e);
         return true;
     }
 
-    // True when the expedition is over (they took everything).
-    private static bool Betrayal(Expedition e, List<Pawn> hirees)
+    private static void Betrayal(Expedition e, List<Pawn> hirees)
     {
         var tuning = ExpeditionsDefOf.Tuning;
         string names = hirees.Select(p => p.LabelShortCap).ToCommaList(true);
-        string faction = hirees[0].Faction.Name;
+        Faction faction = hirees[0].Faction;
 
         if (!People(e).Any())
         {
             ExpeditionReport report = EndEarly(e);
-            string line = "Exp_HireesTookAll".Translate(names, faction, e.opp.Label);
+            string line = "Exp_HireesTookAll".Translate(names, faction.Name, e.opp.Label);
             report.lostText = line;
             report.events.Add(line);
+            foreach (Pawn h in hirees) report.SetFate(h, PawnFate.RanAway);
             Arrival.Return(e);
-            return true;
+            return;
         }
 
         // First they try to slip away with what they can carry; only if they are caught is there a fight.
@@ -112,15 +122,14 @@ public static class SquadEvents
         if (Rand.Value < tuning.RatioCurve.Evaluate(stealth / Math.Max(1f, tuning.slipAwayRequirement)))
         {
             float capacity = hirees.Sum(p => MassUtility.Capacity(p, null));
-            List<string> taken = TakeCarried(e, capacity);
+            List<string> taken = Take(e, capacity);
             e.Note("Exp_HireesSlipped".Translate(names, taken.Count > 0 ? taken.ToCommaList(true) : (string)"Exp_Nothing".Translate()));
             foreach (Pawn h in hirees) e.NoteFate(h, PawnFate.RanAway);
-            return false;
+            return;
         }
 
         e.Note("Exp_HireesCaught".Translate(names));
-        bool won = Fight(e, SquadEvaluator.Score(hirees, ExpeditionsDefOf.Exp_Fight));
-        if (won)
+        if (Fight(e, SquadEvaluator.Score(hirees, ExpeditionsDefOf.Exp_Fight)))
         {
             foreach (Pawn h in hirees)
             {
@@ -131,18 +140,20 @@ public static class SquadEvents
                 }
                 else e.NoteFate(h, PawnFate.RanAway);
             }
-            return false;
+            return;
         }
 
         // They won: animals, the ride and the cargo go with them, and the survivors walk.
         foreach (Pawn h in hirees) e.NoteFate(h, PawnFate.RanAway);
+        double leg = LegDone(e);
+        Phase before = e.phase;
         foreach (Thing t in e.contents.ToList())
         {
             if (t is Pawn p && p.RaceProps.Humanlike && !RideFinder.VehicleCompat.IsVehicle(p)) continue;
             if (t is Pawn animal && !RideFinder.VehicleCompat.IsVehicle(animal))
             {
                 e.Forget(animal);
-                if (!animal.Dead) animal.SetFaction(hirees[0].Faction);
+                if (!animal.Dead) animal.SetFaction(faction);
                 ToWorld(animal);
                 continue;
             }
@@ -150,41 +161,77 @@ public static class SquadEvents
             else e.contents.Remove(t);
             if (!t.Destroyed) t.Destroy();
         }
+        Take(e, float.MaxValue); // and whatever was in the survivors' packs
         e.rideThings.Clear();
         e.ride = Ride.Foot;
         e.Note("Exp_HireesWon".Translate(names));
-        ExpeditionsGame.Instance.HolderChanged();
-        return false;
+        WalkHome(e, before, leg);
     }
 
-    // Food first, then whatever is worth most, from the cargo and the squad's packs, until the weight is used up.
-    private static List<string> TakeCarried(Expedition e, float capacityKg)
+    // How far through the current phase the squad is, 0 to 1.
+    private static double LegDone(Expedition e) => e.PhaseProgress;
+
+    // The ride is gone: whatever is left of the way home takes walking time. Called with the phase and progress
+    // from before the trip was cut short.
+    private static void WalkHome(Expedition e, Phase before, double legDone)
     {
-        var sources = e.contents.Where(t => t is not Pawn && t is not Building).ToList()
-            .Concat(People(e).SelectMany(p => (p.inventory?.innerContainer ?? Enumerable.Empty<Thing>()).ToList()))
+        if (e.phase != Phase.Returning && ExpeditionsGame.Instance.active.Contains(e)) EndEarly(e);
+        if (!ExpeditionsGame.Instance.active.Contains(e)) return;
+        double foot = Math.Max(e.tripFootDays, 0);
+        double days = before switch
+        {
+            Phase.Outbound => legDone * foot,
+            Phase.OnSite => foot,
+            _ => (1 - legDone) * foot,
+        };
+        e.StartPhase(Phase.Returning, (int)(days * GenDate.TicksPerDay));
+    }
+
+    // Food first, then whatever is worth most, from the squad's packs and the loose cargo, until the weight is used
+    // up. What was taken comes off the report's loot list too.
+    private static List<string> Take(Expedition e, float capacityKg)
+    {
+        var sources = People(e).SelectMany(p => (p.inventory?.innerContainer ?? Enumerable.Empty<Thing>()).ToList())
+            .Concat(e.contents.Where(t => t is not Pawn && t is not Building).ToList())
             .OrderByDescending(t => t.def.IsNutritionGivingIngestible)
             .ThenByDescending(t => t.MarketValue)
             .ToList();
         var taken = new List<string>();
         foreach (Thing t in sources)
         {
+            if (capacityKg <= 0f) break;
             float mass = t.GetStatValue(StatDefOf.Mass);
-            int n = mass <= 0f ? t.stackCount : Math.Min(t.stackCount, (int)(capacityKg / mass));
+            int n = mass <= 0f ? t.stackCount : (int)Math.Min(t.stackCount, capacityKg / mass);
             if (n <= 0) continue;
             capacityKg -= n * mass;
             Thing gone = n >= t.stackCount ? t : t.SplitOff(n);
             taken.Add(gone.LabelCap);
-            if (gone.holdingOwner != null) gone.holdingOwner.Remove(gone);
-            gone.Destroy();
-            if (capacityKg <= 0f) break;
+            OffLoot(e.report, gone.def, gone.stackCount);
+            gone.holdingOwner?.Remove(gone);
+            if (!gone.Destroyed) gone.Destroy();
         }
         return taken;
     }
 
+    private static void OffLoot(ExpeditionReport? report, ThingDef def, int count)
+    {
+        if (report == null) return;
+        foreach (ThingDefCountClass l in report.loot.Where(l => l.thingDef == def).ToList())
+        {
+            int off = Math.Min(count, l.count);
+            l.count -= off;
+            count -= off;
+            if (l.count <= 0) report.loot.Remove(l);
+            if (count <= 0) return;
+        }
+    }
+
     // ---------------------------------------------------------------- creepjoiners
 
+    // True when a creepjoiner's downside fired this tick.
     private static bool Creepjoiners(Expedition e, int now)
     {
+        if (!ExpeditionsGame.Instance.active.Contains(e)) return false;
         foreach (Pawn p in e.AwayPawns.ToList())
         {
             CreepDue due = CreepJoinerCompat.Due(p, now);
@@ -197,15 +244,14 @@ public static class SquadEvents
                 ToWorld(p);
                 e.NoteFate(p, PawnFate.RanAway);
                 e.Note("Exp_CreepLeft".Translate(p.LabelShortCap));
-                CheckOverlord(e);
-                return false;
             }
-            return Turned(e, p, due);
+            else Turned(e, p, due);
+            return true;
         }
         return false;
     }
 
-    private static bool Turned(Expedition e, Pawn p, CreepDue kind)
+    private static void Turned(Expedition e, Pawn p, CreepDue kind)
     {
         var tuning = ExpeditionsDefOf.Tuning;
         double own = SquadEvaluator.Score(new[] { p }, ExpeditionsDefOf.Exp_Fight);
@@ -240,15 +286,7 @@ public static class SquadEvents
             ToWorld(p);
             e.NoteFate(p, PawnFate.RanAway);
         }
-        CheckOverlord(e);
-        if (!People(e).Any())
-        {
-            EndEarly(e);
-            Arrival.Return(e);
-            return true;
-        }
         EndEarly(e);
-        return true;
     }
 
     // ---------------------------------------------------------------- shared
