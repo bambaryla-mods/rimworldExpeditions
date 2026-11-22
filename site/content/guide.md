@@ -27,6 +27,16 @@ Pick colonists who are on the console's map and free: not downed, not in a menta
 
 Each site sets how many colonists it takes. Pack animals can come along to carry more.
 
+### Who can go
+
+Not everyone on the colonist bar is yours to send. The picker greys out anyone who can't go and says why.
+
+- **Guests** of a quest stay put. That includes nobles you are hosting and their escorts.
+- **Ghouls** can't go.
+- **Hired help** from Comm Recruiter can go if their contract runs longer than the whole trip, plus a day. If their faction breaks with you while they are out, they leave the squad. They try to slip away with whatever they can carry, and fight if they are caught. The trip ends there and the rest head home.
+- **Slaves** need one of your own free adults in the squad to keep them in line. A hired hand doesn't count. A slave with low suppression may run off when the job is done, and if the last free colonist falls, every slave runs.
+- **Children** can go, but they count for half in a fight or when carrying.
+
 Then pick a ride. On foot is always there; drop pods, a shuttle or vehicles show up when you have them. The ride changes the travel time, how much comes home, and whether the squad can sneak in. See [Rides and food](rides.html).
 
 ## The numbers
