@@ -43,13 +43,28 @@ public class ExpeditionTuningDef : Def
     public float worksiteShare = 0.6f;
     public float worksiteFightPerGuard = 90f;
 
+    // Who can go, and what happens on the road.
+    public float contractMarginDays = 1f;
+    public SimpleCurve slaveRunawayCurve = new();
+    public float turnedCreepjoinerFactor = 1.5f;
+    public float fleshbeastFight = 150f;
+    public float sightstealerPointsFactor = 0.45f;
+    public float slipAwayRequirement = 100f;
+    public SimpleCurve fightWinCurve = new();
+    public SimpleCurve fightWoundCurve = new();
+    public SimpleCurve fightDeathCurve = new();
+
     public List<BiomeColor> biomeColors = new();
 
-    private Curve? ratio, tech, value;
+    private Curve? ratio, tech, value, runaway, fightWin, fightWound, fightDeath;
 
     public Curve RatioCurve => ratio ??= ToCurve(challengeRatioCurve);
     public Curve TechCurve => tech ??= ToCurve(techLevelCurve);
     public Curve ValueCurve => value ??= ToCurve(valueCurve);
+    public Curve SlaveRunawayCurve => runaway ??= ToCurve(slaveRunawayCurve);
+    public Curve FightWinCurve => fightWin ??= ToCurve(fightWinCurve);
+    public Curve FightWoundCurve => fightWound ??= ToCurve(fightWoundCurve);
+    public Curve FightDeathCurve => fightDeath ??= ToCurve(fightDeathCurve);
     public TravelTuning Travel => new(flightBaseDays, flightDaysPerTile, vehicleFootFactor);
 
     private static Curve ToCurve(SimpleCurve c) => new(c.Points.Select(p => ((double)p.x, (double)p.y)).ToList());
@@ -60,6 +75,10 @@ public class ExpeditionTuningDef : Def
         if (challengeRatioCurve.PointsCount == 0) yield return "challengeRatioCurve has no points";
         if (techLevelCurve.PointsCount == 0) yield return "techLevelCurve has no points";
         if (valueCurve.PointsCount == 0) yield return "valueCurve has no points";
+        if (slaveRunawayCurve.PointsCount == 0) yield return "slaveRunawayCurve has no points";
+        if (fightWinCurve.PointsCount == 0) yield return "fightWinCurve has no points";
+        if (fightWoundCurve.PointsCount == 0) yield return "fightWoundCurve has no points";
+        if (fightDeathCurve.PointsCount == 0) yield return "fightDeathCurve has no points";
     }
 }
 

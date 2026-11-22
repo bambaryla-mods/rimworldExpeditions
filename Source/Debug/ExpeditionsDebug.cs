@@ -136,7 +136,7 @@ public static class ExpeditionsDebug
 
     [DebugAction("Expeditions", "Force next outcome...", allowedGameStates = AllowedGameStates.Playing)]
     private static void ForceOutcome() =>
-        Find.WindowStack.Add(new FloatMenu(Enum.GetValues<Outcome>().Where(o => o != Outcome.Gone)
+        Find.WindowStack.Add(new FloatMenu(Enum.GetValues<Outcome>().Where(o => o != Outcome.Gone && o != Outcome.CutShort)
             .Select(o => new FloatMenuOption(o.ToString(), () => Resolver.forcedOutcome = o)).ToList()));
 
     [DebugAction("Expeditions", "Advance expedition phase...", allowedGameStates = AllowedGameStates.Playing)]

@@ -29,7 +29,7 @@ public class Window_ExpeditionReport : ExpeditionsWindow
         {
             Outcome.Success => new Color(0.5f, 0.69f, 0.41f),
             Outcome.Partial => new Color(0.85f, 0.6f, 0.23f),
-            Outcome.Gone => new Color(0.55f, 0.55f, 0.55f),
+            Outcome.Gone or Outcome.CutShort => new Color(0.55f, 0.55f, 0.55f),
             _ => new Color(0.78f, 0.33f, 0.24f),
         };
         Rect top = new(inRect.x, inRect.y, inRect.width, 44f);

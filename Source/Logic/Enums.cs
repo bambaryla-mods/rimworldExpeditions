@@ -16,6 +16,7 @@ public enum Outcome
     Partial,
     Failure,
     Gone, // never rolled: the site was gone by the time the squad got there
+    CutShort, // never rolled: something on the road (a betrayal, a turned creepjoiner) sent the squad home early
 }
 
 public enum PawnFate
@@ -25,6 +26,7 @@ public enum PawnFate
     Killed,
     Captured,
     Joined, // never rolled: someone who came home with the squad and joined the colony
+    RanAway, // never rolled: a slave who fled, or a creepjoiner who walked off or turned
 }
 
 public enum Ride

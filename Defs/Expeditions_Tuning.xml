@@ -45,6 +45,50 @@
 		<!-- squad Fight score asked per guard at a work site (100 is one decent fighter), at least 100 in all -->
 		<worksiteFightPerGuard>90</worksiteFightPerGuard>
 
+		<!-- Who can go. A CommRecruiter hiree goes only if the contract outlasts the trip by this many days. -->
+		<contractMarginDays>1</contractMarginDays>
+		<!-- a slave's suppression (0-1) -> chance of running away when the expedition resolves -->
+		<slaveRunawayCurve>
+			<points>
+				<li>(0, 0.4)</li>
+				<li>(0.5, 0.15)</li>
+				<li>(1, 0.03)</li>
+			</points>
+		</slaveRunawayCurve>
+
+		<!-- Fights on the road (turned creepjoiners, caught hirees). Enemy strength is in Fight score (100 is one decent fighter). -->
+		<turnedCreepjoinerFactor>1.5</turnedCreepjoinerFactor>
+		<fleshbeastFight>150</fleshbeastFight>
+		<!-- share of the colony's threat points a sightstealer pack gets (vanilla rolls 0.25-0.65) -->
+		<sightstealerPointsFactor>0.45</sightstealerPointsFactor>
+		<!-- hostile hirees slip away when their Stealth score beats this, through challengeRatioCurve -->
+		<slipAwayRequirement>100</slipAwayRequirement>
+		<!-- squad Fight score / enemy strength -> chance the squad wins -->
+		<fightWinCurve>
+			<points>
+				<li>(0.5, 0.15)</li>
+				<li>(1, 0.5)</li>
+				<li>(2, 0.85)</li>
+				<li>(3, 0.97)</li>
+			</points>
+		</fightWinCurve>
+		<!-- same ratio -> wound severity (0-1) for each squad member -->
+		<fightWoundCurve>
+			<points>
+				<li>(0.5, 0.9)</li>
+				<li>(1, 0.6)</li>
+				<li>(3, 0.1)</li>
+			</points>
+		</fightWoundCurve>
+		<!-- same ratio -> chance each squad member dies -->
+		<fightDeathCurve>
+			<points>
+				<li>(0.5, 0.4)</li>
+				<li>(1, 0.15)</li>
+				<li>(3, 0)</li>
+			</points>
+		</fightDeathCurve>
+
 		<biomeColors>
 			<li><biome>TemperateForest</biome><color>(0.36, 0.48, 0.27)</color></li>
 			<li><biome>BorealForest</biome><color>(0.30, 0.42, 0.30)</color></li>

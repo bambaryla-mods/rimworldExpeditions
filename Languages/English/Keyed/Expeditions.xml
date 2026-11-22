@@ -36,6 +36,7 @@
 	<Exp_Outcome_Partial>It went partly to plan.</Exp_Outcome_Partial>
 	<Exp_Outcome_Failure>It went badly.</Exp_Outcome_Failure>
 	<Exp_Outcome_Gone>The site was gone by the time they got there.</Exp_Outcome_Gone>
+	<Exp_Outcome_CutShort>They turned back before the job was done.</Exp_Outcome_CutShort>
 	<Exp_Found>They found what they were looking for.</Exp_Found>
 	<Exp_NotFound>They found nothing worth taking.</Exp_NotFound>
 	<Exp_Fate_Unharmed>unharmed</Exp_Fate_Unharmed>
@@ -43,6 +44,7 @@
 	<Exp_Fate_Killed>killed</Exp_Fate_Killed>
 	<Exp_Fate_Captured>captured</Exp_Fate_Captured>
 	<Exp_Fate_Joined>joined the colony</Exp_Fate_Joined>
+	<Exp_Fate_RanAway>ran away</Exp_Fate_RanAway>
 	<Exp_GoodwillLine>Goodwill with {0}: +{1}</Exp_GoodwillLine>
 	<Exp_GoodwillAllLine>Goodwill with every friendly faction: +{0}</Exp_GoodwillAllLine>
 	<Exp_LabelEnemyFor>{0}, for {1}</Exp_LabelEnemyFor>
