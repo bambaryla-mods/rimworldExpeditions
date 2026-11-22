@@ -185,10 +185,16 @@ public partial class Window_Expeditions
         var options = new List<FloatMenuOption>();
         var candidates = Map.mapPawns.FreeColonistsSpawned
             .Concat(Map.mapPawns.SpawnedColonyAnimals.Where(a => a.RaceProps.packAnimal))
-            .Where(p => !squad.Contains(p) && !p.Downed && !Game.IsCommitted(p));
+            .Where(p => !squad.Contains(p) && !p.Downed && !Game.IsCommitted(p) && Eligibility.Listed(p));
         foreach (Pawn p in candidates)
         {
             string label = p.LabelShortCap;
+            AcceptanceReport can = Eligibility.CanGo(p, tripDays >= 0 ? tripDays : Departure.TripDays(Map, o, new List<Pawn> { p }, ride));
+            if (!can.Accepted)
+            {
+                options.Add(new FloatMenuOption($"{label} ({can.Reason})", null));
+                continue;
+            }
             if (main != null && p.RaceProps.Humanlike)
             {
                 var e = SquadEvaluator.Evaluate(new[] { p }, o, ride, null);

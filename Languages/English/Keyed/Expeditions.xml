@@ -83,6 +83,11 @@
 	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>
 	<Exp_PackAnimal>pack animal</Exp_PackAnimal>
 	<Exp_NobodyFree>Nobody is free.</Exp_NobodyFree>
+	<Exp_NoGoMutant>can't go</Exp_NoGoMutant>
+	<Exp_NoGoGuest>quest guest, can't leave</Exp_NoGoGuest>
+	<Exp_NoGoContract>contract ends in {0}, trip takes {1} days</Exp_NoGoContract>
+	<Exp_NeedOverlord>Slaves need a free colonist of your own to keep them in line.</Exp_NeedOverlord>
+	<Exp_ChildFactor>Child: x{0}</Exp_ChildFactor>
 	<Exp_Ride_Foot>Foot</Exp_Ride_Foot>
 	<Exp_Ride_DropPods>Pods</Exp_Ride_DropPods>
 	<Exp_Ride_Shuttle>Shuttle</Exp_Ride_Shuttle>

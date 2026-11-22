@@ -22,6 +22,8 @@ public class ExpeditionChallengeDef : Def
     public bool isHaul;
     public bool isSearch;
     public List<SkillDef> skills = new();
+    // A child's own score on this challenge is multiplied by this (Biotech children).
+    public float childFactor = 1f;
 
     public override IEnumerable<string> ConfigErrors()
     {

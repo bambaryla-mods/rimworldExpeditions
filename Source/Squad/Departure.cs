@@ -42,6 +42,13 @@ public static class Departure
         if (!ride.available) return ride.reason ?? "";
         double trip = TripDays(map, opp, squad, ride.ride);
         if (trip < 0) return "Exp_NoPath".Translate();
+        foreach (Pawn p in squad)
+        {
+            AcceptanceReport can = Eligibility.CanGo(p, trip);
+            if (!can.Accepted) return $"{p.LabelShortCap}: {can.Reason}";
+        }
+        AcceptanceReport squadOk = Eligibility.SquadOk(squad);
+        if (!squadOk.Accepted) return squadOk;
         // A linked site leaves on its quest's timer; a squad that would get there after it is gone is not sent.
         if (opp.linkedSite != null && opp.expiresTick >= 0)
         {
@@ -74,6 +81,7 @@ public static class Departure
             squadMin = opp.site.squadSize.min,
         };
         e.squad.AddRange(squad);
+        e.hirees.AddRange(squad.Where(Eligibility.IsHiree));
         e.rideThings.AddRange(ride.things);
         e.StartPhase(Phase.Departing, GenDate.TicksPerDay);
         game.offers.Remove(opp);

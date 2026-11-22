@@ -28,22 +28,7 @@ public static class SquadEvaluator
         {
             ExpeditionChallengeDef def = sc.challenge;
             var parts = new List<Contribution>();
-            var scores = new List<double>();
-            foreach (Pawn pawn in pawns)
-            {
-                // Pack animals only help carry.
-                if (!pawn.RaceProps.Humanlike && !def.isHaul) continue;
-                var terms = new List<StatTerm>();
-                foreach (ChallengeStat cs in def.stats)
-                {
-                    Contribution part = cs.stat != null ? StatPart(pawn, cs.stat) : SkillPart(pawn, cs.skill!);
-                    terms.Add(new StatTerm(part.value, cs.weight, cs.reference));
-                    parts.Add(part);
-                }
-                scores.Add(ChallengeMath.PawnScore(terms));
-            }
-
-            double score = ChallengeMath.Combine(scores, def.combine);
+            double score = Score(pawns, def, parts);
             if (def.isHaul && rideOption != null && (ride == Ride.Shuttle || ride == Ride.Vehicles))
                 score += rideOption.cargoKg / 75f * 100f;
             if (def.isStealth)
@@ -63,6 +48,35 @@ public static class SquadEvaluator
             ? site.findChanceBase
             : Math.Clamp(site.findChanceBase * (0.5 + 0.5 * search.Max(r => r.chance)), 0.05, 0.95);
         return new SquadEvaluation(results, success, find);
+    }
+
+    // The squad's score on one challenge, from the pawns alone (no ride or vehicle bonuses). Pack animals only help carry.
+    public static double Score(IEnumerable<Pawn> pawns, ExpeditionChallengeDef def, List<Contribution>? parts = null)
+    {
+        var scores = new List<double>();
+        foreach (Pawn pawn in pawns)
+        {
+            if (!pawn.RaceProps.Humanlike && !def.isHaul) continue;
+            var terms = new List<StatTerm>();
+            Contribution? last = null;
+            foreach (ChallengeStat cs in def.stats)
+            {
+                Contribution part = cs.stat != null ? StatPart(pawn, cs.stat) : SkillPart(pawn, cs.skill!);
+                terms.Add(new StatTerm(part.value, cs.weight, cs.reference));
+                parts?.Add(part);
+                last = part;
+            }
+            double pawnScore = ChallengeMath.PawnScore(terms);
+            // A child is a liability: weaker in a fight and carries less, on top of vanilla's own penalties.
+            if (def.childFactor != 1f && Eligibility.IsChild(pawn))
+            {
+                pawnScore *= def.childFactor;
+                if (parts != null && last != null)
+                    parts[parts.Count - 1] = last with { explanation = last.explanation + "\n" + "Exp_ChildFactor".Translate(def.childFactor.ToString("0.##")) };
+            }
+            scores.Add(pawnScore);
+        }
+        return ChallengeMath.Combine(scores, def.combine);
     }
 
     private static Contribution StatPart(Pawn pawn, StatDef stat)

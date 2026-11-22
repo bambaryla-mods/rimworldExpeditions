@@ -7,6 +7,7 @@
 
 	<Expeditions.ExpeditionChallengeDef>
 		<defName>Exp_Fight</defName>
+		<childFactor>0.5</childFactor>
 		<label>fight</label>
 		<description>Getting through whoever is there.</description>
 		<combine>Sum</combine>
@@ -82,6 +83,7 @@
 
 	<Expeditions.ExpeditionChallengeDef>
 		<defName>Exp_Haul</defName>
+		<childFactor>0.5</childFactor>
 		<label>haul</label>
 		<description>Carrying it all home. Shuttles and vehicles add their cargo room.</description>
 		<combine>Sum</combine>
@@ -199,6 +201,7 @@
 
 	<Expeditions.ExpeditionChallengeDef>
 		<defName>Exp_Contest_Shooting</defName>
+		<childFactor>0.5</childFactor>
 		<label>contest (shooting)</label>
 		<description>Hitting the targets in front of a crowd.</description>
 		<combine>Max</combine>
@@ -213,6 +216,7 @@
 
 	<Expeditions.ExpeditionChallengeDef>
 		<defName>Exp_Contest_Melee</defName>
+		<childFactor>0.5</childFactor>
 		<label>contest (melee)</label>
 		<description>Bouts in the ring, to first blood or a yield.</description>
 		<combine>Max</combine>

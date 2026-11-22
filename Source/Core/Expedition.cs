@@ -16,6 +16,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
     public Phase phase;
 
     public List<Pawn> squad = new();
+    public List<Pawn> hirees = new(); // Comm Recruiter hirees in the squad at launch
     public List<Thing> rideThings = new();
     public ThingOwner<Thing> contents;
 
@@ -58,6 +59,16 @@ public class Expedition : IExposable, ISuspendableThingHolder
         ExpeditionsGame.Instance.HolderChanged();
     }
 
+    // A squad member leaves the expedition for good (dead, taken, fled, pulled away). Every such removal goes
+    // through here, so a squad member missing from the holder always means someone else took them.
+    public void Forget(Pawn p)
+    {
+        if (contents.Contains(p)) contents.Remove(p);
+        squad.Remove(p);
+        hirees.Remove(p);
+        ExpeditionsGame.Instance.HolderChanged();
+    }
+
     // Spawns a held thing back onto a map near a cell.
     public void Release(Thing thing, Map map, IntVec3 near)
     {
@@ -88,6 +99,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
         Scribe_Values.Look(ref phase, "phase");
         Scribe_Deep.Look(ref contents, "contents", this);
         Scribe_Collections.Look(ref squad, "squad", LookMode.Reference);
+        Scribe_Collections.Look(ref hirees, "hirees", LookMode.Reference);
         Scribe_Collections.Look(ref rideThings, "rideThings", LookMode.Reference);
         Scribe_References.Look(ref originMap, "originMap");
         Scribe_Values.Look(ref originTile, "originTile", PlanetTile.Invalid);
@@ -102,6 +114,8 @@ public class Expedition : IExposable, ISuspendableThingHolder
         {
             contents ??= new ThingOwner<Thing>(this);
             squad ??= new();
+            hirees ??= new();
+            hirees.RemoveAll(p => p == null);
             rideThings ??= new();
             squad.RemoveAll(p => p == null);
             rideThings.RemoveAll(t => t == null);
