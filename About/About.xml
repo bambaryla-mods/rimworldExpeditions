@@ -3,6 +3,7 @@
 	<name>Expeditions</name>
 	<author>Bambaryła</author>
 	<packageId>bambaryla.expeditions</packageId>
+	<url>https://bambaryla-mods.github.io/rimworldExpeditions/</url>
 	<supportedVersions>
 		<li>1.7</li>
 	</supportedVersions>
@@ -49,5 +50,8 @@ A win brings back the whole prize. A partial win does too, but whoever held the 
 - Combat Extended: adds an ammunition dump to raid.
 All of them are optional.
 
-Squads need food for the whole trip.</description>
+Squads need food for the whole trip.
+
+Every site, challenge and number in the mod: https://bambaryla-mods.github.io/rimworldExpeditions/
+Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=3843741355</description>
 </ModMetaData>
