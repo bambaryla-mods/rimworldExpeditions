@@ -17,7 +17,7 @@ public static class Arrival
         var pawns = e.AwayPawns.Where(p => !p.Dead).ToList();
         // A squad wiped out at the site, or robbed of everything on the road, is lost with its animals. Animals whose
         // people were only called away (a trip cut short) find their own way home.
-        bool unescorted = report.outcome == Outcome.CutShort && report.lostText == null;
+        bool unescorted = e.unescorted && report.lostText == null && pawns.Count > 0;
         if (!unescorted && !pawns.Any(p => p.RaceProps.Humanlike && !RideFinder.VehicleCompat.IsVehicle(p)))
         {
             // Animals left without their people die with the expedition (so bonds and relations resolve properly);

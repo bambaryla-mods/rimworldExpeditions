@@ -17,6 +17,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
 
     public List<Pawn> squad = new();
     public List<Pawn> hirees = new(); // Comm Recruiter hirees in the squad at launch
+    public bool unescorted;           // every person left peacefully on the road; the animals come home alone
     public List<Thing> rideThings = new();
     public ThingOwner<Thing> contents;
 
@@ -127,6 +128,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
         Scribe_Deep.Look(ref contents, "contents", this);
         Scribe_Collections.Look(ref squad, "squad", LookMode.Reference);
         Scribe_Collections.Look(ref hirees, "hirees", LookMode.Reference);
+        Scribe_Values.Look(ref unescorted, "unescorted");
         Scribe_Collections.Look(ref rideThings, "rideThings", LookMode.Reference);
         Scribe_References.Look(ref originMap, "originMap");
         Scribe_Values.Look(ref originTile, "originTile", PlanetTile.Invalid);

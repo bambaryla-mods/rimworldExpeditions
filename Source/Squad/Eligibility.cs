@@ -30,7 +30,7 @@ public static class Eligibility
             if (retained) return true;
             return SquadMath.ContractFits(ticksLeft, Math.Max(tripDays, 0), ExpeditionsDefOf.Tuning.contractMarginDays)
                 ? true
-                : "Exp_NoGoContract".Translate(Math.Max(ticksLeft, 0).ToStringTicksToPeriod(), tripDays.ToString("F1"));
+                : "Exp_NoGoContract".Translate(Math.Max(ticksLeft, 0).ToStringTicksToPeriod(), Math.Max(tripDays, 0).ToString("F1"));
         }
         if (p.IsQuestLodger()) return "Exp_NoGoGuest".Translate();
         return true;

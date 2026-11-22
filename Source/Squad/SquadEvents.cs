@@ -10,6 +10,7 @@ namespace Expeditions;
 public static class SquadEvents
 {
     private static readonly HashSet<int> failed = new();
+    private static bool fought; // a fight happened this tick
 
     // True when the expedition ended or turned around this tick, so the caller skips its phase step.
     public static bool Tick(Expedition e)
@@ -17,25 +18,48 @@ public static class SquadEvents
         if (e.phase == Phase.Departing) return false;
         int now = Find.TickManager.TicksGame;
         Rand.PushState(e.opp.Seed ^ now);
+        fought = false;
         try
         {
+            TrackHirees(e);
             bool happened = Pulled(e) | Creepjoiners(e, now);
             if (!happened) return false;
             // Whatever happened, slaves may now be on their own, or nobody may be left to lead the way.
             CheckOverlord(e);
             if (!ExpeditionsGame.Instance.active.Contains(e)) return true;
-            if (!People(e).Any() && e.phase != Phase.Returning) EndEarly(e);
+            if (!People(e).Any())
+            {
+                if (fought)
+                {
+                    // Killed on the road: lost, animals and all, like a squad wiped out at the site.
+                    ExpeditionReport report = EndEarly(e);
+                    report.lostText ??= "Exp_LostText".Translate(e.opp.Label);
+                    Arrival.Return(e);
+                    return true;
+                }
+                // Only called or walked away: the animals and the ride find their own way home.
+                e.unescorted = true;
+                if (e.phase != Phase.Returning) EndEarly(e);
+            }
             return true;
         }
         catch (Exception ex)
         {
             if (failed.Add(e.id)) Log.Error($"[Expeditions] Squad event failed for expedition {e.id}: {ex}");
-            return false;
+            return !ExpeditionsGame.Instance.active.Contains(e);
         }
         finally
         {
             Rand.PopState();
         }
+    }
+
+    // Trips from before hirees were tracked at launch, and anyone hired since: Comm Recruiter still has a record
+    // for them until it recalls them.
+    private static void TrackHirees(Expedition e)
+    {
+        foreach (Pawn p in e.squad)
+            if (!e.hirees.Contains(p) && e.contents.Contains(p) && CommRecruiterCompat.TryGetHiree(p, out _, out _)) e.hirees.Add(p);
     }
 
     // ---------------------------------------------------------------- slaves
@@ -112,6 +136,7 @@ public static class SquadEvents
             string line = "Exp_HireesTookAll".Translate(names, faction.Name, e.opp.Label);
             report.lostText = line;
             report.events.Add(line);
+            report.loot.Clear();
             foreach (Pawn h in hirees) report.SetFate(h, PawnFate.RanAway);
             Arrival.Return(e);
             return;
@@ -158,7 +183,11 @@ public static class SquadEvents
                 continue;
             }
             if (t is Pawn vehicle) e.Forget(vehicle);
-            else e.contents.Remove(t);
+            else
+            {
+                e.contents.Remove(t);
+                OffLoot(e.report, t.def, t.stackCount);
+            }
             if (!t.Destroyed) t.Destroy();
         }
         Take(e, float.MaxValue); // and whatever was in the survivors' packs
@@ -275,6 +304,8 @@ public static class SquadEvents
         }
 
         bool won = Fight(e, enemy);
+        // No longer one of the colony's, whatever happens next: a hostile, not a colonist, dies here.
+        if (!p.Dead) p.SetFaction(Faction.OfEntities);
         if (kind == CreepDue.Fleshbeasts || won)
         {
             KillAway(p);
@@ -282,7 +313,6 @@ public static class SquadEvents
         }
         else
         {
-            if (!p.Dead) p.SetFaction(Faction.OfEntities);
             ToWorld(p);
             e.NoteFate(p, PawnFate.RanAway);
         }
@@ -298,6 +328,7 @@ public static class SquadEvents
         var tuning = ExpeditionsDefOf.Tuning;
         var fighters = People(e).ToList();
         if (fighters.Count == 0) return false;
+        fought = true;
         double ratio = SquadMath.FightRatio(SquadEvaluator.Score(fighters, ExpeditionsDefOf.Exp_Fight), enemy);
         bool won = SquadMath.SquadWins(ratio, Rand.Value, tuning.FightWinCurve);
         double death = tuning.FightDeathCurve.Evaluate(ratio);
