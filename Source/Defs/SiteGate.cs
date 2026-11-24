@@ -36,3 +36,13 @@ public class SiteGate_Research : SiteGate
         if (research.Count == 0 && anyResearch.Count == 0) yield return "SiteGate_Research lists no research";
     }
 }
+
+// The colony has a mechanitor, at home or out on an expedition (Biotech).
+public class SiteGate_Mechanitor : SiteGate
+{
+    public override bool Open() =>
+        ModsConfig.BiotechActive && (PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_FreeColonists.Any(MechanitorUtility.IsMechanitor)
+            || ExpeditionsGame.Instance.AllAwayPawns.Any(p => !p.Dead && MechanitorUtility.IsMechanitor(p)));
+
+    public override string? ClosedReason => "no mechanitor";
+}

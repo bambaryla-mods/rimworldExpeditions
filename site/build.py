@@ -57,6 +57,7 @@ THINGS = {
 }
 CATEGORIES = {
     "WeaponsRanged": "ranged weapons", "WeaponsMelee": "melee weapons", "Weapons": "weapons",
+    "Neurotrainers": "neurotrainers", "Techprints": "techprints",
     "Apparel": "apparel", "MeatRaw": "raw meat", "Leathers": "leathers", "Textiles": "textiles",
     "Foods": "food", "Drugs": "drugs", "Medicine": "medicine", "Manufactured": "manufactured goods",
     "Artifacts": "artifacts", "PlantFoodRaw": "raw plant food", "ResourcesRaw": "raw resources",
@@ -357,8 +358,11 @@ class Mod:
                          "requires": self.requires(li)})
         joiners = d.find("joiners")
         if joiners is not None:
-            kind = self.lookup(PAWN_KINDS, joiners.findtext("kind") or "", "pawn kind")
-            loot.append({"label": f"{kind}s who join you", "count": fmt_range(joiners.findtext("count") or "1", digits=0),
+            if joiners.find("mechKinds") is not None:
+                label = "mechs who answer to your mechanitor"
+            else:
+                label = self.lookup(PAWN_KINDS, joiners.findtext("kind") or "", "pawn kind") + "s who join you"
+            loot.append({"label": label, "count": fmt_range(joiners.findtext("count") or "1", digits=0),
                          "chance": float(joiners.findtext("chance") or 1), "success_only": False, "requires": []})
         tamed = d.find("tamedAnimals")
         if tamed is not None:

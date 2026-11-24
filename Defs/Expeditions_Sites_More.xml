@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sites that use the hooks other mods build on: real settlements, joiners on a partial win, mech joiners.
+     Numbers are starting points for tuning. -->
+<Defs>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteBase">
+		<defName>Exp_DownedCourier</defName>
+		<label>downed courier</label>
+		<description>A courier shuttle came down with its cargo pod still sealed. Whatever it carried was worth locking up.</description>
+		<color>(0.55, 0.7, 0.9)</color>
+		<commonness>0.6</commonness>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>130</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>ComponentSpacer</thing><count>1~2</count></li>
+			<li><thing>Gold</thing><count>10~30</count></li>
+			<li><thing>Silver</thing><count>100~300</count><chance>0.6</chance></li>
+			<!-- The prize in the pod: needs Royalty for anything to be in these categories. -->
+			<li><category>Neurotrainers</category><count>1</count><chance>0.4</chance><successOnly>true</successOnly></li>
+			<li><category>Techprints</category><count>1</count><chance>0.3</chance><successOnly>true</successOnly></li>
+		</loot>
+		<servesCategories>
+			<li>Manufactured</li>
+		</servesCategories>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>0.6</openness>
+		<squadSize>1~4</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- An ally pays a bounty for hitting slavers on the road; the people in the wagons may come along. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh">
+		<defName>Exp_SlaverConvoy</defName>
+		<label>slaver convoy</label>
+		<description>A line of wagons on the road, the people in the back chained. An ally will pay to see it stopped.</description>
+		<color>(0.75, 0.4, 0.3)</color>
+		<needsRoad>true</needsRoad>
+		<needsFaction>Ally</needsFaction>
+		<needsEnemy>true</needsEnemy>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>1~2</count></li>
+			<li><category>Apparel</category><count>1~2</count></li>
+		</loot>
+		<joiners>
+			<chance>0.7</chance>
+			<count>1~3</count>
+			<kind>Colonist</kind>
+			<partialFactor>0.5</partialFactor>
+		</joiners>
+		<goodwillReward>4</goodwillReward>
+		<silverReward>200</silverReward>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>1</openness>
+		<squadSize>2~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- A real hostile settlement in range; a friendly faction nearby pays for the raid. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh">
+		<defName>Exp_SettlementBounty</defName>
+		<label>settlement bounty</label>
+		<description>A friendly faction has put a price on a hostile settlement. Hit it hard, take what you can, and collect.</description>
+		<color>(0.8, 0.33, 0.24)</color>
+		<needsFaction>Friendly</needsFaction>
+		<settlementLink>
+			<need>Hostile</need>
+			<onSuccess>Raid</onSuccess>
+			<onPartial>Raid</onPartial>
+			<fightMin>250</fightMin>
+		</settlementLink>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<loot>
+			<li><category>WeaponsRanged</category><count>1~3</count></li>
+			<li><category>Apparel</category><count>1~3</count></li>
+			<li><thing>MedicineIndustrial</thing><count>2~6</count></li>
+			<li><thing>Silver</thing><count>100~300</count></li>
+		</loot>
+		<goodwillReward>5</goodwillReward>
+		<silverReward>300</silverReward>
+		<daysOnSite>0.5</daysOnSite>
+		<openness>1</openness>
+		<squadSize>2~6</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarshNoCaptors" MayRequire="Ludeon.RimWorld.Biotech">
+		<defName>Exp_DormantMechs</defName>
+		<label>dormant mechs</label>
+		<description>A cache of mechs gone quiet, waiting for an order. A mechanitor could wake one and bring it home; the rest are scrap.</description>
+		<color>(0.6, 0.55, 0.75)</color>
+		<gates>
+			<li Class="Expeditions.SiteGate_Mechanitor" />
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Hack</challenge><weight>2</weight><requirement>130</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>150</requirement></li>
+			<li><challenge>Exp_SearchSalvage</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Steel</thing><count>50~150</count></li>
+			<li><thing>Plasteel</thing><count>10~40</count><chance>0.5</chance></li>
+			<li><thing>ComponentIndustrial</thing><count>2~5</count></li>
+		</loot>
+		<joiners>
+			<chance>0.5</chance>
+			<count>1</count>
+			<mechKinds>
+				<li><kind>Mech_Lifter</kind></li>
+				<li><kind>Mech_Constructoid</kind></li>
+				<li><kind>Mech_Cleansweeper</kind></li>
+				<li><kind>Mech_Agrihand</kind></li>
+				<li><kind>Mech_Paramedic</kind></li>
+			</mechKinds>
+		</joiners>
+		<daysOnSite>1</daysOnSite>
+		<openness>0.5</openness>
+		<squadSize>1~4</squadSize>
+		<findChanceBase>1</findChanceBase>
+	</Expeditions.ExpeditionSiteDef>
+
+</Defs>
