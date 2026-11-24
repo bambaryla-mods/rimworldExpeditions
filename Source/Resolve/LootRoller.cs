@@ -17,15 +17,34 @@ public static class LootRoller
         if (site.LinkWorker is { } worker && SiteLinks.Alive(e.opp.linkedSite))
             return Fit(e, worker.MakeLoot(e, outcome), report);
 
-        if (site.silverReward > 0) Add(made, ThingDefOf.Silver, Scale(site.silverReward, factor));
+        if (site.silverReward > 0) Pay(made, site.needsFaction != FactionNeed.None ? e.opp.faction : null, Scale(site.silverReward, factor));
         if (found)
         {
             // The loot is whoever holds the site: the enemy on a job for a patron, otherwise the site's faction.
-            TechLevel? limit = (e.opp.enemy ?? e.opp.faction)?.def.techLevel;
-            AddTable(made, site.loot, outcome, limit, factor);
+            Faction? holder = e.opp.enemy ?? e.opp.faction;
+            TechLevel? limit = holder?.def.techLevel;
+            FactionSiteLoot? own = ExpeditionFactionDef.For(holder)?.LootFor(site);
+            if (own == null || !own.replace) AddTable(made, site.loot, outcome, limit, factor);
+            // A faction's own goods are its own: they aren't cut to its tech level.
+            if (own != null) AddTable(made, own.loot, outcome, null, factor);
             if (e.opp.target != null) Add(made, e.opp.target, Scale(e.opp.targetCount, factor));
         }
         return Fit(e, made, report);
+    }
+
+    // The patron's payment: silver, or the goods its faction pays in, at the same market value.
+    private static void Pay(List<Thing> made, Faction? patron, int silver)
+    {
+        List<ThingDef> goods = ExpeditionFactionDef.For(patron)?.payment.Where(t => t != null && t.BaseMarketValue > 0f).ToList() ?? new();
+        if (goods.Count == 0)
+        {
+            Add(made, ThingDefOf.Silver, silver);
+            return;
+        }
+        var (counts, left) = HookMath.SplitPayment(silver, goods.Select(t => (double)t.BaseMarketValue).ToList());
+        for (int i = 0; i < goods.Count; i++)
+            if (counts[i] > 0) Add(made, goods[i], counts[i]);
+        if (left > 0) Add(made, ThingDefOf.Silver, left);
     }
 
     // One roll of a loot table: each entry by its chance, a category picking one eligible item.

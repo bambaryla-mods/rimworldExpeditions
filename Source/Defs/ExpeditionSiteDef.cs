@@ -95,6 +95,8 @@ public class ExpeditionSiteDef : Def
     public bool needsCoast;
     public FactionNeed needsFaction = FactionNeed.None;
     public bool needsEnemy; // a hostile settlement near the tile too: who the squad fights for the patron
+    public List<FactionDef> factionDefs = new();      // when set, needsFaction matches only these
+    public List<FactionDef> enemyFactionDefs = new(); // when set, needsEnemy matches only these
     public bool growingSeason;
     public float commonness = 1f; // weight among ready-made offers
 

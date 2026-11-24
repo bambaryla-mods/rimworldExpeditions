@@ -53,8 +53,8 @@ public static class OfferGenerator
         if (o.captive != null) return true;
         if (!o.site.GatesOpen) return false;
         if (o.site.link != null) return SiteLinks.Alive(o.linkedSite);
-        if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction)) return false;
-        if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy)) return false;
+        if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction, o.site.factionDefs)) return false;
+        if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy, o.site.enemyFactionDefs)) return false;
         return true;
     }
 
@@ -110,12 +110,12 @@ public static class OfferGenerator
         if (site.tamedAnimals != null && site.tamedAnimals.Candidates(t.PrimaryBiome).Count == 0) return false;
         if (site.needsFaction != FactionNeed.None)
         {
-            faction = NearbyFaction(site.needsFaction, tile, null, FactionSiteRadius);
+            faction = NearbyFaction(site.needsFaction, tile, null, FactionSiteRadius, site.factionDefs);
             if (faction == null) return false;
         }
         if (site.needsEnemy)
         {
-            enemy = NearbyFaction(FactionNeed.Hostile, tile, faction, EnemySiteRadius);
+            enemy = NearbyFaction(FactionNeed.Hostile, tile, faction, EnemySiteRadius, site.enemyFactionDefs);
             if (enemy == null) return false;
         }
         return true;
@@ -130,11 +130,15 @@ public static class OfferGenerator
     }
 
     // Same layer only: settlements in orbit (Odyssey) have tile ids of another layer, and measuring across layers errors.
-    private static Faction? NearbyFaction(FactionNeed need, PlanetTile tile, Faction? not, int radius) =>
+    private static Faction? NearbyFaction(FactionNeed need, PlanetTile tile, Faction? not, int radius, List<FactionDef> defs) =>
         Find.WorldObjects.Settlements
-            .Where(x => x.Tile.Layer == tile.Layer && x.Faction != not && Wants(need, x.Faction)
+            .Where(x => x.Tile.Layer == tile.Layer && x.Faction != not && Wants(need, x.Faction, defs)
                 && Find.WorldGrid.ApproxDistanceInTiles(x.Tile, tile) <= radius)
             .RandomElementWithFallback()?.Faction;
+
+    // As below, and of one of these defs when any are listed.
+    public static bool Wants(FactionNeed need, Faction? f, List<FactionDef>? defs) =>
+        Wants(need, f) && (defs == null || defs.Count == 0 || defs.Contains(f!.def));
 
     public static bool Wants(FactionNeed need, Faction? f)
     {
@@ -156,11 +160,12 @@ public static class OfferGenerator
         tile = PlanetTile.Invalid;
         IEnumerable<PlanetTile> pool = tiles;
         FactionNeed anchor = site.needsFaction != FactionNeed.None ? site.needsFaction : site.needsEnemy ? FactionNeed.Hostile : FactionNeed.None;
+        List<FactionDef> anchorDefs = site.needsFaction != FactionNeed.None ? site.factionDefs : site.enemyFactionDefs;
         if (anchor != FactionNeed.None)
         {
             // Only tiles near a qualifying settlement in range; far cheaper than testing random tiles.
             var near = Find.WorldObjects.Settlements
-                .Where(s => Wants(anchor, s.Faction) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range))
+                .Where(s => Wants(anchor, s.Faction, anchorDefs) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range))
                 .SelectMany(s => tiles.Where(t => Find.WorldGrid.ApproxDistanceInTiles(s.Tile, t) <= FactionSiteRadius))
                 .ToList();
             if (near.Count == 0) return false;

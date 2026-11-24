@@ -98,7 +98,8 @@ public static class Resolver
     }
 
     // The site's own outcome effects, then those a faction adds when it holds this site.
-    public static IEnumerable<OutcomeEffect> OutcomeEffectsFor(Expedition e) => e.opp.site.outcomeEffects;
+    public static IEnumerable<OutcomeEffect> OutcomeEffectsFor(Expedition e) =>
+        e.opp.site.outcomeEffects.Concat(ExpeditionFactionDef.For(e.opp.enemy ?? e.opp.faction)?.EffectsFor(e.opp.site) ?? Enumerable.Empty<OutcomeEffect>());
 
     private static PawnResult ApplyFate(Expedition e, Pawn p, Outcome outcome, ExpeditionReport report)
     {
@@ -191,7 +192,7 @@ public static class Resolver
         ExpeditionSiteDef site = e.opp.site;
         int goodwill = outcome == Outcome.Partial ? HalfUp(site.goodwillReward) : site.goodwillReward;
         // Only a patron that still is one: a faction that turned hostile since the offer pays nothing.
-        if (goodwill > 0 && e.opp.faction is { } patron && (site.needsFaction == FactionNeed.None || OfferGenerator.Wants(site.needsFaction, patron))
+        if (goodwill > 0 && e.opp.faction is { } patron && (site.needsFaction == FactionNeed.None || OfferGenerator.Wants(site.needsFaction, patron, site.factionDefs))
             && patron.TryAffectGoodwillWith(Faction.OfPlayer, goodwill, true, true, null, null))
         {
             report.goodwillFaction = patron;
