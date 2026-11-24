@@ -94,7 +94,8 @@ public partial class Window_Expeditions
         float infoY = info.y + 92f;
         IEnumerable<TaggedString>? lines = o.linkedSite != null && SiteLinks.Alive(o.linkedSite) && o.site.LinkWorker is { } worker
             ? worker.InfoLines(o)
-            : o.linkedSettlement != null && SettlementLinks.Alive(o) && o.site.SettlementWorker is { } sworker ? sworker.InfoLines(o) : null;
+            : o.linkedSettlement != null && SettlementLinks.Alive(o) && o.site.SettlementWorker is { } sworker
+                ? Effects.Safe(o.site, () => sworker.InfoLines(o).ToList(), new List<TaggedString>()) : null;
         if (lines != null)
         {
             // What the site's worker says about it: guards, the best haul, warnings.

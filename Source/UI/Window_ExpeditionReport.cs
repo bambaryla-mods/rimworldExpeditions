@@ -57,8 +57,9 @@ public class Window_ExpeditionReport : ExpeditionsWindow
         }
 
         Rect list = new(inRect.x, y, inRect.width, inRect.yMax - y);
-        var goodwill = Arrival.GoodwillLines(report).ToList();
-        float height = report.pawns.Count * 64f + 90f + (report.loot.Count + report.lostToHaul.Count + goodwill.Count) * 24f;
+        var goodwill = Arrival.GoodwillLines(report).Concat(report.effectLines).ToList();
+        float height = report.pawns.Count * 64f + 90f + (report.loot.Count + report.lostToHaul.Count) * 24f
+            + goodwill.Sum(l => Text.CalcHeight(l, list.width - 16f) + 2f);
         Rect view = new(0f, 0f, list.width - 16f, height);
         Widgets.BeginScrollView(list, ref scroll, view);
         float row = 0f;
@@ -104,8 +105,9 @@ public class Window_ExpeditionReport : ExpeditionsWindow
             row += 8f;
             foreach (string line in goodwill)
             {
-                Widgets.Label(new Rect(0f, row, view.width, 22f), line);
-                row += 24f;
+                float h = Text.CalcHeight(line, view.width);
+                Widgets.Label(new Rect(0f, row, view.width, h), line);
+                row += h + 2f;
             }
         }
         Widgets.EndScrollView();

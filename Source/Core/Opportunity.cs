@@ -30,7 +30,7 @@ public class Opportunity : IExposable
         if (linkedSite != null && sc.challenge == ExpeditionsDefOf.Exp_Fight && site.LinkWorker is { } w)
             return w.FightRequirement(linkedSite);
         if (linkedSettlement != null && sc.challenge == ExpeditionsDefOf.Exp_Fight && site.SettlementWorker is { } sw)
-            return sw.FightRequirement(linkedSettlement);
+            return Effects.Safe(site, () => sw.FightRequirement(linkedSettlement), sc.requirement);
         return sc.requirement;
     }
 

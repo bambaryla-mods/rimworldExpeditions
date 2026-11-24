@@ -159,6 +159,17 @@ public class ExpeditionSiteDef : Def
         link?.ResolveReferences();
     }
 
+    // Problems with a loot table, shared with faction overrides.
+    public static IEnumerable<string> LootErrors(List<LootEntry> loot)
+    {
+        foreach (LootEntry l in loot)
+        {
+            if (l == null) { yield return "has a null loot entry"; continue; }
+            if (l.untilAnalyzed && (l.thing == null || !Analysis.Analyzable(l.thing)))
+                yield return $"has an untilAnalyzed loot entry ({l.thing?.defName ?? "a category"}) that isn't an analysable thing";
+        }
+    }
+
     public override IEnumerable<string> ConfigErrors()
     {
         foreach (string e in base.ConfigErrors()) yield return e;
@@ -192,9 +203,7 @@ public class ExpeditionSiteDef : Def
             if (c == null) yield return "has a missing servesCategories entry";
         foreach (LootEntry l in loot)
             if ((l.thing == null) == (l.category == null)) yield return "has a loot entry that needs exactly one of thing or category";
-        foreach (LootEntry l in loot)
-            if (l.untilAnalyzed && (l.thing == null || !Analysis.Analyzable(l.thing)))
-                yield return $"has an untilAnalyzed loot entry ({l.thing?.defName ?? "a category"}) that isn't an analysable thing";
+        foreach (string e in LootErrors(loot)) yield return e;
         if (commonness < 0f) yield return $"commonness is {commonness}, it must not be negative";
         if (xpFactor < 0f) yield return $"xpFactor is {xpFactor}, it must not be negative";
         if (joiners != null && joiners.kind == null && joiners.mechKinds.Count == 0) yield return "joiners has no kind and no mechKinds";

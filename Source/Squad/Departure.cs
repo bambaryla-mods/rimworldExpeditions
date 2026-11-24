@@ -49,11 +49,14 @@ public static class Departure
         }
         AcceptanceReport squadOk = Eligibility.SquadOk(squad);
         if (!squadOk.Accepted) return squadOk;
-        // A linked site leaves on its quest's timer; a squad that would get there after it is gone is not sent.
-        if (opp.linkedSite != null && opp.expiresTick >= 0)
+        // A linked site leaves on its quest's timer; a squad that would get there after it is gone is not sent. A site on
+        // a gate's deadline (a pact) pays out when the squad is done there, so the time on site counts too.
+        int? deadline = opp.linkedSite != null && opp.expiresTick >= 0 ? opp.expiresTick : opp.site.GateDeadline;
+        if (deadline != null)
         {
             double outDays = TravelMath.OutDays(ride.ride, Math.Max(FootDays(map, opp, squad), 0), Tiles(map, opp), ExpeditionsDefOf.Tuning.Travel);
-            if (Find.TickManager.TicksGame + outDays * GenDate.TicksPerDay >= opp.expiresTick) return "Exp_WorksiteTooFar".Translate();
+            if (opp.linkedSite == null) outDays += opp.site.daysOnSite;
+            if (Find.TickManager.TicksGame + outDays * GenDate.TicksPerDay >= deadline) return "Exp_WorksiteTooFar".Translate();
         }
         float need = FoodPlanner.Required(squad, trip);
         float have = FoodPlanner.Available(squad, map, need, out _);

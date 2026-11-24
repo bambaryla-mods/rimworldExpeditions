@@ -47,10 +47,16 @@ public class ExpeditionFactionDef : Def
         {
             if (l.site == null) yield return "has a siteLoot entry with no site";
             foreach (LootEntry entry in l.loot)
-                if ((entry.thing == null) == (entry.category == null)) yield return "has a loot entry that needs exactly one of thing or category";
+                if (entry != null && (entry.thing == null) == (entry.category == null)) yield return "has a loot entry that needs exactly one of thing or category";
+            foreach (string e in ExpeditionSiteDef.LootErrors(l.loot)) yield return e;
         }
         foreach (FactionSiteEffects x in outcomeEffects)
+        {
             if (x.site == null) yield return "has an outcomeEffects entry with no site";
+            if (x.effects.Any(fx => fx == null)) yield return "has a null outcome effect";
+            foreach (OutcomeEffect fx in x.effects.Where(fx => fx != null))
+                foreach (string e in fx.ConfigErrors()) yield return e;
+        }
         foreach (ThingDef t in payment)
             if (t == null || t.BaseMarketValue <= 0f) yield return "has a payment thing that is missing or has no market value";
     }
