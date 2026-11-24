@@ -38,6 +38,7 @@ public static class Resolver
             if (outcome == Outcome.Success) report.successText = site.successText;
 
             foreach (Pawn p in pawns) report.pawns.Add(ApplyFate(e, p, outcome, report));
+            PawnEffects(e, outcome, report);
             // Slaves with nobody left to keep them in line all run; the rest may still try.
             SquadEvents.CheckOverlord(e);
             SquadEvents.SlaveRoll(e);
@@ -51,6 +52,9 @@ public static class Resolver
         {
             Rand.PopState();
         }
+
+        foreach (OutcomeEffect oe in OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(outcome)))
+            Effects.Safe(site, () => oe.Apply(e, outcome, report));
 
         // A linked vanilla site ends as its worker says, outside the seeded state: these are vanilla calls.
         if (site.LinkWorker is { } worker)
@@ -77,6 +81,24 @@ public static class Resolver
         if (!e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike)) Arrival.Return(e);
         game.HolderChanged();
     }
+
+    // Mods' effects on each pawn that came through the site: alive, humanlike, not captured.
+    private static void PawnEffects(Expedition e, Outcome outcome, ExpeditionReport report)
+    {
+        ExpeditionSiteDef site = e.opp.site;
+        if (site.pawnEffects.Count == 0) return;
+        foreach (PawnResult r in report.pawns.ToList())
+        {
+            if (r.fate != PawnFate.Unharmed && r.fate != PawnFate.Injured) continue;
+            Pawn p = r.pawn;
+            if (p.Dead || !p.RaceProps.Humanlike) continue;
+            foreach (PawnEffect pe in site.pawnEffects.Where(x => x.outcomes.Contains(outcome)))
+                Effects.Safe(site, () => pe.Apply(p, e, outcome, report));
+        }
+    }
+
+    // The site's own outcome effects, then those a faction adds when it holds this site.
+    public static IEnumerable<OutcomeEffect> OutcomeEffectsFor(Expedition e) => e.opp.site.outcomeEffects;
 
     private static PawnResult ApplyFate(Expedition e, Pawn p, Outcome outcome, ExpeditionReport report)
     {

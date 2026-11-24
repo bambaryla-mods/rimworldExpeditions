@@ -113,6 +113,8 @@ public class ExpeditionSiteDef : Def
 
     public List<SiteGate> gates = new(); // all must be open for the site to be offered
     public bool immediate; // offered as soon as its gates open, outside the slots and the offer timer
+    public List<PawnEffect> pawnEffects = new();     // run on each pawn that came through the site
+    public List<OutcomeEffect> outcomeEffects = new(); // run once for the outcome
 
     // Made only from something in the world (a captive, a quest site): never a random offer, a lead, or a debug spawn.
     public bool FromWorldOnly => rescueOnly || link != null;
@@ -151,6 +153,16 @@ public class ExpeditionSiteDef : Def
         {
             if (g == null) { yield return "has a null gate"; continue; }
             foreach (string e in g.ConfigErrors()) yield return e;
+        }
+        foreach (PawnEffect pe in pawnEffects)
+        {
+            if (pe == null) { yield return "has a null pawn effect"; continue; }
+            foreach (string e in pe.ConfigErrors()) yield return e;
+        }
+        foreach (OutcomeEffect oe in outcomeEffects)
+        {
+            if (oe == null) { yield return "has a null outcome effect"; continue; }
+            foreach (string e in oe.ConfigErrors()) yield return e;
         }
         if (immediate && gates.Count == 0) yield return "is immediate but has no gates: it would always be on the board";
         foreach (SiteChallenge c in challenges)

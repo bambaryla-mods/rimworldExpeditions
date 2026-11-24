@@ -41,6 +41,8 @@ public static class Arrival
 
         Map? map = e.originMap != null && Find.Maps.Contains(e.originMap) && e.originMap.IsPlayerHome ? e.originMap : Find.AnyPlayerHomeMap;
         Retaliation.Hand(e, map); // somebody came home, as a squad or a caravan: the raid owed starts counting down
+        foreach (OutcomeEffect oe in Resolver.OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(report.outcome)))
+            Effects.Safe(e.opp.site, () => oe.OnArrival(e, report.outcome, map, report));
         if (map == null)
         {
             BecomeCaravan(e, pawns);
