@@ -67,7 +67,7 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         int now = Find.TickManager.TicksGame;
         foreach (Expedition e in active.ToList())
         {
-            if (SiteLinks.Lost(e))
+            if (SiteLinks.Lost(e) || SettlementLinks.Lost(e))
             {
                 if (e.phase == Phase.Departing) Departure.CallOff(e, "Exp_WorksiteGoneCancelled");
                 else SiteLinks.TurnBack(e);

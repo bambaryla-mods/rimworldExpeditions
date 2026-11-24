@@ -50,6 +50,7 @@ public static class SiteLinks
         double trip = TravelMath.TripDays(e.ride, e.tripFootDays, tiles, e.opp.site.daysOnSite, travel);
         e.foodNeeded = (float)WorksiteMath.TurnBackFood(e.foodNeeded, away, trip);
         e.opp.linkedSite = null; // gone, or being done in person; the squad is done with it
+        e.opp.linkedSettlement = null;
         e.StartPhase(Phase.Returning, (int)(back * GenDate.TicksPerDay));
         ExpeditionsGame.Instance.HolderChanged();
         return e.report;

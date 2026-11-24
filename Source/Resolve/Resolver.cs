@@ -56,6 +56,19 @@ public static class Resolver
         foreach (OutcomeEffect oe in OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(outcome)))
             Effects.Safe(site, () => oe.Apply(e, outcome, report));
 
+        // A linked settlement ends as its worker says: raided, razed or untouched, and its owner may answer.
+        if (site.SettlementWorker is { } sw && e.opp.linkedSettlement is { Spawned: true, Destroyed: false } settlement)
+        {
+            var raiders = e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList();
+            if (outcome == Outcome.Partial && raiders.Count > 0 && Retaliation.For(e) is { } raid)
+            {
+                e.retaliation = raid;
+                report.retaliationText = "Exp_RetaliationLine".Translate(Retaliation.Who(raid));
+            }
+            Effects.Safe(site, () => sw.Conclude(settlement, outcome, report, raiders));
+            if (settlement.Destroyed) e.opp.linkedSettlement = null;
+        }
+
         // A linked vanilla site ends as its worker says, outside the seeded state: these are vanilla calls.
         if (site.LinkWorker is { } worker)
         {

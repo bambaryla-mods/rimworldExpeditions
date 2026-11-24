@@ -124,6 +124,7 @@ public class ExpeditionSiteDef : Def
     public bool rescueOnly;
     public bool fallback;
     public SiteLinkProps? link; // offered only for a vanilla quest site on the world map
+    public SettlementLinkProps? settlementLink; // offered for a real settlement on the world map
 
     public List<SiteGate> gates = new(); // all must be open for the site to be offered
     public bool immediate; // offered as soon as its gates open, outside the slots and the offer timer
@@ -139,6 +140,7 @@ public class ExpeditionSiteDef : Def
     public int? GateDeadline => gates.Select(g => Effects.Safe(this, () => g.DeadlineTick, null)).Where(t => t != null).Min();
 
     public SiteLinkWorker? LinkWorker => link?.Worker(this);
+    public SettlementLinkWorker? SettlementWorker => settlementLink?.Worker(this);
 
     public int goodwillReward;
     public int goodwillAllFriendly;
@@ -162,6 +164,9 @@ public class ExpeditionSiteDef : Def
         foreach (string e in base.ConfigErrors()) yield return e;
         if (link != null)
             foreach (string e in link.ConfigErrors()) yield return e;
+        if (settlementLink != null)
+            foreach (string e in settlementLink.ConfigErrors()) yield return e;
+        if (link != null && settlementLink != null) yield return "has both link and settlementLink";
         if (challenges.NullOrEmpty()) yield return "has no challenges";
         foreach (SiteGate g in gates)
         {

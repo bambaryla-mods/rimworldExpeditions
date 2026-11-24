@@ -52,6 +52,7 @@ public static class OfferGenerator
     {
         if (o.captive != null) return true;
         if (!o.site.GatesOpen) return false;
+        if (o.site.settlementLink != null && !SettlementLinks.Alive(o)) return false;
         if (o.site.link != null) return SiteLinks.Alive(o.linkedSite);
         if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction, o.site.factionDefs)) return false;
         if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy, o.site.enemyFactionDefs)) return false;
@@ -68,7 +69,15 @@ public static class OfferGenerator
         IEnumerable<ExpeditionSiteDef> candidates = site != null ? new[] { site } : ReadyMadeOrder();
         foreach (ExpeditionSiteDef s in candidates)
         {
-            if (!TryFindTile(s, home, tiles, out PlanetTile tile, out Faction? faction, out Faction? enemy)) continue;
+            PlanetTile tile;
+            Faction? faction, enemy;
+            Settlement? settlement = null;
+            if (s.settlementLink != null)
+            {
+                if (!TryFindSettlement(s, home, out settlement, out faction, out enemy)) continue;
+                tile = settlement!.Tile;
+            }
+            else if (!TryFindTile(s, home, tiles, out tile, out faction, out enemy)) continue;
             var tuning = ExpeditionsDefOf.Tuning;
             int? deadline = s.GateDeadline;
             return new Opportunity
@@ -79,12 +88,40 @@ public static class OfferGenerator
                 faction = faction,
                 enemy = enemy,
                 target = target,
+                linkedSettlement = settlement,
                 prospected = target != null,
                 expiresTick = deadline ?? Find.TickManager.TicksGame
                     + (target != null ? tuning.prospectLifetimeTicks : tuning.offerLifetimeTicks).RandomInRange,
             };
         }
         return null;
+    }
+
+    // A settlement in range for a settlement-linked site. With a patron (needsFaction), the patron is found near the
+    // settlement and the settlement's owner is the enemy; otherwise the owner is the offer's faction.
+    private static bool TryFindSettlement(ExpeditionSiteDef s, PlanetTile home, out Settlement? settlement, out Faction? faction, out Faction? enemy)
+    {
+        settlement = null;
+        faction = null;
+        enemy = null;
+        foreach (Settlement st in SettlementLinks.Candidates(s, home).InRandomOrder())
+        {
+            if (s.needsFaction != FactionNeed.None)
+            {
+                Faction? patron = NearbyFaction(s.needsFaction, st.Tile, st.Faction, EnemySiteRadius, s.factionDefs);
+                if (patron == null) continue;
+                faction = patron;
+                enemy = st.Faction;
+            }
+            else
+            {
+                faction = st.Faction;
+                enemy = null;
+            }
+            settlement = st;
+            return true;
+        }
+        return false;
     }
 
     // Ready-made sites in a random order weighted by commonness, so a family of similar sites (the tournaments)

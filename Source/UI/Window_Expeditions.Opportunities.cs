@@ -92,10 +92,13 @@ public partial class Window_Expeditions
         Label(new Rect(info.x, info.y + 28f, info.width, 20f), where, GameFont.Tiny, look.TextDim);
         Label(new Rect(info.x, info.y + 46f, info.width, 40f), o.site.description, GameFont.Tiny, look.TextDim);
         float infoY = info.y + 92f;
-        if (o.linkedSite != null && SiteLinks.Alive(o.linkedSite) && o.site.LinkWorker is { } worker)
+        IEnumerable<TaggedString>? lines = o.linkedSite != null && SiteLinks.Alive(o.linkedSite) && o.site.LinkWorker is { } worker
+            ? worker.InfoLines(o)
+            : o.linkedSettlement != null && SettlementLinks.Alive(o) && o.site.SettlementWorker is { } sworker ? sworker.InfoLines(o) : null;
+        if (lines != null)
         {
             // What the site's worker says about it: guards, the best haul, warnings.
-            foreach (TaggedString line in worker.InfoLines(o))
+            foreach (TaggedString line in lines)
             {
                 Text.Font = GameFont.Tiny;
                 float h = Math.Max(20f, Text.CalcHeight(line, info.width));

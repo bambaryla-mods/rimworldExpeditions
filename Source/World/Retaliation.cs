@@ -40,12 +40,14 @@ public static class Retaliation
     // Who will answer a partial win at this expedition's site, read before the site is gone.
     public static PendingRaid? For(Expedition e)
     {
-        RetaliationProps? r = e.opp.site.link?.retaliation;
+        RetaliationProps? r = e.opp.site.link?.retaliation ?? e.opp.site.settlementLink?.retaliation;
         if (r == null) return null;
         var raid = new PendingRaid { source = r.source, animal = r.animalKind, pointsFactor = r.pointsFactor, delayTicks = r.delayTicks };
         if (raid.source == RaidSource.SiteFaction)
         {
-            Faction? owner = e.opp.linkedSite?.Faction ?? e.opp.faction;
+            // The holder: a quest site's owner, a linked settlement's owner, else the offer's own faction.
+            Faction? owner = e.opp.linkedSite?.Faction ?? e.opp.linkedSettlement?.Faction
+                ?? (e.opp.site.settlementLink != null ? e.opp.enemy ?? e.opp.faction : e.opp.faction);
             if (owner != null && owner == Faction.OfMechanoids) raid.source = RaidSource.Mechanoids;
             else if (owner != null && owner == Faction.OfInsects) raid.source = RaidSource.Insects;
             else if (owner is { Hidden: false, temporary: false, defeated: false } f && !f.IsPlayer) raid.faction = f;
