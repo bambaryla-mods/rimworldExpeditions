@@ -52,7 +52,8 @@ public static class Arrival
             foreach (Thing t in e.contents.Where(t => t is Building).ToList())
             {
                 e.contents.Remove(t);
-                GenSpawn.Spawn(t, cell, map, Rot4.North);
+                // The spot is clear when one was found; if not, stacks are moved aside rather than erased.
+                GenSpawn.Spawn(t, cell, map, Rot4.North, WipeMode.VanishOrMoveAside);
                 FleckMaker.ThrowDustPuffThick(cell.ToVector3Shifted(), map, 3f, UnityEngine.Color.gray);
             }
             foreach (Pawn p in e.contents.OfType<Pawn>().ToList()) e.Release(p, map, cell);
@@ -67,16 +68,25 @@ public static class Arrival
 
     private static IntVec3 ArrivalCell(Expedition e, Map map)
     {
-        if (e.ride == Ride.Shuttle)
-        {
-            Thing? console = map.listerBuildings.allBuildingsColonist.OfType<Building_CommsConsole>().FirstOrDefault();
-            IntVec3 near = console?.Position ?? DropCellFinder.TradeDropSpot(map);
-            if (DropCellFinder.TryFindDropSpotNear(near, map, out IntVec3 spot, false, false, false, new IntVec2(5, 5))) return spot;
-            return DropCellFinder.TradeDropSpot(map);
-        }
+        if (e.ride == Ride.Shuttle && e.contents.OfType<Building>().FirstOrDefault() is { } shuttle) return ShuttleCell(shuttle.def.Size, map);
         if (CellFinder.TryFindRandomEdgeCellWith(c => c.Standable(map) && !c.Fogged(map) && map.reachability.CanReachColony(c),
                 map, CellFinder.EdgeRoadChance_Neutral, out IntVec3 edge))
             return edge;
+        return DropCellFinder.TradeDropSpot(map);
+    }
+
+    // Where the shuttle sets down. Spawning a building erases whatever its footprint covers (walls, furniture, stacks),
+    // and a drop pod's spot check lets items and many buildings through, so the spot has to be clear for the shuttle's
+    // own size. A landing beacon zone first, then vanilla's safe shuttle spot near the colony (no items or buildings
+    // under it, away from hostiles), then the same without the hostile check.
+    private static IntVec3 ShuttleCell(IntVec2 size, Map map)
+    {
+        if (DropCellFinder.TryFindShipLandingArea(map, out IntVec3 zone, out _) && DropCellFinder.SkyfallerCanLandAt(zone, map, size)) return zone;
+        IntVec3 spot = DropCellFinder.TryFindSafeLandingSpotCloseToColony(map, size, Faction.OfPlayer);
+        if (spot.IsValid) return spot;
+        spot = DropCellFinder.TryFindSafeLandingSpotCloseToColony(map, size);
+        if (spot.IsValid) return spot;
+        Log.Warning("[Expeditions] No clear spot for the returning shuttle; landing at the trade drop spot.");
         return DropCellFinder.TradeDropSpot(map);
     }
 
