@@ -47,6 +47,7 @@ public class ExpeditionReport : IExposable
     public string? siteFateText;    // what became of a linked site the squad failed at
     public List<string> events = new(); // what happened on the road: betrayals, a creepjoiner turning, slaves fleeing
     public string? lostText;            // the "expedition lost" letter text, when something other than the site did it
+    public List<string> effectLines = new(); // what other mods' hooks did: blessings, scrip, power banked, things burned
 
     // Records what became of a pawn, updating the line already there (from the site) rather than adding a second.
     public void SetFate(Pawn p, PawnFate fate, List<string>? injuries = null)
@@ -76,10 +77,12 @@ public class ExpeditionReport : IExposable
         Scribe_Values.Look(ref siteFateText, "siteFateText");
         Scribe_Collections.Look(ref events, "events", LookMode.Value);
         Scribe_Values.Look(ref lostText, "lostText");
+        Scribe_Collections.Look(ref effectLines, "effectLines", LookMode.Value);
         pawns ??= new();
         events ??= new();
         loot ??= new();
         lostToHaul ??= new();
+        effectLines ??= new();
         if (Scribe.mode == LoadSaveMode.PostLoadInit) pawns.RemoveAll(p => p.pawn == null);
     }
 }

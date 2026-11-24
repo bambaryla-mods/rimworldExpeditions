@@ -13,7 +13,7 @@ public static class OfferGenerator
     private const float GrowingTempMin = 6f;
     private const float GrowingTempMax = 42f;
 
-    public static int ReadyMadeCount => ExpeditionsGame.Instance.offers.Count(o => !o.prospected && o.captive == null && o.site.link == null);
+    public static int ReadyMadeCount => ExpeditionsGame.Instance.offers.Count(o => !o.prospected && o.captive == null && o.site.link == null && !o.site.immediate);
 
     public static void Tick()
     {
@@ -21,6 +21,7 @@ public static class OfferGenerator
         int now = Find.TickManager.TicksGame;
         game.offers.RemoveAll(o => (o.expiresTick >= 0 && now > o.expiresTick) || !StillFits(o));
         SiteLinks.Tick();
+        ImmediateTick();
         if (now < game.nextOfferTick) return;
         game.nextOfferTick = now + ExpeditionsDefOf.Tuning.offerIntervalTicks.RandomInRange;
         if (ReadyMadeCount >= ExpeditionsMod.Settings.offerSlots) return;
@@ -30,10 +31,27 @@ public static class OfferGenerator
         if (opp != null) game.offers.Add(opp);
     }
 
+    // Sites that answer something with its own clock (a quest that ends in days): offered the moment their gates open,
+    // outside the slots and the timer, one offer at a time and none while a squad is out on one.
+    private static void ImmediateTick()
+    {
+        var game = ExpeditionsGame.Instance;
+        Map? home = Find.AnyPlayerHomeMap;
+        if (home == null) return;
+        foreach (ExpeditionSiteDef s in DefDatabase<ExpeditionSiteDef>.AllDefsListForReading)
+        {
+            if (!s.immediate || s.FromWorldOnly) continue;
+            if (game.offers.Any(o => o.site == s) || game.active.Any(e => e.opp.site == s) || !s.GatesOpen) continue;
+            Opportunity? opp = TryMake(s, home.Tile, null);
+            if (opp != null) game.offers.Add(opp);
+        }
+    }
+
     // An offer whose patron is no longer friendly enough, or whose enemy made peace, is withdrawn.
     private static bool StillFits(Opportunity o)
     {
         if (o.captive != null) return true;
+        if (!o.site.GatesOpen) return false;
         if (o.site.link != null) return SiteLinks.Alive(o.linkedSite);
         if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction)) return false;
         if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy)) return false;
@@ -52,6 +70,7 @@ public static class OfferGenerator
         {
             if (!TryFindTile(s, home, tiles, out PlanetTile tile, out Faction? faction, out Faction? enemy)) continue;
             var tuning = ExpeditionsDefOf.Tuning;
+            int? deadline = s.GateDeadline;
             return new Opportunity
             {
                 id = ExpeditionsGame.Instance.NextId(),
@@ -61,7 +80,7 @@ public static class OfferGenerator
                 enemy = enemy,
                 target = target,
                 prospected = target != null,
-                expiresTick = Find.TickManager.TicksGame
+                expiresTick = deadline ?? Find.TickManager.TicksGame
                     + (target != null ? tuning.prospectLifetimeTicks : tuning.offerLifetimeTicks).RandomInRange,
             };
         }
@@ -72,7 +91,7 @@ public static class OfferGenerator
     // doesn't crowd the board.
     private static IEnumerable<ExpeditionSiteDef> ReadyMadeOrder()
     {
-        var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.FromWorldOnly && !s.fallback).ToList();
+        var sites = DefDatabase<ExpeditionSiteDef>.AllDefsListForReading.Where(s => !s.FromWorldOnly && !s.fallback && !s.immediate && s.GatesOpen).ToList();
         return WeightedOrder.Order(sites.Select(s => (double)s.commonness).ToList(), () => Rand.Value).Select(i => sites[i]);
     }
 

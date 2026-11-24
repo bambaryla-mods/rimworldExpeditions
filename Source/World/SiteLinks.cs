@@ -73,7 +73,7 @@ public static class SiteLinks
             if (!s.Spawned || s.Destroyed || s.HasMap || s.parts.Count == 0 || Linked(s)) continue;
             if (!WorldArea.InRange(home.Tile, s.Tile, ExpeditionsMod.Settings.range)) continue;
             Quest? q = QuestOf(s);
-            if (q == null || DefFor(s, q) is not { } def || !def.LinkWorker!.CanOffer(s)) continue;
+            if (q == null || DefFor(s, q) is not { } def || !def.GatesOpen || !def.LinkWorker!.CanOffer(s)) continue;
             // The board's deadline is the site's own: when its quest packs it up.
             int left = TicksLeft(s);
             var opp = new Opportunity

@@ -106,8 +106,16 @@ public class ExpeditionSiteDef : Def
     public bool fallback;
     public SiteLinkProps? link; // offered only for a vanilla quest site on the world map
 
+    public List<SiteGate> gates = new(); // all must be open for the site to be offered
+    public bool immediate; // offered as soon as its gates open, outside the slots and the offer timer
+
     // Made only from something in the world (a captive, a quest site): never a random offer, a lead, or a debug spawn.
     public bool FromWorldOnly => rescueOnly || link != null;
+
+    public bool GatesOpen => gates.All(g => Effects.Safe(this, () => g.Open(), false));
+
+    // The earliest deadline any gate gives, or null.
+    public int? GateDeadline => gates.Select(g => Effects.Safe(this, () => g.DeadlineTick, null)).Where(t => t != null).Min();
 
     public SiteLinkWorker? LinkWorker => link?.Worker(this);
 
@@ -134,6 +142,12 @@ public class ExpeditionSiteDef : Def
         if (link != null)
             foreach (string e in link.ConfigErrors()) yield return e;
         if (challenges.NullOrEmpty()) yield return "has no challenges";
+        foreach (SiteGate g in gates)
+        {
+            if (g == null) { yield return "has a null gate"; continue; }
+            foreach (string e in g.ConfigErrors()) yield return e;
+        }
+        if (immediate && gates.Count == 0) yield return "is immediate but has no gates: it would always be on the board";
         foreach (SiteChallenge c in challenges)
             if (c.challenge == null) yield return "has a challenge entry with no challenge";
         if (squadSize.min < 1) yield return $"squadSize.min is {squadSize.min}, it must be at least 1";
