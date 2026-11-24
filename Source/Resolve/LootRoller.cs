@@ -15,7 +15,11 @@ public static class LootRoller
 
         // A linked vanilla site: its worker says what is there. Its prize is known, so it is always found.
         if (site.LinkWorker is { } worker && SiteLinks.Alive(e.opp.linkedSite))
-            return Fit(e, worker.MakeLoot(e, outcome), report);
+        {
+            List<Thing> prize = worker.MakeLoot(e, outcome);
+            LootFilters.Run(e, prize, report);
+            return Fit(e, prize, report);
+        }
 
         if (site.silverReward > 0) Pay(made, site.needsFaction != FactionNeed.None ? e.opp.faction : null, Scale(site.silverReward, factor));
         if (found)
@@ -29,6 +33,7 @@ public static class LootRoller
             if (own != null) AddTable(made, own.loot, outcome, null, factor);
             if (e.opp.target != null) Add(made, e.opp.target, Scale(e.opp.targetCount, factor));
         }
+        LootFilters.Run(e, made, report);
         return Fit(e, made, report);
     }
 

@@ -41,6 +41,11 @@ public static class Arrival
 
         Map? map = e.originMap != null && Find.Maps.Contains(e.originMap) && e.originMap.IsPlayerHome ? e.originMap : Find.AnyPlayerHomeMap;
         Retaliation.Hand(e, map); // somebody came home, as a squad or a caravan: the raid owed starts counting down
+        // What they carry, checked again: a rule may have changed on the way home. Never the ride or the people.
+        var carried = e.contents.Where(t => t is not Pawn && t is not Building).ToList();
+        var keep = carried.ToList();
+        LootFilters.Run(e, keep, report);
+        foreach (Thing t in carried.Where(t => !keep.Contains(t) && e.contents.Contains(t))) e.contents.Remove(t); // destroying usually removes it already
         foreach (OutcomeEffect oe in Resolver.OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(report.outcome)))
             Effects.Safe(e.opp.site, () => oe.OnArrival(e, report.outcome, map, report));
         if (map == null)
