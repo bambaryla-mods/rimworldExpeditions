@@ -34,6 +34,7 @@ public static class LootRoller
         foreach (LootEntry entry in loot)
         {
             if (entry.successOnly && outcome != Outcome.Success) continue;
+            if (!entry.Live()) continue;
             if (!Rand.Chance(entry.chance)) continue;
             ThingDef? def = entry.thing ?? Pick(entry.category!, limit);
             if (def != null) Add(made, def, Scale(entry.count.RandomInRange, factor));

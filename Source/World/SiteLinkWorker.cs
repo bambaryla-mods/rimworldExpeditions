@@ -44,7 +44,7 @@ public class SiteLinkWorker
     {
         yield return "Exp_LinkThreat".Translate(Threat(o.linkedSite!).ToString("F0"));
         var parts = new List<string>();
-        foreach (LootEntry l in def.loot.Where(l => l.chance >= 1f))
+        foreach (LootEntry l in def.loot.Where(l => l.chance >= 1f && l.Live()))
             parts.Add($"{(l.thing?.label ?? l.category!.label)} ×{l.count.max}");
         if (SiteLinks.QuestOf(o.linkedSite!) is { } q)
             parts.AddRange(RewardItems(q).Select(t => $"{t.def.label} ×{t.stackCount}"));

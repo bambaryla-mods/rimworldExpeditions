@@ -29,6 +29,11 @@ public class LootEntry
     public IntRange count = new(1, 1);
     public float chance = 1f;
     public bool successOnly; // rolled only on a full Success, for single rare items
+    public ResearchProjectDef? research; // rolled only once this is finished
+    public bool untilAnalyzed; // skipped once the thing's analysis is complete (a key artifact found another way)
+
+    // Whether this entry can roll right now.
+    public bool Live() => (research == null || research.IsFinished) && !(untilAnalyzed && thing != null && Analysis.Done(thing));
 }
 
 // People who come home with the squad and join the colony.
@@ -156,6 +161,9 @@ public class ExpeditionSiteDef : Def
             if (c == null) yield return "has a missing servesCategories entry";
         foreach (LootEntry l in loot)
             if ((l.thing == null) == (l.category == null)) yield return "has a loot entry that needs exactly one of thing or category";
+        foreach (LootEntry l in loot)
+            if (l.untilAnalyzed && (l.thing == null || !Analysis.Analyzable(l.thing)))
+                yield return $"has an untilAnalyzed loot entry ({l.thing?.defName ?? "a category"}) that isn't an analysable thing";
         if (commonness < 0f) yield return $"commonness is {commonness}, it must not be negative";
         if (xpFactor < 0f) yield return $"xpFactor is {xpFactor}, it must not be negative";
         if (joiners != null && joiners.kind == null) yield return "joiners has no kind";
