@@ -42,6 +42,18 @@ public class JoinerSpec
     public float chance = 1f;
     public IntRange count = new(1, 1);
     public PawnKindDef? kind;
+    public float partialFactor; // above 0: they also roll on a partial win, at chance x this
+    public List<MechKindEntry> mechKinds = new(); // Biotech: the joiner is a mech, and needs a mechanitor in the squad
+
+    // The mech kinds the colony can take now.
+    public List<PawnKindDef> LiveMechKinds() =>
+        mechKinds.Where(m => m.kind != null && (m.research == null || m.research.IsFinished)).Select(m => m.kind).ToList();
+}
+
+public class MechKindEntry
+{
+    public PawnKindDef kind = null!;
+    public ResearchProjectDef? research;
 }
 
 // Wild animals of the site's biome, tamed and brought home.
@@ -180,7 +192,8 @@ public class ExpeditionSiteDef : Def
                 yield return $"has an untilAnalyzed loot entry ({l.thing?.defName ?? "a category"}) that isn't an analysable thing";
         if (commonness < 0f) yield return $"commonness is {commonness}, it must not be negative";
         if (xpFactor < 0f) yield return $"xpFactor is {xpFactor}, it must not be negative";
-        if (joiners != null && joiners.kind == null) yield return "joiners has no kind";
+        if (joiners != null && joiners.kind == null && joiners.mechKinds.Count == 0) yield return "joiners has no kind and no mechKinds";
+        if (joiners != null && joiners.partialFactor < 0f) yield return "joiners.partialFactor must not be negative";
         if (joiners != null && joiners.count.min < 1) yield return "joiners.count.min must be at least 1";
         if (tamedAnimals != null && tamedAnimals.count.min < 1) yield return "tamedAnimals.count.min must be at least 1";
     }

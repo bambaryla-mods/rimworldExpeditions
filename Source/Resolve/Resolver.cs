@@ -45,7 +45,7 @@ public static class Resolver
 
             if (found && outcome == Outcome.Success && e.opp.captive is { } captive) Rescue(e, captive, report);
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
-            if (found && outcome == Outcome.Success) Recruits(e, report);
+            if (found && outcome != Outcome.Failure) Recruits(e, outcome, report);
             Reward(e, outcome, report);
         }
         finally
@@ -211,19 +211,46 @@ public static class Resolver
 
     private static int HalfUp(int n) => (n + 1) / 2;
 
+    // Mechs woken on site: they answer to a mechanitor in the squad, and over bandwidth vanilla's rules apply.
+    private static List<Pawn> Mechs(Expedition e, JoinerSpec j, ExpeditionReport report)
+    {
+        var made = new List<Pawn>();
+        if (!ModsConfig.BiotechActive) return made;
+        Pawn? mechanitor = e.AwayPawns.FirstOrDefault(p => !p.Dead && p.RaceProps.Humanlike && MechanitorUtility.IsMechanitor(p));
+        List<PawnKindDef> kinds = j.LiveMechKinds();
+        if (mechanitor == null || kinds.Count == 0)
+        {
+            report.effectLines.Add("Exp_MechsNoMechanitor".Translate());
+            return made;
+        }
+        int n = j.count.RandomInRange;
+        for (int i = 0; i < n; i++)
+        {
+            Pawn mech = PawnGenerator.GeneratePawn(new PawnGenerationRequest(kinds.RandomElement(), Faction.OfPlayer,
+                PawnGenerationContext.NonPlayer, tile: e.opp.tile, forceGenerateNewPawn: true));
+            mechanitor.relations.AddDirectRelation(PawnRelationDefOf.Overseer, mech);
+            made.Add(mech);
+        }
+        return made;
+    }
+
     // People who join and animals tamed on site. They come home in the holder with the squad.
-    private static void Recruits(Expedition e, ExpeditionReport report)
+    private static void Recruits(Expedition e, Outcome outcome, ExpeditionReport report)
     {
         ExpeditionSiteDef site = e.opp.site;
         var made = new List<Pawn>();
-        if (site.joiners is { kind: { } kind } j && Rand.Chance(j.chance))
+        if (site.joiners is { } j && Rand.Chance((float)HookMath.JoinerChance(j.chance, outcome, j.partialFactor)))
         {
-            int n = j.count.RandomInRange;
-            for (int i = 0; i < n; i++)
-                made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(kind, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
-                    tile: e.opp.tile, forceGenerateNewPawn: true)));
+            if (j.mechKinds.Count > 0) made.AddRange(Mechs(e, j, report));
+            else if (j.kind != null)
+            {
+                int n = j.count.RandomInRange;
+                for (int i = 0; i < n; i++)
+                    made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(j.kind, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
+                        tile: e.opp.tile, forceGenerateNewPawn: true)));
+            }
         }
-        if (site.tamedAnimals is { } a && Rand.Chance(a.chance))
+        if (outcome == Outcome.Success && site.tamedAnimals is { } a && Rand.Chance(a.chance))
         {
             BiomeDef biome = Find.WorldGrid[e.opp.tile].PrimaryBiome;
             List<PawnKindDef> kinds = a.Candidates(biome);
