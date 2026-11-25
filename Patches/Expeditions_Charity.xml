@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The alms run counts as charity: each of vanilla's charity precepts gives its own thought for it, as it does for
+     beggars and refugees. Patch operations don't read MayRequire, so the Ideology check is a FindMod. -->
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Ideology</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/PreceptDef[defName="Charity_Worthwhile"]/comps</xpath>
+					<value>
+						<li Class="PreceptComp_KnowsMemoryThought">
+							<eventDef>Exp_CharityFulfilled_Alms</eventDef>
+							<thought>Exp_CharityFulfilled_Worthwhile_Alms</thought>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/PreceptDef[defName="Charity_Important"]/comps</xpath>
+					<value>
+						<li Class="PreceptComp_KnowsMemoryThought">
+							<eventDef>Exp_CharityFulfilled_Alms</eventDef>
+							<thought>Exp_CharityFulfilled_Important_Alms</thought>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/PreceptDef[defName="Charity_Essential"]/comps</xpath>
+					<value>
+						<li Class="PreceptComp_KnowsMemoryThought">
+							<eventDef>Exp_CharityFulfilled_Alms</eventDef>
+							<thought>Exp_CharityFulfilled_Essential_Alms</thought>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

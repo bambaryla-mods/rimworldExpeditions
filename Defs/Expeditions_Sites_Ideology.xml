@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ideology sites: each offered only while the colony's main ideoligion would want it (SiteGate_Ideo). Entries from
+     other DLCs and mods carry MayRequire and drop out when those aren't loaded. Alpha Memes' nonviolence meme and
+     strict violence precept live in its VME folder, so they need both mods. -->
+<Defs>
+
+	<!-- ======================================================================== history event and thoughts -->
+
+	<HistoryEventDef MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_CharityFulfilled_Alms</defName>
+		<label>alms given</label>
+	</HistoryEventDef>
+
+	<ThoughtDef Name="Exp_CharityAlmsBase" Abstract="True">
+		<thoughtClass>Thought_Memory</thoughtClass>
+		<durationDays>8</durationDays>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_CharityAlmsBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_CharityFulfilled_Essential_Alms</defName>
+		<stages>
+			<li>
+				<label>alms given</label>
+				<description>We carried food and medicine to people who had nothing. I really am a good person!</description>
+				<baseMoodEffect>4</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_CharityAlmsBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_CharityFulfilled_Important_Alms</defName>
+		<stages>
+			<li>
+				<label>alms given</label>
+				<description>We carried food and medicine to people who had nothing. It was the right thing to do.</description>
+				<baseMoodEffect>2</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_CharityAlmsBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_CharityFulfilled_Worthwhile_Alms</defName>
+		<stages>
+			<li>
+				<label>alms given</label>
+				<description>We carried food and medicine to people who had nothing. It was good of us.</description>
+				<baseMoodEffect>1</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef Name="Exp_IdeoThoughtBase" Abstract="True">
+		<thoughtClass>Thought_Memory</thoughtClass>
+		<stackLimit>1</stackLimit>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_RustledHerd</defName>
+		<durationDays>6</durationDays>
+		<stages>
+			<li>
+				<label>rustled a herd</label>
+				<description>We drove off someone else's herd right under their noses. Good animals, and a good night's work.</description>
+				<baseMoodEffect>4</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_GaveAlms</defName>
+		<durationDays>6</durationDays>
+		<stages>
+			<li>
+				<label>gave alms</label>
+				<description>I handed out food to people who were starving. I keep thinking of their faces.</description>
+				<baseMoodEffect>3</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_MadePilgrimage</defName>
+		<durationDays>15</durationDays>
+		<stages>
+			<li>
+				<label>made the journey</label>
+				<description>I went all that way and stood where so many stood before me. I came back changed.</description>
+				<baseMoodEffect>8</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_PilgrimsReturned</defName>
+		<durationDays>6</durationDays>
+		<stages>
+			<li>
+				<label>our pilgrims returned</label>
+				<description>Some of us made the long journey and came back to tell of it.</description>
+				<baseMoodEffect>3</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_PreachedToStrangers</defName>
+		<durationDays>6</durationDays>
+		<stages>
+			<li>
+				<label>preached to strangers</label>
+				<description>I told people of another faith what we believe, and some of them listened.</description>
+				<baseMoodEffect>4</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_HumbledHeretics</defName>
+		<durationDays>8</durationDays>
+		<stages>
+			<li>
+				<label>humbled the heretics</label>
+				<description>Their shrine is rubble. Let them see what their false faith is worth.</description>
+				<baseMoodEffect>5</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef ParentName="Exp_IdeoThoughtBase" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_SavedGrove</defName>
+		<durationDays>10</durationDays>
+		<stages>
+			<li>
+				<label>saved the grove</label>
+				<description>The loggers are gone and the old trees still stand. Some things are worth fighting for.</description>
+				<baseMoodEffect>6</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<!-- ======================================================================== sites -->
+
+	<!-- A neutral village's herd, far from its walls. Counts as a raid; the village is angry if the squad is seen. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_Rustling</defName>
+		<label>cattle rustling</label>
+		<description>A village's herd grazes far from its walls, with only a boy and a dog to watch it.</description>
+		<color>(0.7, 0.55, 0.35)</color>
+		<needsFaction>Friendly</needsFaction>
+		<biomes>
+			<li>TemperateForest</li>
+			<li>AridShrubland</li>
+			<li>BorealForest</li>
+			<li>Tundra</li>
+		</biomes>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyPrecept>
+					<li>Raiding_Required</li>
+					<li>Raiding_Respected</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Cattle_Improved</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Horses_Desired</li>
+				</anyPrecept>
+				<anyMeme>
+					<li>Raider</li>
+					<li>Rancher</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Cowboys</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Corsair</li>
+				</anyMeme>
+				<noMeme>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_NonViolence</li>
+				</noMeme>
+				<noPrecept>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_Violence_Abhorrent_Strict</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Stealth</challenge><weight>2</weight><requirement>120</requirement></li>
+			<li><challenge>Exp_Tame</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<tamedAnimals>
+			<chance>1</chance>
+			<count>3~8</count>
+			<kinds>
+				<li>Cow</li>
+				<li>Goat</li>
+				<li>Sheep</li>
+				<li>Horse</li>
+				<li>Yak</li>
+				<li>Alpaca</li>
+			</kinds>
+		</tamedAnimals>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_RustledHerd</thought>
+			</li>
+		</pawnEffects>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_RaidCredit" />
+			<li Class="Expeditions.OutcomeEffect_FactionGoodwill">
+				<amount>-15</amount>
+				<outcomes>
+					<li>Partial</li>
+					<li>Failure</li>
+				</outcomes>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- Refugees at a crossroads. The squad carries food and medicine and leaves it there: charity, as vanilla counts it. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_AlmsRun</defName>
+		<label>alms run</label>
+		<description>Refugees are starving at a crossroads camp. They need food, medicine and someone to hand it out.</description>
+		<color>(0.45, 0.75, 0.7)</color>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyPrecept>
+					<li>Charity_Worthwhile</li>
+					<li>Charity_Important</li>
+					<li>Charity_Essential</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Hospital_Required</li>
+				</anyPrecept>
+				<anyMeme>
+					<li>Guilty</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Egalitarian</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Healthcare</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Monastic</li>
+				</anyMeme>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Endure</challenge><weight>1.5</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Haul</challenge><weight>1</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Teach</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<supplies>
+			<nutrition>25</nutrition>
+			<medicine>5</medicine>
+		</supplies>
+		<joiners>
+			<chance>0.25</chance>
+			<count>1</count>
+			<kind>Villager</kind>
+		</joiners>
+		<goodwillAllFriendly>2</goodwillAllFriendly>
+		<successText>The camp ate tonight, and the sick were tended.</successText>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_GaveAlms</thought>
+			</li>
+		</pawnEffects>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_HistoryEvent">
+				<eventDef>Exp_CharityFulfilled_Alms</eventDef>
+				<lineKey>Exp_CharityLine</lineKey>
+				<outcomes>
+					<li>Success</li>
+					<li>Partial</li>
+				</outcomes>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>1~4</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- A shrine of our faith, or simply a famous place to journey to. The stay is long; the pilgrims come back changed. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_Pilgrimage</defName>
+		<label>pilgrimage</label>
+		<description>Travelers speak of an old shrine, days away, where the faithful have gathered for centuries.</description>
+		<color>(0.75, 0.7, 0.5)</color>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyMeme>
+					<li>Structure_TheistEmbodied</li>
+					<li>Structure_TheistAbstract</li>
+					<li>Structure_OriginChristian</li>
+					<li>Structure_OriginIslamic</li>
+					<li>Structure_OriginHindu</li>
+					<li>Structure_OriginBuddhist</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Jewish</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Sikhism</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Jainism</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Kemetism</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Mesoamerican</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Structure_Shintaoism</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Structure_Pantheism</li>
+					<li MayRequire="Ludeon.RimWorld.Anomaly">Ritualist</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Monastic</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_ExaltedPriesthood</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Nomad</li>
+				</anyMeme>
+				<anyPrecept>
+					<li MayRequire="Sarg.AlphaMemes">AM_Religion_Loved</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Travel_Desired</li>
+					<li MayRequire="Ludeon.RimWorld.Odyssey">Nomadic_Preferred</li>
+				</anyPrecept>
+				<noMeme>
+					<li MayRequire="Sarg.AlphaMemes">AM_Structure_Atheist</li>
+				</noMeme>
+				<noPrecept>
+					<li MayRequire="Sarg.AlphaMemes">AM_Religion_Despised</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Religion_Disliked</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Travel_Despised</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Endure</challenge><weight>2</weight><requirement>150</requirement></li>
+		</challenges>
+		<successText>The pilgrims made the journey and stood where so many had stood before them.</successText>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_MadePilgrimage</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+			<li Class="Expeditions.PawnEffect_Certainty">
+				<offset>0.1</offset>
+			</li>
+		</pawnEffects>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_ColonyThought">
+				<thought>Exp_PilgrimsReturned</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+			<li Class="Expeditions.OutcomeEffect_DevelopmentPoints">
+				<points>1</points>
+				<outcomes>
+					<li>Success</li>
+					<li>Partial</li>
+				</outcomes>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>3</daysOnSite>
+		<squadSize>1~4</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- A village of another faith that will hear us out. Converts may follow the preachers home. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteGentle" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_PreachingTour</defName>
+		<label>preaching tour</label>
+		<description>A village of another faith is open to visitors, and its people are curious about ours.</description>
+		<color>(0.6, 0.6, 0.8)</color>
+		<needsFaction>Friendly</needsFaction>
+		<otherFaith>true</otherFaith>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyMeme>
+					<li>Proselytizer</li>
+				</anyMeme>
+				<anyPrecept>
+					<li>Proselytizing_Occasionally</li>
+					<li>Proselytizing_Sometimes</li>
+					<li>Proselytizing_Frequently</li>
+				</anyPrecept>
+				<noPrecept>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Proselytizing_Never</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Religion_ProselytismDisliked</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Contest_Debate</challenge><weight>2</weight><requirement>100</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<joiners>
+			<chance>0.3</chance>
+			<count>1</count>
+			<kind>Villager</kind>
+			<joinEvent>ConvertedNewMember</joinEvent>
+		</joiners>
+		<goodwillReward>5</goodwillReward>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_PreachedToStrangers</thought>
+			</li>
+			<li Class="Expeditions.PawnEffect_Certainty">
+				<offset>0.05</offset>
+			</li>
+		</pawnEffects>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_FactionGoodwill">
+				<amount>-10</amount>
+				<outcomes>
+					<li>Failure</li>
+				</outcomes>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- A rival faith's shrine near one of its settlements. Wrecking it is a raid, and its owners won't forget. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_HereticShrine</defName>
+		<label>heretic shrine</label>
+		<description>Pilgrims of a rival faith gather at a shrine in the hills, close to one of its settlements.</description>
+		<color>(0.75, 0.4, 0.3)</color>
+		<needsFaction>Hostile</needsFaction>
+		<otherFaith>true</otherFaith>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyMeme>
+					<li>Supremacist</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Iconoclast</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_ViolentConversion</li>
+				</anyMeme>
+				<anyPrecept>
+					<li MayRequire="Sarg.AlphaMemes">AM_RelicDestruction_Desired</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Religion_Despised</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Proselytizing_Forceful</li>
+				</anyPrecept>
+				<noMeme>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_NonViolence</li>
+				</noMeme>
+				<noPrecept>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_Violence_Abhorrent_Strict</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>250</requirement></li>
+			<li><challenge>Exp_Stealth</challenge><weight>1</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>Silver</thing><count>150~400</count></li>
+			<li><thing>Gold</thing><count>10~30</count><chance>0.5</chance></li>
+		</loot>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_HumbledHeretics</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+		</pawnEffects>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_RaidCredit" />
+			<li Class="Expeditions.OutcomeEffect_FactionGoodwill">
+				<amount>-20</amount>
+				<outcomes>
+					<li>Success</li>
+					<li>Partial</li>
+				</outcomes>
+			</li>
+			<li Class="Expeditions.OutcomeEffect_ColonyThought">
+				<thought>Exp_HumbledHeretics</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- Loggers in an ancient grove. Driving them off is a fight; a Gauranlen seed may come home. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_FelledGrove</defName>
+		<label>felled grove</label>
+		<description>Loggers are clearing an ancient grove. The oldest trees are already marked for the saw.</description>
+		<color>(0.4, 0.65, 0.35)</color>
+		<biomes>
+			<li>TemperateForest</li>
+			<li>BorealForest</li>
+			<li>TropicalRainforest</li>
+			<li>TemperateSwamp</li>
+			<li>TropicalSwamp</li>
+		</biomes>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<anyMeme>
+					<li>TreeConnection</li>
+					<li>NaturePrimacy</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_GauranlenSupremacy</li>
+				</anyMeme>
+				<anyPrecept>
+					<li>TreeCutting_Prohibited</li>
+					<li>TreeCutting_Horrible</li>
+					<li>TreeCutting_Disapproved</li>
+					<li>GauranlenConnection_Strong</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Dryads_Enhanced</li>
+				</anyPrecept>
+				<noMeme>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_NonViolence</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Deforestation</li>
+				</noMeme>
+				<noPrecept>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_Violence_Abhorrent_Strict</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_GauranlenConnection_Forbidden</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Fight</challenge><weight>2</weight><requirement>200</requirement></li>
+			<li><challenge>Exp_Endure</challenge><weight>0.5</weight><requirement>100</requirement></li>
+		</challenges>
+		<loot>
+			<li><thing>GauranlenSeed</thing><count>1</count><successOnly>true</successOnly></li>
+		</loot>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_ColonyThought">
+				<thought>Exp_SavedGrove</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+	<!-- A camp with no guards posted. The people taken come home as slaves for a slaver faith, prisoners otherwise. -->
+	<Expeditions.ExpeditionSiteDef ParentName="Exp_SiteHarsh" MayRequire="Ludeon.RimWorld.Ideology">
+		<defName>Exp_Captives</defName>
+		<label>unguarded camp</label>
+		<description>A nomad band camps by the trail with no guards posted. Nobody would hear a thing.</description>
+		<color>(0.55, 0.35, 0.35)</color>
+		<needsFaction>Any</needsFaction>
+		<gates>
+			<li Class="Expeditions.SiteGate_Ideo">
+				<approvesSlavery>true</approvesSlavery>
+				<anyRitualPattern>
+					<li>SacrificePrisoner</li>
+				</anyRitualPattern>
+				<anyMeme>
+					<li>Cannibal</li>
+					<li MayRequire="Ludeon.RimWorld.Biotech">Bloodfeeding</li>
+					<li MayRequire="Ludeon.RimWorld.Anomaly">Inhuman</li>
+					<li MayRequire="Sarg.AlphaMemes">AM_Sadist</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_BloodCourt</li>
+				</anyMeme>
+				<anyPrecept>
+					<li MayRequire="Ludeon.RimWorld.Biotech">Bloodfeeders_Revered</li>
+					<li MayRequire="Ludeon.RimWorld.Anomaly">PsychicRituals_Exalted</li>
+				</anyPrecept>
+				<noMeme>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_NonViolence</li>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Emancipation</li>
+				</noMeme>
+				<noPrecept>
+					<li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+					<li MayRequire="Sarg.AlphaMemes,VanillaExpanded.VMemesE">AM_Violence_Abhorrent_Strict</li>
+				</noPrecept>
+			</li>
+		</gates>
+		<challenges>
+			<li><challenge>Exp_Stealth</challenge><weight>2</weight><requirement>120</requirement></li>
+			<li><challenge>Exp_Fight</challenge><weight>1</weight><requirement>150</requirement></li>
+		</challenges>
+		<captives>
+			<chance>0.9</chance>
+			<count>1~3</count>
+			<partialFactor>0.5</partialFactor>
+		</captives>
+		<outcomeEffects>
+			<li Class="Expeditions.OutcomeEffect_RaidCredit" />
+			<li Class="Expeditions.OutcomeEffect_FactionGoodwill">
+				<amount>-25</amount>
+				<outcomes>
+					<li>Success</li>
+					<li>Partial</li>
+				</outcomes>
+			</li>
+		</outcomeEffects>
+		<findChanceBase>1</findChanceBase>
+		<daysOnSite>1</daysOnSite>
+		<squadSize>2~5</squadSize>
+	</Expeditions.ExpeditionSiteDef>
+
+</Defs>
