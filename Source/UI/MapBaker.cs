@@ -49,7 +49,7 @@ public static class MapBaker
 
     public static BakedMap Get(PlanetTile home, int range, MapStyle style)
     {
-        if (!cache.TryGetValue((home, range, style), out BakedMap map))
+        if (!cache.TryGetValue((home, range, style), out BakedMap? map))
             cache[(home, range, style)] = map = Bake(home, range, style);
         return map;
     }
