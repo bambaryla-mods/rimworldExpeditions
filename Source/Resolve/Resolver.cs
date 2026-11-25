@@ -266,6 +266,10 @@ public static class Resolver
                 for (int i = 0; i < n; i++)
                     made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(j.kind, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
                         tile: e.opp.tile, forceGenerateNewPawn: true)));
+                // Joiners are made in the colony's faction, so they already hold its faith: a convert needs only the event.
+                if (j.joinEvent != null)
+                    foreach (Pawn joiner in made.Where(p => p.RaceProps.Humanlike))
+                        Effects.Safe(site, () => Faith.Record(j.joinEvent, Faith.Doer(e)));
             }
         }
         if (outcome == Outcome.Success && site.tamedAnimals is { } a && Rand.Chance(a.chance))

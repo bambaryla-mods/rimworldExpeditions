@@ -45,6 +45,7 @@ public class JoinerSpec
     public PawnKindDef? kind;
     public float partialFactor; // above 0: they also roll on a partial win, at chance x this
     public List<MechKindEntry> mechKinds = new(); // Biotech: the joiner is a mech, and needs a mechanitor in the squad
+    public HistoryEventDef? joinEvent; // recorded for each person who joins (a convert: ConvertedNewMember)
 
     // The mech kinds the colony can take now.
     public List<PawnKindDef> LiveMechKinds() =>
