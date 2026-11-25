@@ -275,7 +275,8 @@ public static class Resolver
             int n = kinds.Count == 0 ? 0 : a.count.RandomInRange;
             for (int i = 0; i < n; i++)
             {
-                PawnKindDef k = kinds.RandomElementByWeight(biome.CommonalityOfAnimal);
+                // A listed herd isn't the biome's wildlife: its kinds may never live wild here, so pick evenly.
+                PawnKindDef k = a.kinds.Count > 0 ? kinds.RandomElement() : kinds.RandomElementByWeight(biome.CommonalityOfAnimal);
                 made.Add(PawnGenerator.GeneratePawn(new PawnGenerationRequest(k, Faction.OfPlayer, PawnGenerationContext.NonPlayer,
                     tile: e.opp.tile, forceGenerateNewPawn: true)));
             }

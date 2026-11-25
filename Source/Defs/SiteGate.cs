@@ -46,3 +46,50 @@ public class SiteGate_Mechanitor : SiteGate
 
     public override string? ClosedReason => "no mechanitor";
 }
+
+// The colony's main ideoligion wants this (Ideology). Any entry in the "any" lists opens it; anything in the "no"
+// lists closes it whatever else matches. Entries from other DLCs and mods carry MayRequire and drop out when absent.
+public class SiteGate_Ideo : SiteGate
+{
+    public List<PreceptDef> anyPrecept = new();
+    public List<MemeDef> anyMeme = new();
+    public bool approvesSlavery;
+    public List<RitualPatternDef> anyRitualPattern = new();
+    public List<PreceptDef> noPrecept = new();
+    public List<MemeDef> noMeme = new();
+
+    private bool AnyListed => anyPrecept.Count > 0 || anyMeme.Count > 0 || approvesSlavery || anyRitualPattern.Count > 0;
+
+    public bool Matches(Ideo? ideo)
+    {
+        if (ideo == null) return false;
+        return IdeoMath.GateOpen(AnyListed, AnyMatch(ideo), Block(ideo) != null);
+    }
+
+    private bool AnyMatch(Ideo ideo) =>
+        anyPrecept.Any(p => p != null && ideo.HasPrecept(p))
+        || anyMeme.Any(m => m != null && ideo.HasMeme(m))
+        || (approvesSlavery && ideo.PreceptsListForReading.Any(p => p.def.approvesOfSlavery))
+        || (anyRitualPattern.Count > 0 && ideo.PreceptsListForReading.OfType<Precept_Ritual>().Any(r => anyRitualPattern.Contains(r.sourcePattern)));
+
+    // The first thing in this ideoligion that rules the site out, if any.
+    private Def? Block(Ideo ideo) =>
+        (Def?)noPrecept.FirstOrDefault(p => p != null && ideo.HasPrecept(p)) ?? noMeme.FirstOrDefault(m => m != null && ideo.HasMeme(m));
+
+    public override bool Open() => ModsConfig.IdeologyActive && Matches(Faction.OfPlayer?.ideos?.PrimaryIdeo);
+
+    public override string? ClosedReason
+    {
+        get
+        {
+            Ideo? ideo = Faction.OfPlayer?.ideos?.PrimaryIdeo;
+            if (!ModsConfig.IdeologyActive || ideo == null) return "no ideoligion";
+            return Block(ideo) is { } b ? $"ruled out by {b.label}" : "no matching ideoligion";
+        }
+    }
+
+    public override IEnumerable<string> ConfigErrors()
+    {
+        if (!AnyListed && noPrecept.Count == 0 && noMeme.Count == 0) yield return "SiteGate_Ideo lists nothing to match";
+    }
+}

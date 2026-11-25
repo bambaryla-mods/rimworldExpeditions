@@ -57,6 +57,7 @@ public static class OfferGenerator
         if (o.site.settlementLink != null && !SettlementLinks.Alive(o)) return false;
         if (o.site.link != null) return SiteLinks.Alive(o.linkedSite);
         if (o.site.needsFaction != FactionNeed.None && !Wants(o.site.needsFaction, o.faction, o.site.factionDefs)) return false;
+        if (o.site.otherFaith && !OtherFaith(o.faction!)) return false;
         if (o.site.needsEnemy && !Wants(FactionNeed.Hostile, o.enemy, o.site.enemyFactionDefs)) return false;
         return true;
     }
@@ -110,7 +111,7 @@ public static class OfferGenerator
         {
             if (s.needsFaction != FactionNeed.None)
             {
-                Faction? patron = NearbyFaction(s.needsFaction, st.Tile, st.Faction, EnemySiteRadius, s.factionDefs);
+                Faction? patron = NearbyFaction(s.needsFaction, st.Tile, st.Faction, EnemySiteRadius, s.factionDefs, FaithFilter(s));
                 if (patron == null) continue;
                 faction = patron;
                 enemy = st.Faction;
@@ -149,7 +150,7 @@ public static class OfferGenerator
         if (site.tamedAnimals != null && site.tamedAnimals.Candidates(t.PrimaryBiome).Count == 0) return false;
         if (site.needsFaction != FactionNeed.None)
         {
-            faction = NearbyFaction(site.needsFaction, tile, null, FactionSiteRadius, site.factionDefs);
+            faction = NearbyFaction(site.needsFaction, tile, null, FactionSiteRadius, site.factionDefs, FaithFilter(site));
             if (faction == null) return false;
         }
         if (site.needsEnemy)
@@ -169,11 +170,21 @@ public static class OfferGenerator
     }
 
     // Same layer only: settlements in orbit (Odyssey) have tile ids of another layer, and measuring across layers errors.
-    private static Faction? NearbyFaction(FactionNeed need, PlanetTile tile, Faction? not, int radius, List<FactionDef> defs) =>
+    private static Faction? NearbyFaction(FactionNeed need, PlanetTile tile, Faction? not, int radius, List<FactionDef> defs,
+        Func<Faction, bool>? also = null) =>
         Find.WorldObjects.Settlements
-            .Where(x => x.Tile.Layer == tile.Layer && x.Faction != not && Wants(need, x.Faction, defs)
+            .Where(x => x.Tile.Layer == tile.Layer && x.Faction != not && Wants(need, x.Faction, defs) && (also == null || also(x.Faction))
                 && Find.WorldGrid.ApproxDistanceInTiles(x.Tile, tile) <= radius)
             .RandomElementWithFallback()?.Faction;
+
+    private static Func<Faction, bool>? FaithFilter(ExpeditionSiteDef s) => s.otherFaith ? OtherFaith : null;
+
+    // A faction with an ideoligion of its own that isn't the colony's main one.
+    public static bool OtherFaith(Faction f)
+    {
+        Ideo? theirs = f?.ideos?.PrimaryIdeo;
+        return theirs != null && theirs != Faction.OfPlayer?.ideos?.PrimaryIdeo;
+    }
 
     // As below, and of one of these defs when any are listed.
     public static bool Wants(FactionNeed need, Faction? f, List<FactionDef>? defs) =>
@@ -204,7 +215,8 @@ public static class OfferGenerator
         {
             // Only tiles near a qualifying settlement in range; far cheaper than testing random tiles.
             var near = Find.WorldObjects.Settlements
-                .Where(s => Wants(anchor, s.Faction, anchorDefs) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range))
+                .Where(s => Wants(anchor, s.Faction, anchorDefs) && WorldArea.InRange(home, s.Tile, ExpeditionsMod.Settings.range)
+                    && (!site.otherFaith || site.needsFaction == FactionNeed.None || OtherFaith(s.Faction)))
                 .SelectMany(s => tiles.Where(t => Find.WorldGrid.ApproxDistanceInTiles(s.Tile, t) <= FactionSiteRadius))
                 .ToList();
             if (near.Count == 0) return false;

@@ -12,6 +12,7 @@ public enum FactionNeed
     Hostile,
     Ally,
     Friendly, // not hostile: neutral or ally
+    Any,      // any faction that isn't the player's
 }
 
 public class SiteChallenge
@@ -62,10 +63,11 @@ public class TamedAnimalsSpec
     public float chance = 1f;
     public IntRange count = new(1, 1);
     public float maxWildness = 1f;
+    public List<PawnKindDef> kinds = new(); // when set, these and only these, whatever the biome (a stolen herd)
 
-    // The biome's wild animals this site can tame.
+    // The biome's wild animals this site can tame, or the listed kinds.
     public List<PawnKindDef> Candidates(BiomeDef biome) =>
-        biome.AllWildAnimals
+        kinds.Count > 0 ? kinds.Where(k => k != null).ToList() : biome.AllWildAnimals
             .Where(k => k.RaceProps.Animal && biome.CommonalityOfAnimal(k) > 0f && k.race.GetStatValueAbstract(StatDefOf.Wildness) <= maxWildness)
             .ToList();
 }
@@ -109,6 +111,7 @@ public class ExpeditionSiteDef : Def
     public bool needsEnemy; // a hostile settlement near the tile too: who the squad fights for the patron
     public List<FactionDef> factionDefs = new();      // when set, needsFaction matches only these
     public List<FactionDef> enemyFactionDefs = new(); // when set, needsEnemy matches only these
+    public bool otherFaith; // the site's faction must follow another ideoligion than the colony's main one (Ideology)
     public bool growingSeason;
     public float commonness = 1f; // weight among ready-made offers
 
