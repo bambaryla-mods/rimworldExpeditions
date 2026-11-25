@@ -69,7 +69,9 @@ public class ExpeditionsGame : GameComponent, IThingHolder
         {
             if (SiteLinks.Lost(e) || SettlementLinks.Lost(e))
             {
-                if (e.phase == Phase.Departing) Departure.CallOff(e, "Exp_WorksiteGoneCancelled");
+                bool recalled = SettlementLinks.Recalled(e);
+                if (e.phase == Phase.Departing) Departure.CallOff(e, recalled ? "Exp_RecalledCancelled" : "Exp_WorksiteGoneCancelled");
+                else if (recalled) SiteLinks.TurnBack(e, Outcome.CutShort).events.Add("Exp_RecalledLine".Translate());
                 else SiteLinks.TurnBack(e);
                 continue;
             }

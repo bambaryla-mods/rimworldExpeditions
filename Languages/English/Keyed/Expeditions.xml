@@ -48,7 +48,10 @@
 	<Exp_GoodwillLine>Goodwill with {0}: +{1}</Exp_GoodwillLine>
 	<Exp_GoodwillAllLine>Goodwill with every friendly faction: +{0}</Exp_GoodwillAllLine>
 	<Exp_GoodwillAllExceptLine>Word of it travels: goodwill with every other faction +{0}</Exp_GoodwillAllExceptLine>
-	<Exp_MechsNoMechanitor>The dormant mechs woke, but with no mechanitor among them nobody could take control. They were left behind.</Exp_MechsNoMechanitor>
+	<Exp_MechsNoMechanitor>The mechs they found woke, but with no mechanitor in the squad nobody could take control. They were left behind.</Exp_MechsNoMechanitor>
+	<Exp_MechsNoneAvailable>None of the mechs they found were of a kind the colony can take yet. They were left behind.</Exp_MechsNoneAvailable>
+	<Exp_RecalledLine>The reason for going was gone, and they were called home.</Exp_RecalledLine>
+	<Exp_RecalledCancelled>The expedition to the {0} was called off: there's no reason to go any more.</Exp_RecalledCancelled>
 	<Exp_SettlementRazeWarning>A win razes {0} for good.</Exp_SettlementRazeWarning>
 	<Exp_SettlementRazed>{0} was razed. Nothing stands there now.</Exp_SettlementRazed>
 	<Exp_SettlementRaided>{0} was raided, but it still stands.</Exp_SettlementRaided>

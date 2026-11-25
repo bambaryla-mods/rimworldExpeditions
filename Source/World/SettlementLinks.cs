@@ -62,6 +62,9 @@ public class SettlementLinkWorker
     public virtual float FightRequirement(Settlement s) =>
         (float)SiteLinkMath.FightRequirement(StorytellerUtility.DefaultSiteThreatPointsNow(), Props.fightPerPoint, Props.fightMin);
 
+    // The whole haul, for a kind of settlement whose stores are known; null rolls the site's table as usual.
+    public virtual List<Thing>? MakeLoot(Expedition e, Outcome outcome, bool found) => null;
+
     public virtual IEnumerable<TaggedString> InfoLines(Opportunity o)
     {
         Settlement s = o.linkedSettlement!;
@@ -118,6 +121,17 @@ public static class SettlementLinks
         return game.offers.Any(o => o.linkedSettlement == s) || game.active.Any(e => e.opp.linkedSettlement == s);
     }
 
+    // Taken by something an immediate site can't push aside: a squad already out, or another immediate offer.
+    public static bool Held(Settlement s)
+    {
+        var game = ExpeditionsGame.Instance;
+        return game.offers.Any(o => o.linkedSettlement == s && o.site.immediate) || game.active.Any(e => e.opp.linkedSettlement == s);
+    }
+
+    // The settlement still stands and nobody is in it in person: the squad is being called back, not finding it gone.
+    public static bool Recalled(Expedition e) =>
+        e.opp.site.settlementLink != null && e.opp.linkedSettlement is { Spawned: true, Destroyed: false, HasMap: false };
+
     // The settlement went away, or its worker called the squad back, before they were done: they come home.
     public static bool Lost(Expedition e) =>
         e.opp.site.settlementLink != null && e.phase != Phase.Returning && !Alive(e.opp);
@@ -128,7 +142,8 @@ public static class SettlementLinks
         SettlementLinkProps sl = site.settlementLink!;
         int range = ExpeditionsMod.Settings.range;
         return Find.WorldObjects.Settlements.Where(s => s.Tile.Layer == home.Layer && s.Spawned && !s.HasMap
-            && OfferGenerator.Wants(sl.need, s.Faction, sl.factionDefs) && WorldArea.InRange(home, s.Tile, range) && !Linked(s)
+            && OfferGenerator.Wants(sl.need, s.Faction, sl.factionDefs) && WorldArea.InRange(home, s.Tile, range)
+            && !(site.immediate ? Held(s) : Linked(s))
             && Effects.Safe(site, () => sl.Worker(site).CanOffer(s), false));
     }
 

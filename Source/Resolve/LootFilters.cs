@@ -3,8 +3,9 @@ using Verse;
 namespace Expeditions;
 
 // Lets another mod strike things out of what a squad brings home: subclass it, and Expeditions finds it at startup.
-// It runs on the rolled loot before the haul is weighed, and again on what is carried when the squad gets home, so a
-// rule that changed on the way back still holds. Return a line for the report, or null.
+// It runs on the rolled loot before the haul is weighed, and again when the squad gets home, so a rule that changed on
+// the way back still holds. That second pass sees everything carried home besides people and the ride: the haul, the
+// patron's payment, and whatever supplies the squad packed. Return a line for the report, or null.
 public abstract class ExpeditionLootFilter
 {
     // Remove what the filter forbids from `loot`. Things removed are destroyed by Expeditions.

@@ -43,7 +43,9 @@ public static class OfferGenerator
             if (!s.immediate || s.FromWorldOnly) continue;
             if (game.offers.Any(o => o.site == s) || game.active.Any(e => e.opp.site == s) || !s.GatesOpen) continue;
             Opportunity? opp = TryMake(s, home.Tile, null);
-            if (opp != null) game.offers.Add(opp);
+            if (opp == null) continue;
+            if (opp.linkedSettlement != null) game.offers.RemoveAll(o => o.linkedSettlement == opp.linkedSettlement && !o.site.immediate);
+            game.offers.Add(opp);
         }
     }
 

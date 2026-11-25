@@ -231,7 +231,12 @@ public static class Resolver
         if (!ModsConfig.BiotechActive) return made;
         Pawn? mechanitor = e.AwayPawns.FirstOrDefault(p => !p.Dead && p.RaceProps.Humanlike && MechanitorUtility.IsMechanitor(p));
         List<PawnKindDef> kinds = j.LiveMechKinds();
-        if (mechanitor == null || kinds.Count == 0)
+        if (kinds.Count == 0)
+        {
+            report.effectLines.Add("Exp_MechsNoneAvailable".Translate());
+            return made;
+        }
+        if (mechanitor == null)
         {
             report.effectLines.Add("Exp_MechsNoMechanitor".Translate());
             return made;

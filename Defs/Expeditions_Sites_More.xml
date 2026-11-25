@@ -18,7 +18,7 @@
 			<li><thing>ComponentSpacer</thing><count>1~2</count></li>
 			<li><thing>Gold</thing><count>10~30</count></li>
 			<li><thing>Silver</thing><count>100~300</count><chance>0.6</chance></li>
-			<!-- The prize in the pod: needs Royalty for anything to be in these categories. -->
+			<!-- The prize in the pod. Skill neurotrainers are in the core game; techprints need Royalty. -->
 			<li><category>Neurotrainers</category><count>1</count><chance>0.4</chance><successOnly>true</successOnly></li>
 			<li><category>Techprints</category><count>1</count><chance>0.3</chance><successOnly>true</successOnly></li>
 		</loot>

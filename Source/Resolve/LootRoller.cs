@@ -21,6 +21,15 @@ public static class LootRoller
             return Fit(e, prize, report);
         }
 
+        // A settlement worker that knows the stores says what is there; otherwise the site's own table rolls.
+        if (site.SettlementWorker is { } sw && e.opp.linkedSettlement != null
+            && Effects.Safe(site, () => sw.MakeLoot(e, outcome, found), null) is { } stores)
+        {
+            if (site.silverReward > 0) Pay(stores, site.needsFaction != FactionNeed.None ? e.opp.faction : null, Scale(site.silverReward, factor));
+            LootFilters.Run(e, stores, report);
+            return Fit(e, stores, report);
+        }
+
         if (site.silverReward > 0) Pay(made, site.needsFaction != FactionNeed.None ? e.opp.faction : null, Scale(site.silverReward, factor));
         if (found)
         {
