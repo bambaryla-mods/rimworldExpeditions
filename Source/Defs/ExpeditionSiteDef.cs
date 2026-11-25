@@ -59,6 +59,14 @@ public class MechKindEntry
 }
 
 // Wild animals of the site's biome, tamed and brought home.
+// Food (as nutrition) and medicine the squad must bring and gives away at the site, on the listed outcomes.
+public class SiteSupplies
+{
+    public float nutrition;
+    public int medicine;
+    public List<Outcome> spentOn = new() { Outcome.Success, Outcome.Partial };
+}
+
 public class TamedAnimalsSpec
 {
     public float chance = 1f;
@@ -152,6 +160,7 @@ public class ExpeditionSiteDef : Def
     public float xpFactor = 1f;
     public JoinerSpec? joiners;
     public TamedAnimalsSpec? tamedAnimals;
+    public SiteSupplies? supplies;
     [MustTranslate] public string? successText; // a line in the report on a full Success, for jobs with nothing to bring home
 
     // Whether there is anything to find here. Without it the report says nothing about finding.
@@ -213,6 +222,7 @@ public class ExpeditionSiteDef : Def
         if (joiners != null && joiners.kind == null && joiners.mechKinds.Count == 0) yield return "joiners has no kind and no mechKinds";
         if (joiners != null && joiners.partialFactor < 0f) yield return "joiners.partialFactor must not be negative";
         if (joiners != null && joiners.count.min < 1) yield return "joiners.count.min must be at least 1";
+        if (supplies != null && supplies.nutrition <= 0f && supplies.medicine <= 0) yield return "supplies asks for no food and no medicine";
         if (tamedAnimals != null && tamedAnimals.count.min < 1) yield return "tamedAnimals.count.min must be at least 1";
     }
 }

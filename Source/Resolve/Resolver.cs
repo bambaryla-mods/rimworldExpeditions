@@ -39,6 +39,7 @@ public static class Resolver
 
             foreach (Pawn p in pawns) report.pawns.Add(ApplyFate(e, p, outcome, report));
             PawnEffects(e, outcome, report);
+            GiveSupplies(e, outcome, report);
             // Slaves with nobody left to keep them in line all run; the rest may still try.
             SquadEvents.CheckOverlord(e);
             SquadEvents.SlaveRoll(e);
@@ -108,6 +109,15 @@ public static class Resolver
             foreach (PawnEffect pe in site.pawnEffects.Where(x => x.outcomes.Contains(outcome)))
                 Effects.Safe(site, () => pe.Apply(p, e, outcome, report));
         }
+    }
+
+    // Alms given at the site: from everyone who carries, pack animals too, since their packs were counted at launch.
+    private static void GiveSupplies(Expedition e, Outcome outcome, ExpeditionReport report)
+    {
+        if (e.opp.site.supplies is not { } s || !s.spentOn.Contains(outcome)) return;
+        var carriers = e.AwayPawns.Where(p => !p.Dead && !p.IsPrisoner && !RideFinder.VehicleCompat.IsVehicle(p)).ToList();
+        (float food, int meds) = SupplyPlanner.Spend(carriers, s.nutrition, s.medicine);
+        if (food > 0f || meds > 0) report.effectLines.Add("Exp_SuppliesGivenLine".Translate(food.ToString("F1"), meds));
     }
 
     // The site's own outcome effects, then those a faction adds when it holds this site.

@@ -58,9 +58,14 @@ public static class Departure
             if (opp.linkedSite == null) outDays += opp.site.daysOnSite;
             if (Find.TickManager.TicksGame + outDays * GenDate.TicksPerDay >= deadline) return "Exp_WorksiteTooFar".Translate();
         }
-        float need = FoodPlanner.Required(squad, trip);
+        float need = SupplyPlanner.FoodNeed(squad, trip, opp.site);
         float have = FoodPlanner.Available(squad, map, need, out _);
         if (FoodMath.Shortfall(need, have) > 0.001) return "Exp_NotEnoughFood".Translate(need.ToString("F1"), have.ToString("F1"));
+        if (opp.site.supplies is { medicine: > 0 } sup)
+        {
+            int meds = SupplyPlanner.Medicine(squad, map, sup.medicine, out _);
+            if (meds < sup.medicine) return "Exp_NotEnoughMedicine".Translate(sup.medicine, meds);
+        }
         return true;
     }
 
@@ -70,7 +75,12 @@ public static class Departure
         double foot = Math.Max(FootDays(map, opp, squad), 0);
         double trip = TravelMath.TripDays(ride.ride, foot, Tiles(map, opp), opp.site.daysOnSite, ExpeditionsDefOf.Tuning.Travel);
         float need = FoodPlanner.Required(squad, trip);
-        FoodPlanner.Available(squad, map, need, out var pickups);
+        FoodPlanner.Available(squad, map, SupplyPlanner.FoodNeed(squad, trip, opp.site), out var pickups);
+        if (opp.site.supplies is { medicine: > 0 } sup)
+        {
+            SupplyPlanner.Medicine(squad, map, sup.medicine, out var medPickups);
+            pickups.AddRange(medPickups);
+        }
 
         var e = new Expedition
         {

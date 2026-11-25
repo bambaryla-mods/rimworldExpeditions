@@ -20,6 +20,7 @@
 	<Exp_PawnUnavailable>Someone in the squad cannot leave right now.</Exp_PawnUnavailable>
 	<Exp_NoPath>There is no way to get there on foot.</Exp_NoPath>
 	<Exp_NotEnoughFood>Not enough food: needs {0}, has {1}.</Exp_NotEnoughFood>
+	<Exp_NotEnoughMedicine>Not enough medicine to give: needs {0}, has {1}.</Exp_NotEnoughMedicine>
 	<Exp_Departed>The squad has set out for the {0}.</Exp_Departed>
 	<Exp_DepartureCancelled>The expedition to the {0} was called off: the squad fell apart before leaving.</Exp_DepartureCancelled>
 	<Exp_DepartReport>setting out on an expedition.</Exp_DepartReport>
@@ -54,6 +55,7 @@
 	<Exp_RaidCreditLine>It counts as a raid.</Exp_RaidCreditLine>
 	<Exp_CharityLine>It counts as charity.</Exp_CharityLine>
 	<Exp_GoodwillFactionLine>{0}: goodwill {1}</Exp_GoodwillFactionLine>
+	<Exp_SuppliesGivenLine>Given away: {0} nutrition of food and {1} medicine.</Exp_SuppliesGivenLine>
 	<Exp_DevelopmentLine>Our ideoligion gains {0} development point(s).</Exp_DevelopmentLine>
 	<Exp_MechsNoMechanitor>The mechs they found woke, but with no mechanitor in the squad nobody could take control. They were left behind.</Exp_MechsNoMechanitor>
 	<Exp_MechsNoneAvailable>None of the mechs they found were of a kind the colony can take yet. They were left behind.</Exp_MechsNoneAvailable>
@@ -80,6 +82,7 @@
 	<Exp_SelectOpportunity>Pick an opportunity from the list or the map.</Exp_SelectOpportunity>
 	<Exp_Numbers>Success {0} · Find {1} · Away {2}</Exp_Numbers>
 	<Exp_Food>Food: needs {0}, has {1}</Exp_Food>
+	<Exp_Supplies>Of that, {0} is to give away, with {1} medicine (has {2})</Exp_Supplies>
 	<Exp_WorksiteGuards>{0} guards</Exp_WorksiteGuards>
 	<Exp_WorksiteHaul>At best: {0}</Exp_WorksiteHaul>
 	<Exp_LinkComplexLoot>the complex's own loot</Exp_LinkComplexLoot>

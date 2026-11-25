@@ -41,9 +41,11 @@ public static class FoodPlanner
         return have;
     }
 
-    // Removes `nutrition` worth of food from what the returning squad carries, cheapest food first.
-    public static void ConsumeOnReturn(List<Pawn> returning, float nutrition)
+    // Removes `nutrition` worth of food from what the returning squad carries, cheapest food first. Returns the
+    // nutrition actually removed.
+    public static float ConsumeOnReturn(List<Pawn> returning, float nutrition)
     {
+        float wanted = nutrition;
         var food = returning
             .SelectMany(p => (p.inventory?.innerContainer ?? Enumerable.Empty<Thing>()).ToList())
             .Where(t => Nutrition(t) > 0f)
@@ -58,6 +60,7 @@ public static class FoodPlanner
             if (eat >= t.stackCount) t.Destroy();
             else t.SplitOff(eat).Destroy();
         }
+        return wanted - Math.Max(0f, nutrition);
     }
 
     private static float Nutrition(Thing t) => t.def.IsNutritionGivingIngestible ? t.GetStatValue(StatDefOf.Nutrition) : 0f;

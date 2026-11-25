@@ -20,6 +20,7 @@ public partial class Window_Expeditions
     private AcceptanceReport launchReport;
     private double tripDays;
     private float foodNeed, foodHave;
+    private int medsHave;
 
     private List<Opportunity> VisibleOffers() =>
         Game.offers.Where(o => WorldArea.InRange(Home, o.tile, ExpeditionsMod.Settings.range))
@@ -65,8 +66,9 @@ public partial class Window_Expeditions
         RideOption option = rides.FirstOrDefault(r => r.ride == ride) ?? rides[0];
         eval = SquadEvaluator.Evaluate(squad, selectedOpp, ride, option);
         tripDays = squad.Count == 0 ? -1 : Departure.TripDays(Map, selectedOpp, squad, ride);
-        foodNeed = tripDays < 0 ? 0f : FoodPlanner.Required(squad, tripDays);
+        foodNeed = tripDays < 0 ? 0f : SupplyPlanner.FoodNeed(squad, tripDays, selectedOpp.site);
         foodHave = FoodPlanner.Available(squad, Map, foodNeed, out _);
+        medsHave = selectedOpp.site.supplies is { medicine: > 0 } sup ? SupplyPlanner.Medicine(squad, Map, sup.medicine, out _) : 0;
         launchReport = squad.Count == 0 ? "Exp_PickSquad".Translate() : Departure.CanLaunch(selectedOpp, squad, option, Map);
     }
 
@@ -117,6 +119,14 @@ public partial class Window_Expeditions
         GUI.color = foodHave + 0.001f < foodNeed ? ColorLibrary.RedReadable : Color.white;
         Label(new Rect(info.x, infoY + 24f, info.width, 20f), "Exp_Food".Translate(foodNeed.ToString("F1"), foodHave.ToString("F1")), GameFont.Tiny);
         GUI.color = Color.white;
+        if (o.site.supplies is { } supplies)
+        {
+            // The food line above already counts the food to give away; this says how much of it is for them.
+            GUI.color = medsHave < supplies.medicine ? ColorLibrary.RedReadable : Color.white;
+            Label(new Rect(info.x, infoY + 42f, info.width, 20f),
+                "Exp_Supplies".Translate(supplies.nutrition.ToString("F1"), supplies.medicine, medsHave), GameFont.Tiny);
+            GUI.color = Color.white;
+        }
 
         // Column 2: one bar per challenge; hover lists who and what gave the score.
         if (eval != null)
