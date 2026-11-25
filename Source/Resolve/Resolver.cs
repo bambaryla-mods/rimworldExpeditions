@@ -47,6 +47,7 @@ public static class Resolver
             if (found && outcome == Outcome.Success && e.opp.captive is { } captive) Rescue(e, captive, report);
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
             if (found && outcome != Outcome.Failure) Recruits(e, outcome, report);
+            if (found && outcome != Outcome.Failure) TakeCaptives(e, outcome, report);
             Reward(e, outcome, report);
         }
         finally
@@ -60,7 +61,7 @@ public static class Resolver
         // A linked settlement ends as its worker says: raided, razed or untouched, and its owner may answer.
         if (site.SettlementWorker is { } sw && e.opp.linkedSettlement is { Spawned: true, Destroyed: false } settlement)
         {
-            var raiders = e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList();
+            var raiders = e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead && !e.IsCaptive(p)).ToList();
             if (outcome == Outcome.Partial && raiders.Count > 0 && Retaliation.For(e) is { } raid)
             {
                 e.retaliation = raid;
@@ -74,13 +75,13 @@ public static class Resolver
         if (site.LinkWorker is { } worker)
         {
             // A partial win is answered: who will come is read now, before the site is gone.
-            if (outcome == Outcome.Partial && e.AwayPawns.Any(p => p.RaceProps.Humanlike && !p.Dead) && Retaliation.For(e) is { } raid)
+            if (outcome == Outcome.Partial && e.AwayPawns.Any(p => p.RaceProps.Humanlike && !p.Dead && !e.IsCaptive(p)) && Retaliation.For(e) is { } raid)
             {
                 e.retaliation = raid;
                 report.retaliationText = "Exp_RetaliationLine".Translate(Retaliation.Who(raid));
             }
             if (e.opp.linkedSite is { } ls && SiteLinks.Alive(ls))
-                worker.Conclude(ls, SiteLinks.QuestOf(ls), outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead).ToList());
+                worker.Conclude(ls, SiteLinks.QuestOf(ls), outcome, report, e.AwayPawns.Where(p => p.RaceProps.Humanlike && !p.Dead && !e.IsCaptive(p)).ToList());
             // A site that is gone is unlinked. One still standing (a harmful site after a failure) stays linked
             // until the squad is home, so it isn't offered again while they walk back.
             if (e.opp.linkedSite is { Destroyed: true }) e.opp.linkedSite = null;
@@ -92,7 +93,7 @@ public static class Resolver
         int tiles = e.originMap != null ? Departure.Tiles(e.originMap, e.opp) : (int)Find.WorldGrid.ApproxDistanceInTiles(e.originTile, e.opp.tile);
         double back = TravelMath.BackDays(e.ride, e.tripFootDays, tiles, tuning.Travel);
         e.StartPhase(Phase.Returning, (int)(back * GenDate.TicksPerDay));
-        if (!e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike)) Arrival.Return(e);
+        if (!e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike && !e.IsCaptive(p))) Arrival.Return(e);
         game.HolderChanged();
     }
 
@@ -260,6 +261,33 @@ public static class Resolver
             made.Add(mech);
         }
         return made;
+    }
+
+    // People taken on site, made prisoners at once so they never fight for or with the squad. Only if someone of the
+    // squad is left standing to bring them back. Whether they end as slaves is settled on arrival.
+    private static void TakeCaptives(Expedition e, Outcome outcome, ExpeditionReport report)
+    {
+        if (e.opp.site.captives is not { } c || !Rand.Chance((float)HookMath.JoinerChance(c.chance, outcome, c.partialFactor))) return;
+        if (!e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike && !e.IsCaptive(p) && !RideFinder.VehicleCompat.IsVehicle(p))) return;
+        Faction? faction = e.opp.faction is { defeated: false } f && !f.IsPlayer ? f : null;
+        int n = c.count.RandomInRange;
+        for (int i = 0; i < n; i++)
+        {
+            PawnKindDef kind = faction?.RandomPawnKind() ?? PawnKindDefOf.Villager;
+            Pawn p = PawnGenerator.GeneratePawn(new PawnGenerationRequest(kind, faction, PawnGenerationContext.NonPlayer,
+                tile: e.opp.tile, forceGenerateNewPawn: true));
+            // Gear can't be dropped by a pawn that isn't on a map; nobody comes home armed, and it isn't loot.
+            p.equipment?.DestroyAllEquipment();
+            p.inventory?.DestroyAll();
+            p.guest?.SetGuestStatus(Faction.OfPlayer, GuestStatus.Prisoner);
+            if (!e.contents.TryAdd(p))
+            {
+                Find.WorldPawns.PassToWorld(p, PawnDiscardDecideMode.Discard);
+                continue;
+            }
+            e.captives.Add(p);
+            report.pawns.Add(new PawnResult { pawn = p, fate = PawnFate.Taken });
+        }
     }
 
     // People who join and animals tamed on site. They come home in the holder with the squad.

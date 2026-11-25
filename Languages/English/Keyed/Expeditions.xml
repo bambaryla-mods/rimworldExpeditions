@@ -56,6 +56,10 @@
 	<Exp_CharityLine>It counts as charity.</Exp_CharityLine>
 	<Exp_GoodwillFactionLine>{0}: goodwill {1}</Exp_GoodwillFactionLine>
 	<Exp_SuppliesGivenLine>Given away: {0} nutrition of food and {1} medicine.</Exp_SuppliesGivenLine>
+	<Exp_CaptivesEnslavedLine>{0} captive(s) brought home as slaves.</Exp_CaptivesEnslavedLine>
+	<Exp_CaptivesPrisonersLine>{0} captive(s) brought home as prisoners.</Exp_CaptivesPrisonersLine>
+	<Exp_CaptivesNoWardenLine>{0} captive(s) brought home as prisoners: nobody free came back to enslave them.</Exp_CaptivesNoWardenLine>
+	<Exp_CaptivesFreedLine>With nobody left to hold them, {0} captive(s) got away.</Exp_CaptivesFreedLine>
 	<Exp_DevelopmentLine>Our ideoligion gains {0} development point(s).</Exp_DevelopmentLine>
 	<Exp_MechsNoMechanitor>The mechs they found woke, but with no mechanitor in the squad nobody could take control. They were left behind.</Exp_MechsNoMechanitor>
 	<Exp_MechsNoneAvailable>None of the mechs they found were of a kind the colony can take yet. They were left behind.</Exp_MechsNoneAvailable>

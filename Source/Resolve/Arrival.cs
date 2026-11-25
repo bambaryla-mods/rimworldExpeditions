@@ -13,6 +13,9 @@ public static class Arrival
         game.active.Remove(e);
         ExpeditionReport report = e.report ?? new ExpeditionReport { siteLabel = e.opp.Label, tick = Find.TickManager.TicksGame };
         game.AddHistory(report);
+        // Nobody of the squad left to hold them: captives go free before anything else counts them.
+        if (e.captives.Count > 0 && !e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike && !e.IsCaptive(p) && !RideFinder.VehicleCompat.IsVehicle(p)))
+            FreeCaptives(e, report);
 
         var pawns = e.AwayPawns.Where(p => !p.Dead).ToList();
         // A squad wiped out at the site, or robbed of everything on the road, is lost with its animals. Animals whose
@@ -48,9 +51,11 @@ public static class Arrival
         foreach (Thing t in carried.Where(t => !keep.Contains(t) && e.contents.Contains(t))) e.contents.Remove(t); // destroying usually removes it already
         foreach (OutcomeEffect oe in Resolver.OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(report.outcome)))
             Effects.Safe(e.opp.site, () => oe.OnArrival(e, report.outcome, map, report));
+        Captives.Settle(e, report);
         if (map == null)
         {
             BecomeCaravan(e, pawns);
+            e.captives.Clear();
         }
         else
         {
@@ -65,12 +70,30 @@ public static class Arrival
             }
             foreach (Pawn p in e.contents.OfType<Pawn>().ToList()) e.Release(p, map, cell);
             foreach (Thing t in e.contents.ToList()) e.Release(t, map, cell);
+            // Set down at the edge, a prisoner would run at once; vanilla gives caravan prisoners the same grace.
+            foreach (Pawn c in e.captives.Where(c => c.Spawned && c.IsPrisoner)) c.guest.WaitInsteadOfEscapingForDefaultTicks();
+            e.captives.Clear();
             var letter = (ChoiceLetter_ExpeditionReport)LetterMaker.MakeLetter("Exp_ReturnedLabel".Translate(report.siteLabel), ReportText(report),
                 ExpeditionsDefOf.Exp_ReportLetter, new LookTargets(pawns.Where(p => p.Spawned)));
             letter.reportTick = report.tick;
             Find.LetterStack.ReceiveLetter(letter);
         }
         game.HolderChanged();
+    }
+
+    private static void FreeCaptives(Expedition e, ExpeditionReport report)
+    {
+        foreach (Pawn c in e.captives.ToList())
+        {
+            if (e.contents.Contains(c)) e.contents.Remove(c);
+            if (!c.Dead)
+            {
+                c.guest?.SetGuestStatus(null);
+                if (!Find.WorldPawns.Contains(c)) Find.WorldPawns.PassToWorld(c, PawnDiscardDecideMode.Decide);
+            }
+        }
+        report.effectLines.Add("Exp_CaptivesFreedLine".Translate(e.captives.Count));
+        e.captives.Clear();
     }
 
     private static IntVec3 ArrivalCell(Expedition e, Map map)

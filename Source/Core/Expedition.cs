@@ -35,6 +35,9 @@ public class Expedition : IExposable, ISuspendableThingHolder
     public List<string> pendingEvents = new();
     public List<PawnResult> pendingFates = new();
     public PendingRaid? retaliation; // owed for a partial win; handed to the game when the squad is home
+    public List<Pawn> captives = new(); // in `contents` too: people taken on site, never counted as the squad
+
+    public bool IsCaptive(Pawn p) => captives.Contains(p);
 
     public Expedition()
     {
@@ -141,6 +144,7 @@ public class Expedition : IExposable, ISuspendableThingHolder
         Scribe_Collections.Look(ref pendingEvents, "pendingEvents", LookMode.Value);
         Scribe_Collections.Look(ref pendingFates, "pendingFates", LookMode.Deep);
         Scribe_Deep.Look(ref retaliation, "retaliation");
+        Scribe_Collections.Look(ref captives, "captives", LookMode.Reference);
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
         {
             contents ??= new ThingOwner<Thing>(this);
@@ -151,6 +155,8 @@ public class Expedition : IExposable, ISuspendableThingHolder
             pendingFates ??= new();
             pendingFates.RemoveAll(f => f?.pawn == null);
             rideThings ??= new();
+            captives ??= new();
+            captives.RemoveAll(p => p == null);
             squad.RemoveAll(p => p == null);
             rideThings.RemoveAll(t => t == null);
         }

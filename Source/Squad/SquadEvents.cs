@@ -364,7 +364,7 @@ public static class SquadEvents
     private static IEnumerable<Pawn> Living(Expedition e) => e.AwayPawns.Where(p => !p.Dead);
 
     private static IEnumerable<Pawn> People(Expedition e) =>
-        Living(e).Where(p => p.RaceProps.Humanlike && !RideFinder.VehicleCompat.IsVehicle(p));
+        Living(e).Where(p => p.RaceProps.Humanlike && !RideFinder.VehicleCompat.IsVehicle(p) && !e.IsCaptive(p));
 
     private static void ToWorld(Pawn p)
     {

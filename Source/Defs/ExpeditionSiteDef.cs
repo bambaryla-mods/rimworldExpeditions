@@ -59,6 +59,14 @@ public class MechKindEntry
 }
 
 // Wild animals of the site's biome, tamed and brought home.
+// People the squad brings home against their will: prisoners, or slaves when the colony's faith keeps them.
+public class CaptivesSpec
+{
+    public float chance = 1f;
+    public IntRange count = new(1, 1);
+    public float partialFactor; // above 0: they also roll on a partial win, at chance x this
+}
+
 // Food (as nutrition) and medicine the squad must bring and gives away at the site, on the listed outcomes.
 public class SiteSupplies
 {
@@ -161,10 +169,11 @@ public class ExpeditionSiteDef : Def
     public JoinerSpec? joiners;
     public TamedAnimalsSpec? tamedAnimals;
     public SiteSupplies? supplies;
+    public CaptivesSpec? captives;
     [MustTranslate] public string? successText; // a line in the report on a full Success, for jobs with nothing to bring home
 
     // Whether there is anything to find here. Without it the report says nothing about finding.
-    public bool HasFinds => loot.Count > 0 || joiners != null || tamedAnimals != null;
+    public bool HasFinds => loot.Count > 0 || joiners != null || tamedAnimals != null || captives != null;
 
     public override void ResolveReferences()
     {
@@ -222,6 +231,7 @@ public class ExpeditionSiteDef : Def
         if (joiners != null && joiners.kind == null && joiners.mechKinds.Count == 0) yield return "joiners has no kind and no mechKinds";
         if (joiners != null && joiners.partialFactor < 0f) yield return "joiners.partialFactor must not be negative";
         if (joiners != null && joiners.count.min < 1) yield return "joiners.count.min must be at least 1";
+        if (captives != null && captives.count.min < 1) yield return "captives.count.min must be at least 1";
         if (supplies != null && supplies.nutrition <= 0f && supplies.medicine <= 0) yield return "supplies asks for no food and no medicine";
         if (tamedAnimals != null && tamedAnimals.count.min < 1) yield return "tamedAnimals.count.min must be at least 1";
     }
