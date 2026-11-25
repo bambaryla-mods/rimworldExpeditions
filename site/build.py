@@ -40,7 +40,7 @@ TUNING_TAG = "Expeditions.ExpeditionTuningDef"
 NAV = [
     ("Guide", [("guide", "How it works"), ("rides", "Rides and food"), ("prospecting", "Prospecting"),
                ("captives", "Captives")]),
-    ("Sites", [("finds", "Places to search"), ("jobs", "Jobs for other factions")]),
+    ("Sites", [("finds", "Places to search"), ("jobs", "Jobs for other factions"), ("ideology", "Ideology")]),
     ("Challenges", [("challenges", "Challenges")]),
     ("About", [("settings", "Settings and mods")]),
 ]
@@ -54,6 +54,7 @@ THINGS = {
     "Leather_AlphaThrumbo": "thrumbomane", "Meat_AlphaThrumbo": "alpha thrumbo meat", "Gravcore": "gravcore",
     "GravlitePanel": "gravlite panels",
     "Leather_Thrumbo": "thrumbofur", "Meat_Thrumbo": "thrumbo meat",
+    "GauranlenSeed": "Gauranlen seed",
 }
 CATEGORIES = {
     "WeaponsRanged": "ranged weapons", "WeaponsMelee": "melee weapons", "Weapons": "weapons",
@@ -73,7 +74,7 @@ BIOMES = {
     "TropicalSwamp": "tropical swamp", "Grasslands": "grasslands",
 }
 HILLINESS = {"SmallHills": "small hills", "LargeHills": "large hills", "Mountainous": "mountains"}
-PAWN_KINDS = {"Colonist": "colonist"}
+PAWN_KINDS = {"Colonist": "colonist", "Villager": "villager"}
 # Stats a challenge reads: label, and how to show the value a decent pawn has.
 STATS = {
     "ShootingAccuracyPawn": ("shooting accuracy", "pct"), "MeleeDPS": ("melee DPS", "num"),
@@ -105,6 +106,7 @@ FACTION_NEED = {
     "Hostile": "a hostile faction's settlement nearby",
     "Ally": "an allied faction's settlement nearby",
     "Friendly": "a neutral or allied faction's settlement nearby",
+    "Any": "any faction's settlement nearby",
 }
 # Whose settlement a settlementLink site is offered for, and what a win does to it.
 SETTLEMENT_NEED = {"Hostile": "hostile", "Ally": "allied", "Friendly": "neutral or allied", "None": "any faction's"}
@@ -112,6 +114,13 @@ SETTLEMENT_END = {"Raid": "raids it", "Destroy": "razes it for good", "Nothing":
 # Gates a site can wait on (SiteGate classes), as conditions players read. Other mods' gates go here too.
 GATES = {
     "Expeditions.SiteGate_Mechanitor": "a mechanitor in the colony",
+    "Expeditions.SiteGate_Ideo": "only while your colony's main ideoligion wants it",
+}
+# What the outcome effects a site lists mean to a player. Classes not here are left off the page.
+EFFECTS = {
+    "Expeditions.OutcomeEffect_RaidCredit": "counts as a raid for your ideoligion",
+    "Expeditions.OutcomeEffect_DevelopmentPoints": "a development point for a fluid ideoligion",
+    "Expeditions.OutcomeEffect_ColonyThought": "a mood boost for the colony at home",
 }
 # Labels of research projects that SiteGate_Research names.
 RESEARCH = {}
@@ -336,8 +345,18 @@ class Mod:
         need = d.findtext("needsFaction")
         if need and need != "None":
             conditions.append(FACTION_NEED.get(need, need))
+        if flag("otherFaith"):
+            conditions.append("of another faith than yours")
         if flag("needsEnemy"):
             conditions.append("and a hostile settlement near the site")
+        supplies = d.find("supplies")
+        if supplies is not None:
+            give = []
+            if float(supplies.findtext("nutrition") or 0) > 0:
+                give.append(f"{fmt_num(float(supplies.findtext('nutrition')))} nutrition of food")
+            if int(supplies.findtext("medicine") or 0) > 0:
+                give.append(f"{supplies.findtext('medicine')} medicine")
+            conditions.append("the squad brings " + " and ".join(give) + " to give away")
         if flag("growingSeason"):
             conditions.append("in the growing season")
         link = d.find("settlementLink")
@@ -390,9 +409,18 @@ class Mod:
                 label += f" (also on a Partial, at {fmt_num(partial * 100, 0)}% of the chance)"
             loot.append({"label": label, "count": fmt_range(joiners.findtext("count") or "1", digits=0),
                          "chance": float(joiners.findtext("chance") or 1), "success_only": partial <= 0, "requires": []})
+        captives = d.find("captives")
+        if captives is not None:
+            partial = float(captives.findtext("partialFactor") or 0)
+            label = "captives: slaves for a faith that keeps them, prisoners otherwise"
+            if partial > 0:
+                label += f" (also on a Partial, at {fmt_num(partial * 100, 0)}% of the chance)"
+            loot.append({"label": label, "count": fmt_range(captives.findtext("count") or "1", digits=0),
+                         "chance": float(captives.findtext("chance") or 1), "success_only": partial <= 0, "requires": []})
         tamed = d.find("tamedAnimals")
         if tamed is not None:
-            loot.append({"label": "tamed wild animals of the area",
+            herd = d.find("tamedAnimals/kinds") is not None
+            loot.append({"label": "farm animals, driven home" if herd else "tamed wild animals of the area",
                          "count": fmt_range(tamed.findtext("count") or "1", digits=0),
                          "chance": float(tamed.findtext("chance") or 1), "success_only": False, "requires": []})
 
@@ -408,6 +436,22 @@ class Mod:
             rewards.append(f"×{fmt_num(xp)} skill experience")
         if d.findtext("successText"):
             rewards.append(d.findtext("successText"))
+        if d.find("pawnEffects/li[@Class='Expeditions.PawnEffect_Thought']") is not None:
+            rewards.append("a mood boost for the squad")
+        if d.find("pawnEffects/li[@Class='Expeditions.PawnEffect_Certainty']") is not None:
+            rewards.append("stronger certainty in their faith")
+        for eff in d.findall("outcomeEffects/li"):
+            cls = eff.get("Class") or ""
+            outs = [o.text for o in eff.findall("outcomes/li")]
+            when = f" (on {' or '.join(o for o in outs)})" if outs and outs != ["Success"] else ""
+            if cls == "Expeditions.OutcomeEffect_FactionGoodwill":
+                n = int(eff.findtext("amount") or 0)
+                rewards.append(f"{n:+d} goodwill with them{when}")
+            elif cls == "Expeditions.OutcomeEffect_HistoryEvent" and eff.findtext("eventDef") == "Exp_CharityFulfilled_Alms":
+                rewards.append(f"counts as charity for your ideoligion{when}")
+            elif cls in EFFECTS:
+                if rewards.count(EFFECTS[cls]) == 0:
+                    rewards.append(EFFECTS[cls] + when)
 
         risk = {}
         for outcome in ("success", "partial", "failure"):
@@ -419,7 +463,9 @@ class Mod:
             risk[outcome] = {k: v / total for k, v in w.items()}
 
         need = d.findtext("needsFaction") or "None"
-        if flag("rescueOnly"):
+        if d.find("gates/li[@Class='Expeditions.SiteGate_Ideo']") is not None:
+            page = "ideology"
+        elif flag("rescueOnly"):
             page = "rescue"
         elif d.find("link") is not None:
             worker = d.findtext("link/workerClass") or ""
@@ -525,7 +571,8 @@ class Helpers:
         s = self._site(def_name)
         if s is None:
             return Markup("?")
-        page = {"finds": "finds", "worksites": "finds", "worldsites": "finds", "jobs": "jobs"}.get(s["page"], "captives")
+        page = {"finds": "finds", "worksites": "finds", "worldsites": "finds", "jobs": "jobs",
+                "ideology": "ideology"}.get(s["page"], "captives")
         return Markup(f'<a href="{page}.html#{slugify(s["label"])}">{escape(s["label"])}</a>')
 
     def requirements(self):

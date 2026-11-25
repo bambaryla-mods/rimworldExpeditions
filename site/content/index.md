@@ -13,6 +13,7 @@ Gear, skills, bionics and traits all count, and every number is shown before you
 
 - [Places to search](finds.html): {{ site_count("finds") }} kinds of site, from an abandoned mine to an ancient mechanitor complex.
 - [Jobs for other factions](jobs.html): {{ site_count("jobs") }} kinds of work for allies and villages, paid in silver, goodwill and practice.
+- [Ideology](ideology.html): {{ site_count("ideology") }} kinds of site that only turn up when your ideoligion would want them: raids, charity, pilgrimages, conversions, captives.
 - [Prospecting](prospecting.html): ask around on the comms for any item.
 - [Captives](captives.html): colonists taken on an expedition, or kidnapped by raiders, can be rescued.
 - [Quest sites from the DLCs](finds.html#dlc-quest-sites): Ideology's work sites, Royalty's machines harming your colony, Biotech's and Ideology's ancient complexes, and Odyssey's gravcore sites, ancient structures, mercenaries and alpha thrumbo. A squad can do them instead of a caravan.
