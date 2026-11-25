@@ -15,7 +15,7 @@ public static class Arrival
         game.AddHistory(report);
         // Nobody of the squad left to hold them: captives go free before anything else counts them.
         if (e.captives.Count > 0 && !e.AwayPawns.Any(p => !p.Dead && p.RaceProps.Humanlike && !e.IsCaptive(p) && !RideFinder.VehicleCompat.IsVehicle(p)))
-            FreeCaptives(e, report);
+            Effects.Safe(e.opp.site, () => FreeCaptives(e, report));
 
         var pawns = e.AwayPawns.Where(p => !p.Dead).ToList();
         // A squad wiped out at the site, or robbed of everything on the road, is lost with its animals. Animals whose
@@ -51,7 +51,8 @@ public static class Arrival
         foreach (Thing t in carried.Where(t => !keep.Contains(t) && e.contents.Contains(t))) e.contents.Remove(t); // destroying usually removes it already
         foreach (OutcomeEffect oe in Resolver.OutcomeEffectsFor(e).Where(x => x.outcomes.Contains(report.outcome)))
             Effects.Safe(e.opp.site, () => oe.OnArrival(e, report.outcome, map, report));
-        Captives.Settle(e, report);
+        // Guarded: from here on the squad is out of `active`, so a throw would lose everyone still in the holder.
+        Effects.Safe(e.opp.site, () => Captives.Settle(e, report));
         if (map == null)
         {
             BecomeCaravan(e, pawns);
@@ -71,7 +72,10 @@ public static class Arrival
             foreach (Pawn p in e.contents.OfType<Pawn>().ToList()) e.Release(p, map, cell);
             foreach (Thing t in e.contents.ToList()) e.Release(t, map, cell);
             // Set down at the edge, a prisoner would run at once; vanilla gives caravan prisoners the same grace.
-            foreach (Pawn c in e.captives.Where(c => c.Spawned && c.IsPrisoner)) c.guest.WaitInsteadOfEscapingForDefaultTicks();
+            Effects.Safe(e.opp.site, () =>
+            {
+                foreach (Pawn c in e.captives.Where(c => c.Spawned && c.IsPrisoner)) c.guest.WaitInsteadOfEscapingForDefaultTicks();
+            });
             e.captives.Clear();
             var letter = (ChoiceLetter_ExpeditionReport)LetterMaker.MakeLetter("Exp_ReturnedLabel".Translate(report.siteLabel), ReportText(report),
                 ExpeditionsDefOf.Exp_ReportLetter, new LookTargets(pawns.Where(p => p.Spawned)));

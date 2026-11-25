@@ -66,7 +66,8 @@ public partial class Window_Expeditions
         RideOption option = rides.FirstOrDefault(r => r.ride == ride) ?? rides[0];
         eval = SquadEvaluator.Evaluate(squad, selectedOpp, ride, option);
         tripDays = squad.Count == 0 ? -1 : Departure.TripDays(Map, selectedOpp, squad, ride);
-        foodNeed = tripDays < 0 ? 0f : SupplyPlanner.FoodNeed(squad, tripDays, selectedOpp.site);
+        // With no squad picked yet the trip's food is unknown, but the alms are not.
+        foodNeed = tripDays < 0 ? selectedOpp.site.supplies?.nutrition ?? 0f : SupplyPlanner.FoodNeed(squad, tripDays, selectedOpp.site);
         foodHave = FoodPlanner.Available(squad, Map, foodNeed, out _);
         medsHave = selectedOpp.site.supplies is { medicine: > 0 } sup ? SupplyPlanner.Medicine(squad, Map, sup.medicine, out _) : 0;
         launchReport = squad.Count == 0 ? "Exp_PickSquad".Translate() : Departure.CanLaunch(selectedOpp, squad, option, Map);

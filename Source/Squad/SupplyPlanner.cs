@@ -24,7 +24,8 @@ public static class SupplyPlanner
 
         var stock = map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine)
             .Where(t => t.Spawned && !t.IsForbidden(walker) && walker.CanReserveAndReach(t, PathEndMode.Touch, Danger.Some))
-            .OrderBy(t => t.Position.DistanceToSquared(walker.Position));
+            .OrderBy(t => t.MarketValue)
+            .ThenBy(t => t.Position.DistanceToSquared(walker.Position)); // cheapest first: nobody gives away glitterworld medicine by accident
         foreach (Thing t in stock)
         {
             if (have >= count) break;

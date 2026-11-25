@@ -39,7 +39,7 @@ public static class Resolver
 
             foreach (Pawn p in pawns) report.pawns.Add(ApplyFate(e, p, outcome, report));
             PawnEffects(e, outcome, report);
-            GiveSupplies(e, outcome, report);
+            Effects.Safe(site, () => GiveSupplies(e, outcome, report));
             // Slaves with nobody left to keep them in line all run; the rest may still try.
             SquadEvents.CheckOverlord(e);
             SquadEvents.SlaveRoll(e);
@@ -47,7 +47,7 @@ public static class Resolver
             if (found && outcome == Outcome.Success && e.opp.captive is { } captive) Rescue(e, captive, report);
             foreach (Thing t in LootRoller.Roll(e, outcome, found, report)) e.contents.TryAdd(t);
             if (found && outcome != Outcome.Failure) Recruits(e, outcome, report);
-            if (found && outcome != Outcome.Failure) TakeCaptives(e, outcome, report);
+            if (found && outcome != Outcome.Failure) Effects.Safe(site, () => TakeCaptives(e, outcome, report));
             Reward(e, outcome, report);
         }
         finally

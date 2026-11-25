@@ -510,6 +510,12 @@
 		<loot>
 			<li><thing>GauranlenSeed</thing><count>1</count><successOnly>true</successOnly></li>
 		</loot>
+		<pawnEffects>
+			<li Class="Expeditions.PawnEffect_Thought">
+				<thought>Exp_SavedGrove</thought>
+				<onlyIfFaithMatches>true</onlyIfFaithMatches>
+			</li>
+		</pawnEffects>
 		<outcomeEffects>
 			<li Class="Expeditions.OutcomeEffect_ColonyThought">
 				<thought>Exp_SavedGrove</thought>
