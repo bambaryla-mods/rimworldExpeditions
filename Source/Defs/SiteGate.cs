@@ -48,7 +48,8 @@ public class SiteGate_Mechanitor : SiteGate
 }
 
 // The colony's main ideoligion wants this (Ideology). Any entry in the "any" lists opens it; anything in the "no"
-// lists closes it whatever else matches. Entries from other DLCs and mods carry MayRequire and drop out when absent.
+// lists closes it whatever else matches. Entries from other DLCs and mods carry MayRequire and drop out when absent;
+// a gate left with nothing to match stays closed.
 public class SiteGate_Ideo : SiteGate
 {
     public List<PreceptDef> anyPrecept = new();
@@ -63,7 +64,7 @@ public class SiteGate_Ideo : SiteGate
     public bool Matches(Ideo? ideo)
     {
         if (ideo == null) return false;
-        return IdeoMath.GateOpen(AnyListed, AnyMatch(ideo), Block(ideo) != null);
+        return IdeoMath.GateOpen(AnyMatch(ideo), Block(ideo) != null);
     }
 
     private bool AnyMatch(Ideo ideo) =>

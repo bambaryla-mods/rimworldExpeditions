@@ -53,7 +53,9 @@ public class PawnEffect_Certainty : PawnEffect
     public override void Apply(Pawn p, Expedition e, Outcome outcome, ExpeditionReport report)
     {
         if (p.ideo == null || (onlyIfFaithMatches && !Faith.PawnMatches(e.opp.site, p))) return;
+        float before = p.ideo.Certainty;
         p.ideo.OffsetCertainty(offset);
+        if (p.ideo.Certainty == before) return; // classic mode, or already certain: nothing to report
         string line = "Exp_CertaintyLine".Translate();
         if (!report.effectLines.Contains(line)) report.effectLines.Add(line);
     }
