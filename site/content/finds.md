@@ -13,7 +13,9 @@ How to read it:
 - **Chance it's there**: the Find number. With a search challenge it runs from the low end with a poor searcher to the high end with an expert.
 - **Risk per pawn**: what each pawn's roll can bring, by outcome. Whatever is left is "unharmed".
 
-A site marked with a DLC or mod only turns up when you have it. "Rare" sites turn up less often than the rest.
+A site marked with a DLC or mod only turns up when you have it. "Rare" sites turn up less often than the rest. Some sites wait for something in the colony, like a mechanitor for the {{ site_link("Exp_DormantMechs") }}. Until then they don't appear, and they leave the board if it stops being true. A squad already on its way still goes.
+
+The mechs from the dormant mechs answer to a mechanitor in the squad. Without one, none come home. Over the mechanitor's bandwidth, they come home uncontrolled, as any mech would.
 
 ## Ideology work sites
 

@@ -106,6 +106,15 @@ FACTION_NEED = {
     "Ally": "an allied faction's settlement nearby",
     "Friendly": "a neutral or allied faction's settlement nearby",
 }
+# Whose settlement a settlementLink site is offered for, and what a win does to it.
+SETTLEMENT_NEED = {"Hostile": "hostile", "Ally": "allied", "Friendly": "neutral or allied", "None": "any faction's"}
+SETTLEMENT_END = {"Raid": "raids it", "Destroy": "razes it for good", "Nothing": "leaves it standing"}
+# Gates a site can wait on (SiteGate classes), as conditions players read. Other mods' gates go here too.
+GATES = {
+    "Expeditions.SiteGate_Mechanitor": "a mechanitor in the colony",
+}
+# Labels of research projects that SiteGate_Research names.
+RESEARCH = {}
 # The C# defaults of ExpeditionTuningDef and ExpeditionSiteDef, for fields the XML leaves out.
 TUNING_DEFAULTS = {
     "partialBand": 0.15, "offerIntervalTicks": "60000~180000", "offerLifetimeTicks": "180000~480000",
@@ -331,6 +340,20 @@ class Mod:
             conditions.append("and a hostile settlement near the site")
         if flag("growingSeason"):
             conditions.append("in the growing season")
+        link = d.find("settlementLink")
+        if link is not None:
+            owner = SETTLEMENT_NEED.get(link.findtext("need") or "Hostile", link.findtext("need"))
+            end = SETTLEMENT_END.get(link.findtext("onSuccess") or "Raid", link.findtext("onSuccess"))
+            conditions.append(f"a real {owner} settlement in range; a win {end}")
+        for gate in d.findall("gates/li"):
+            cls = gate.get("Class") or ""
+            if cls == "Expeditions.SiteGate_Research":
+                names = [self.lookup(RESEARCH, r.text, "research") for r in gate.findall("research/li")]
+                conditions.append("once " + " and ".join(names) + " is researched")
+            else:
+                conditions.append(self.lookup(GATES, cls, "gate"))
+        if flag("immediate"):
+            conditions.append("offered as soon as that holds")
 
         challenges = []
         for li in d.findall("challenges/li"):
@@ -362,8 +385,11 @@ class Mod:
                 label = "mechs who answer to your mechanitor"
             else:
                 label = self.lookup(PAWN_KINDS, joiners.findtext("kind") or "", "pawn kind") + "s who join you"
+            partial = float(joiners.findtext("partialFactor") or 0)
+            if partial > 0:
+                label += f" (also on a Partial, at {fmt_num(partial * 100, 0)}% of the chance)"
             loot.append({"label": label, "count": fmt_range(joiners.findtext("count") or "1", digits=0),
-                         "chance": float(joiners.findtext("chance") or 1), "success_only": False, "requires": []})
+                         "chance": float(joiners.findtext("chance") or 1), "success_only": partial <= 0, "requires": []})
         tamed = d.find("tamedAnimals")
         if tamed is not None:
             loot.append({"label": "tamed wild animals of the area",
