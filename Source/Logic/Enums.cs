@@ -27,6 +27,7 @@ public enum PawnFate
     Captured,
     Joined, // never rolled: someone who came home with the squad and joined the colony
     RanAway, // never rolled: a slave who fled, or a creepjoiner who walked off or turned
+    Taken, // never rolled: someone the squad brought home against their will
 }
 
 public enum Ride
