@@ -105,6 +105,7 @@
 	<Exp_ClickToRemove>Click to remove from the squad.</Exp_ClickToRemove>
 	<Exp_PackAnimal>pack animal</Exp_PackAnimal>
 	<Exp_NobodyFree>Nobody is free.</Exp_NobodyFree>
+	<Exp_InOtherSquad>picked for {0}</Exp_InOtherSquad>
 	<Exp_NoGoMutant>can't go</Exp_NoGoMutant>
 	<Exp_NoGoGuest>quest guest, can't leave</Exp_NoGoGuest>
 	<Exp_NoGoContract>contract ends in {0}, trip takes {1} days</Exp_NoGoContract>

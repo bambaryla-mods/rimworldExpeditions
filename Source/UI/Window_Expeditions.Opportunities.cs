@@ -9,7 +9,9 @@ public partial class Window_Expeditions
     private const float EvalRefreshFrames = 90;
 
     private Opportunity? selectedOpp;
-    private readonly List<Pawn> squad = new();
+    // Each opportunity keeps the squad picked for it until it launches, so a pawn is in at most one of them.
+    private readonly Dictionary<Opportunity, List<Pawn>> drafts = new();
+    private List<Pawn> squad = new();
     private Ride ride = Ride.Foot;
 
     // Cached for the selected opportunity, squad and ride; rebuilt on change and every ~1.5 s.
@@ -32,7 +34,8 @@ public partial class Window_Expeditions
         tab = Tab.Opportunities;
         if (selectedOpp == opp) return;
         selectedOpp = opp;
-        squad.Clear();
+        if (!drafts.TryGetValue(opp, out List<Pawn>? draft)) drafts[opp] = draft = new List<Pawn>();
+        squad = draft;
         ride = Ride.Foot;
         evalKey = "";
     }
@@ -40,7 +43,12 @@ public partial class Window_Expeditions
     private void OpportunityList(Rect rect, ExpeditionsLook look)
     {
         var offers = VisibleOffers();
-        if (selectedOpp != null && !offers.Contains(selectedOpp)) selectedOpp = null;
+        if (selectedOpp != null && !offers.Contains(selectedOpp))
+        {
+            drafts.Remove(selectedOpp);
+            selectedOpp = null;
+            squad = new List<Pawn>();
+        }
         if (offers.Count == 0)
         {
             Label(rect, "Exp_NoOffers".Translate(), color: look.TextDim);
@@ -152,8 +160,9 @@ public partial class Window_Expeditions
         {
             RideOption option = rides.First(r => r.ride == ride);
             Departure.Launch(o, squad.ToList(), option, Map);
+            drafts.Remove(o);
             selectedOpp = null;
-            squad.Clear();
+            squad = new List<Pawn>();
             tab = Tab.Active;
         }
         if (!launchReport.Accepted && !launchReport.Reason.NullOrEmpty())
@@ -204,6 +213,12 @@ public partial class Window_Expeditions
         foreach (Pawn p in candidates)
         {
             string label = p.LabelShortCap;
+            Opportunity? other = drafts.FirstOrDefault(d => d.Key != o && d.Value.Contains(p) && Game.offers.Contains(d.Key)).Key;
+            if (other != null)
+            {
+                options.Add(new FloatMenuOption($"{label} ({"Exp_InOtherSquad".Translate(other.Label)})", null));
+                continue;
+            }
             AcceptanceReport can = Eligibility.CanGo(p, tripDays >= 0 ? tripDays : Departure.TripDays(Map, o, new List<Pawn> { p }, ride));
             if (!can.Accepted)
             {
