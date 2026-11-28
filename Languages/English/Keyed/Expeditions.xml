@@ -158,6 +158,10 @@
 	<Exp_SettingRange>Expedition range: {0} tiles</Exp_SettingRange>
 	<Exp_SettingOffers>Ready-made opportunities at a time: {0}</Exp_SettingOffers>
 	<Exp_CallOff>Call off</Exp_CallOff>
+	<Exp_Recall>Recall</Exp_Recall>
+	<Exp_RecallNoPods>Drop pods can't fly back for them. They'll come home once the job is done.</Exp_RecallNoPods>
+	<Exp_PlayerRecalled>The squad on the way to the {0} was called home. The opportunity is still on the board.</Exp_PlayerRecalled>
+	<Exp_PlayerRecalledLine>They were called home before they got there.</Exp_PlayerRecalledLine>
 	<Exp_SearchHint>Type at least {0} letters to search this mod's items.</Exp_SearchHint>
 	<Exp_SearchNoMatch>Nothing in {0} matches. Try another mod or other words.</Exp_SearchNoMatch>
 </LanguageData>

@@ -201,6 +201,21 @@ public static class Departure
         return true;
     }
 
+    // Only on the way out: a squad on site finishes the job, and drop pods can't fly back for them.
+    public static bool CanRecall(Expedition e) => e.phase == Phase.Outbound && e.ride != Ride.DropPods;
+
+    // The player turns a squad on the road for home from the Active tab. They come back the way they went, and the
+    // offer goes back on the board as it was. TurnBack lets go of the linked site on the squad's copy, not the board's.
+    public static void Recall(Expedition e)
+    {
+        if (!CanRecall(e)) return;
+        Opportunity opp = e.opp;
+        e.opp = opp.Copy();
+        SiteLinks.TurnBack(e, Outcome.CutShort).events.Add("Exp_PlayerRecalledLine".Translate());
+        if (opp.expiresTick < 0 || opp.expiresTick > Find.TickManager.TicksGame) ExpeditionsGame.Instance.offers.Add(opp);
+        Messages.Message("Exp_PlayerRecalled".Translate(opp.Label), MessageTypeDefOf.NeutralEvent, false);
+    }
+
     // The player calls it off from the Active tab.
     public static void CallOff(Expedition e, string messageKey = "Exp_DepartureCancelled") => Cancel(e, e.originMap, messageKey);
 

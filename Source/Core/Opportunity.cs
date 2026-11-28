@@ -22,6 +22,9 @@ public class Opportunity : IExposable
     public Site? linkedSite; // the vanilla quest site on the world map this offer is for
     public Settlement? linkedSettlement; // the real settlement this offer is for (sites with settlementLink)
 
+    // The same offer as a separate object: the board keeps one while a recalled squad carries the other home.
+    public Opportunity Copy() => (Opportunity)MemberwiseClone();
+
     public int Seed => id * 7919 + Find.World.info.Seed;
 
     // A linked site's own strength sets its Fight requirement; every other challenge asks what the def says.

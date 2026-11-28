@@ -53,6 +53,16 @@ public partial class Window_Expeditions
                 selectedExp = null;
                 return;
             }
+            if (e.phase == Phase.Outbound)
+            {
+                Rect recall = new(rect.xMax - 130f, rect.y, 130f, 28f);
+                if (e.ride == Ride.DropPods) TooltipHandler.TipRegion(recall, "Exp_RecallNoPods".Translate());
+                if (look.Button(recall, "Exp_Recall".Translate(), active: Departure.CanRecall(e)) && Departure.CanRecall(e))
+                {
+                    Departure.Recall(e);
+                    return;
+                }
+            }
             var people = e.phase == Phase.Departing ? e.squad : e.AwayPawns.Where(p => !RideFinder.VehicleCompat.IsVehicle(p)).ToList();
             for (int i = 0; i < people.Count; i++)
             {
